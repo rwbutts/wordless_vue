@@ -1,0 +1,16 @@
+export type CheckWordAsyncResponseType =
+     { success: boolean, exists:boolean|undefined, message: string}
+
+export type GetWordAsyncResponseType =
+     { success: boolean, word:string|undefined, message: string}
+ 
+export type GetMatchCountAsyncResponseType=
+     { success: boolean, count:number|undefined, message: string}
+
+export default class WordlessAPI {
+     constructor();
+     getWordAsync( daysAgo : number ) : Promise<GetWordAsyncResponseType>;
+     checkWordAsync( word: string ) : Promise<CheckWordAsyncResponseType>;
+     getMatchCountAsync( answer: string, guessList:string[]) : Promise<GetMatchCountAsyncResponseType>;
+}
+export const WordlessAPISvc : WordlessAPI;
