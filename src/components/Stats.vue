@@ -25,11 +25,14 @@
 </template>
 
 <script lang='ts'>
+"use strict";
+// @ts-check
 
 import Vue  from 'vue'
 import StatBar from './StatBar.vue'
 import CumulativeStats from '@/CumulativeStats'
-import { GameStates, StatsGameReportArgs } from '@/utils/Game'
+import { assert } from '@/utils/Misc';
+import { CustomEventNames, GameStates, MatchCodes, KeyCodes, } from '@/types';
 
 export default Vue.extend({
      name: 'statbox',
@@ -60,7 +63,7 @@ export default Vue.extend({
           //      if( typeof newVal === 'boolean' )
           //           this.showDialog = newVal;       }
           // },
-          report( newVal : StatsGameReportArgs, oldVal : StatsGameReportArgs)  // eslint-disable-line no-unused-vars
+          report( newVal : StatsReportGameResult, oldVal : StatsReportGameResult)  // eslint-disable-line no-unused-vars
           {
                if( !newVal || typeof newVal !== 'object' ) 
                     return;
@@ -69,10 +72,13 @@ export default Vue.extend({
                switch( newVal.finalState )
                {
                     case GameStates.WON:
+                         // if( newVal.numGuesses === undefined )
+                         //      throw new Error( 'ASSERT: newVal.numGuesses is undefined');
+                         assert( !(newVal.numGuesses===undefined), 'newVal.numGuesses is not undefined');
                          newStats = CumulativeStats.recordWin( newVal.numGuesses as number);
                          break;
                     case GameStates.LOST:
-                         newStats = CumulativeStats.recordLoss();
+                         newStats = CumulativeStats.recordLoss( );
                          break;
                     default:
                          throw new Error('impossible  game state encountered');

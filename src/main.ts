@@ -1,23 +1,23 @@
+/// <reference path='./globals.ts' />
 "use strict";
 
+const VERSION = '2.23';
+
 import Vue  from 'vue'
-import { wordlessAPISvc } from '@/WordlessAPI';
+import { wordlessApiService,  } from '@/WordlessAPI';
 import App from '@/App.vue'
-import { ResetGameEventArgs, EventBus, CustomEventNames, } from '@/EventBus';
+import { EventBus, } from '@/EventBus';
 
 import { useStateStore } from '@/Store';
 import { createPinia, PiniaVuePlugin, mapStores } from 'pinia'
 import VueCompositionAPI from '@vue/composition-api'
+import { CustomEventNames, GameStates, MatchCodes, KeyCodes, } from '@/types';
+
 
 Vue.use(PiniaVuePlugin)
 const pinia = createPinia()
 Vue.use(VueCompositionAPI)
-
-
-Vue.use(pinia);
-
-const VERSION = '2.23';
-
+console.log(`init = -${GameStates.INIT}`);
 export const app = new Vue({
      el: '#app',
      render: h => h(App),
@@ -32,17 +32,17 @@ export const app = new Vue({
      computed : {
           ...mapStores( useStateStore, ''),
      },
-     
+
      methods: {
           async restartApp() 
           {
                this.stateStore.$reset();
 
-               let response = await wordlessAPISvc.getWordAsync();
+               let response = await wordlessApiService.getWordAsync();
                if( response.success )
                {
                     this.stateStore.setStatusMsg(`Guess the 5-letter word in 6 tries. Good luck!`);
-                    (new ResetGameEventArgs(response.word)).emit();
+                    EventBus.emitResetEvent( { answer: response.word } );
                }
                else
                {
@@ -63,5 +63,3 @@ export const app = new Vue({
           this.stateStore.setStatusMsg(`V${this.VERSION}: Loading word...`);
      }
 });
-//app.$mount('#app');
-

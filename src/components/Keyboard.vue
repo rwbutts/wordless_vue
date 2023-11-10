@@ -25,7 +25,7 @@
                <key :refMap='refMap' char='L' @click='keyHandler' />
           </div>
           <div class='kb-row' >
-               <key :refMap='refMap' :char="KEYCODES.DELETE"  special_key label='DELETE' @click='keyHandler' />
+               <key :refMap='refMap' char='DELETE'  special_key label='DELETE' @click='keyHandler' />
                <key :refMap='refMap' char='Z' @click='keyHandler' />
                <key :refMap='refMap' char='X' @click='keyHandler' />
                <key :refMap='refMap' char='C' @click='keyHandler' />
@@ -33,21 +33,21 @@
                <key :refMap='refMap' char='B' @click='keyHandler' />
                <key :refMap='refMap' char='N' @click='keyHandler' />
                <key :refMap='refMap' char='M' @click='keyHandler' />
-               <key :refMap='refMap' :char="KEYCODES.ENTER"  special_key label='ENTER' @click='keyHandler' />
+               <key :refMap='refMap' char='ENTER'  special_key label='ENTER' @click='keyHandler' />
          </div>
          <div class='kb-row' >
-               <key :refMap='refMap' class="reset-key" :char="KEYCODES.RESET"  special_key label='PLAY AGAIN' @click="$emit('reset');" />
+               <key :refMap='refMap' class="reset-key" char='RESET'  special_key label='PLAY AGAIN' @click="$emit('reset');" />
          </div>
      </div>
 </template>
 
 <script lang='ts'>
-"use strict";
+
 /* eslint-disable no-unused-vars */
 
 import Vue  from 'vue'
 import Key from './Key.vue'
-import { KeyCodes as KEYCODES, KeyPressEventArgs} from '@/utils/Keyboard'
+import { CustomEventNames, GameStates, MatchCodes, KeyCodes, } from '@/types';
 
 export default Vue.extend({
      name: 'keyboard',
@@ -55,8 +55,8 @@ export default Vue.extend({
      data() 
      {
           return {
-                KEYCODES,
-                refMap : {} as ObjStringMap<any>,
+//                KEYCODES,
+                refMap : {} as Record<string,any>,
           };
      },
 
@@ -70,7 +70,8 @@ export default Vue.extend({
      },
 
      methods: {
-          keyHandler( args: KeyPressEventArgs) : void {
+          keyHandler( args: KeyPressEventArgs ) : void 
+          {
                this.$emit('key-press', args );
           },
 
@@ -100,8 +101,8 @@ export default Vue.extend({
      },
 
      mounted() {
-          this._handleRealKeyThis = this.handleRealKey.bind(this);   
-          window.addEventListener('keydown', this._handleRealKeyThis);
+          this.handleRealKey = this.handleRealKey.bind(this);   
+          window.addEventListener('keydown', this.handleRealKey);
      },
 
      beforeDestroy() 

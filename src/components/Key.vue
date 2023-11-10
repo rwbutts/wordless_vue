@@ -14,13 +14,13 @@
 <script lang='ts'>
 "use strict";
 // @ts-check
+
 /* eslint-disable no-unused-vars */
 
-import Vue  from 'vue'
-import { mapState, mapActions, mapWritableState } from 'pinia'
+import Vue, {PropType, }  from 'vue'
+import { mapState,  } from 'pinia'
 import { useStateStore, } from '@/Store';
-import { KeyPressEventArgs } from '@/utils/Keyboard'
-import { MatchCodes } from '@/utils/Game'
+import { CustomEventNames, GameStates, MatchCodes, KeyCodes, } from '@/types';
 
 export default Vue.extend({
      name: 'key',
@@ -33,20 +33,21 @@ export default Vue.extend({
 
      props: {
           label : {
-               type: String,
+               type: String as PropType<string>,
                default: "",
           },
           special_key : {
-               type: Boolean,
+               type: Boolean as PropType<boolean>,
                default: false,
           },
           char : String,       // character/mnemonic emitted with key click event
           refMap : {
-               type: Object,
+               type: Object as PropType<Record<string,any>>,
           },
      },
-
-     computed: {
+//     emits: [ 'click', ],
+     computed: 
+     {
           ...mapState(useStateStore, ['KeyColorMap',]),
           getCSSClasses()
           {
@@ -67,8 +68,9 @@ export default Vue.extend({
           },
       },
 
-     methods: {
-          clickHandler (  )  
+     methods: 
+     {
+          clickHandler( )  
           {
                /**                
                 * check if disabled in css so keypress-
@@ -77,13 +79,13 @@ export default Vue.extend({
                 **/
                if(!this.isCssPointerEventDisabled())
                {
-                    let args = new KeyPressEventArgs( this.char );
                     this.keyDown = true;
-                    this.$emit('click', args );
+                    this.$emit('click', {character: this.char } );
                     setTimeout( ()=>(this.keyDown = false), 100);
                }
           },
-          isCssPointerEventDisabled() :boolean {
+          isCssPointerEventDisabled() : boolean 
+          {
                let styles = window.getComputedStyle(this.$el);
                let val = styles.getPropertyValue('pointer-events');
                return (val === 'none');

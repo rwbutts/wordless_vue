@@ -21,11 +21,14 @@
 </template>
 
 <script lang='ts'>
-"use strict"
+"use strict";
+// @ts-check
+
 /* eslint-disable no-unused-vars */
 
 import Vue  from 'vue'
 import GuessLetter from './GuessLetter.vue';
+import { CustomEventNames, GameStates, MatchCodes, KeyCodes, } from '@/types';
 
 import { calcLetterColor } from '@/utils/Game';
 

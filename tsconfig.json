@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+     "listEmittedfiles": true,
+     "declaration": true,
+     "declarationDir": "./types",
     "target": "esnext",
     "module": "esnext",
     "strict": true,

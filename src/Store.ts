@@ -1,7 +1,9 @@
-"use strict"
+"use strict";
+// @ts-check
 
 import { defineStore } from 'pinia'
-import { GameStates, calcLetterColor, } from '@/utils/Game';
+import { calcLetterColor, } from '@/utils/Game';
+import { CustomEventNames, GameStates, MatchCodes, KeyCodes, } from '@/types';
 
 export const useStateStore = defineStore('state', {
      state: () => ({ 
@@ -10,8 +12,8 @@ export const useStateStore = defineStore('state', {
                gameOver: false,
                guessList: Array(7).fill('') as string[],
                statusMessage: '', 
-               gameState: GameStates.INIT,
-               KeyColorMap: {} as ObjStringMap<string>,
+               gameState: 'game-starting', //GameStates.INIT as string,
+               KeyColorMap: {} as Record<string,string>,
           }
      ),
      getters: {
@@ -38,7 +40,7 @@ export const useStateStore = defineStore('state', {
                console.log("Setstatus", msg);
                this.statusMessage = msg;
           },
-          setGameState( state:string ) {
+          setGameState( state: string ) {
                this.gameState = state;
                if( state===GameStates.WON || state===GameStates.LOST )
                     this.gameOver = true;

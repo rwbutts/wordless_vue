@@ -42,17 +42,18 @@
 <script lang='ts'>
 "use strict";
 // @ts-check
+
 /* eslint-disable no-unused-vars */
 
 import Vue  from 'vue'
-import { wordlessAPISvc, CheckWordAsyncResponseType } from '@/WordlessAPI'
+import { wordlessApiService, type CheckWordAsyncResponseType} from '@/WordlessAPI'
 import GuessList from '@/components/GuessList.vue'
 import WordInput from '@/components/WordInput.vue'
 import Stats from '@/components/Stats.vue'
 import { mapState, mapActions,  } from 'pinia'
-import { EventBus, CustomEventNames, ResetGameEventArgs, } from '@/EventBus';
-import { GameStates, StatsGameReportArgs, } from '@/utils/Game';
+import { EventBus, } from '@/EventBus';
 import { useStateStore, } from '@/Store';
+import { CustomEventNames, GameStates, MatchCodes, KeyCodes, } from '@/types';
 
 
 export default Vue.extend({
@@ -93,12 +94,12 @@ export default Vue.extend({
                if(guess === this.answer)
                {
                     this.setGameState(GameStates.WON);
-                    this.statsReport = new StatsGameReportArgs( GameStates.WON, this.activeRow  );
+                    this.statsReport = { finalState: GameStates.WON, numGuesses: this.activeRow };
                }
                else if (this.activeRow >= 6 )
                {
                     this.setGameState(GameStates.LOST);
-                    this.statsReport = new StatsGameReportArgs( GameStates.LOST );
+                    this.statsReport = { finalState: GameStates.LOST };
                }
                else
                     this.displayMatchingWordCount( this.answer, this.guessList.slice(0, this.activeRow));
@@ -106,7 +107,7 @@ export default Vue.extend({
 
           async displayMatchingWordCount( answer: string, guesses: string[] ) : Promise<void>
           {
-               let apiResp = await wordlessAPISvc.getMatchCountAsync( answer, guesses );
+               let apiResp = await wordlessApiService.getMatchCountAsync( answer, guesses );
                if(!apiResp.success)
                {
                     this.setStatusMsg(`Error retrieving match count: ${apiResp.message} `);
@@ -119,7 +120,7 @@ export default Vue.extend({
 
           async validateWord( word :string ) : Promise<CheckWordAsyncResponseType>
           {
-               return await wordlessAPISvc.checkWordAsync( word );
+               return await wordlessApiService.checkWordAsync( word );
           }
      },
      beforeMount()

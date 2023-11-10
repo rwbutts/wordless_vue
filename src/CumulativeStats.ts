@@ -1,3 +1,6 @@
+"use strict";
+// @ts-check
+
 const STAT_STORAGE_NAME = 'cumulative_stats';
 
 export default class CumulativeStats
@@ -16,23 +19,23 @@ export default class CumulativeStats
      
      }
 
-     static recordWin( attempts : number ) : CumulativeStats
+     static recordWin( numGuesses : number ) : CumulativeStats
      {
           var statObj  = CumulativeStats.fromStorage();
 
-          if( attempts > statObj.histogramBins.length || attempts <= 0 )
+          if( numGuesses >= statObj.histogramBins.length || numGuesses <= 0 )
                throw new RangeError( 'RecordWin() invalid Attempts parameter value' );
 
           statObj.winningStreak++;
           statObj.gamesPlayed++;
           statObj.gamesWon++;
-          statObj.histogramBins[ attempts - 1 ]++;
+          statObj.histogramBins[ numGuesses - 1 ]++;
           statObj.persist();
 
           return statObj;
      }
 
-     static recordLoss(): CumulativeStats
+     static recordLoss( ): CumulativeStats
      {
           var statObj = CumulativeStats.fromStorage();
 
@@ -68,7 +71,16 @@ export default class CumulativeStats
           let statJSON = forceReset ? null : localStorage.getItem( STAT_STORAGE_NAME );
           if( statJSON !== null )
           {
-               var statObj = JSON.parse( statJSON );
+               let statObj : CumulativeStats;
+               try {
+                    statObj = JSON.parse( statJSON );
+               }
+               catch(err)
+               {
+                    let msg = err instanceof(Error) ? err.message : '** Exception unknown **';
+                    console.warn(`JSON Exception loading stat from localstorage: ${msg}`);
+                    statObj = new CumulativeStats();
+               }
                return Object.assign( new CumulativeStats(), statObj );
           }
                // if not found, return an empty stat object

@@ -1,21 +1,8 @@
 "use strict";
+// @ts-check
 
 export function assert( condition: boolean, message:string = '' ) {
      if (!condition) {
-         throw new Error(message || "Assertion failed");
+         throw new Error( 'assert() failed: ' + message );
      }
  }
-
- /*
-export const MatchCodes = { 
-     CORRECT : "correct",
-     ELSEWHERE : "elsewhere",
-     MISS : "miss",
-     DEFAULT : "default",
-};
-*/
-
-
-
- 
-

@@ -1,13 +1,10 @@
 "use strict";
-import Vue from 'vue'
+// @ts-check
 
-   
-export const CustomEventNames: ObjStringMap<string> = {
-     RESET_KEY : 'user-reset-key',
-     RESET_COMPONENTS: "init-components",
-     SETKEYSTYLE : 'set-key-style',
-     KEYPRESS: 'key-press',
-}
+import Vue from 'vue'
+import { CustomEventNames, GameStates, MatchCodes, KeyCodes, } from '@/types';
+
+
 
 export class EventArgsBase
 {
@@ -63,6 +60,16 @@ export class EventBus
           this._verifyEventNameNotNull( eventName );
           this.eventSource.$emit( eventName, eventArgument );
      }
+
+     static emitResetEvent( eventArgument: ResetGameEventArgs )
+     {
+          this.emit( eventArgument, CustomEventNames.RESET_COMPONENTS ); 
+     }
+     static emitResetRequestEvent( eventArgument: ResetKeyEventArgs )
+     {
+          this.emit( eventArgument, CustomEventNames.RESET_KEY ); 
+     }
+
      static startListen( handler:(arg:any)=>void, eventName: string )
      {
           this._verifyEventNameNotNull( eventName );
@@ -74,18 +81,6 @@ export class EventBus
      {
           this._verifyEventNameNotNull( eventName );
           this.eventSource.$off( eventName, handler );
-     }
-}
-
-
-export class ResetGameEventArgs extends EventArgsBase
-{
-     answer : string;
-     
-     constructor( answer: string )
-     {
-          super( CustomEventNames.RESET_COMPONENTS );
-          this.answer = answer;
      }
 }
 

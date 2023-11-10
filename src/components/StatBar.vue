@@ -7,6 +7,9 @@
 </template>
 
 <script lang='ts'>
+"use strict";
+// @ts-check
+
 import Vue  from 'vue'
 
 export default Vue.extend({

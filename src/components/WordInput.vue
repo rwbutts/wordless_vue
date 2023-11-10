@@ -3,20 +3,22 @@
      :class="{ 'guess-is-not-empty' : guessLen>0,
                'guess-is-full-word' :  guessLen >= 5,
                'guess-is-not-full-word' : guessLen <5 }"
-               @reset='EventBus.emit( {}, CustomEventNames.RESET_KEY );'/>
+               @reset='EventBus.emitResetRequestEvent( {} );'/>
 </template>
      
-     <script lang='ts'>
-     "use strict"
+<script lang='ts'>
+     "use strict";
+     // @ts-check
+
      /* eslint-disable no-unused-vars */
      
-import Vue  from 'vue'
-     import { mapState, mapActions, mapWritableState } from 'pinia'
+     import Vue, { PropType }  from 'vue'
+     import { mapState,  } from 'pinia'
      import Keyboard from './Keyboard.vue';
-     import { EventBus, CustomEventNames } from '@/EventBus'
+     import { EventBus,  } from '@/EventBus'
      import { calcLetterColor } from '@/utils/Game';
      import { useStateStore } from '@/Store';
-     import { KeyCodes } from '@/utils/Keyboard';
+     import { CustomEventNames, GameStates, MatchCodes, KeyCodes, } from '@/types';
      
      export default Vue.extend({
           name: 'word-input',
@@ -25,7 +27,6 @@ import Vue  from 'vue'
           {
                return {
                     EventBus,
-                    CustomEventNames,
                };
           },
 
@@ -33,12 +34,12 @@ import Vue  from 'vue'
 
           inject: [],
 
-          emit:['guess-validated','update:target', 'message', ],
+//          emits : {'guess-validated':null,'update:target':null, 'message':null, } as any,
           
           props: 
           {    
                'target': {
-                    type: String,
+                    type: String as PropType<string>,
                     required : true,
                },
                'validator': {
@@ -52,7 +53,7 @@ import Vue  from 'vue'
           },
 
           methods: {
-               async keyEventHandler( eventArgs :KeyPressEventArgs )
+               async keyEventHandler( eventArgs :KeyPressEventArgs ) : Promise<void>
                {
                     let key = eventArgs.character;
                     let resp;

@@ -11,12 +11,13 @@ export type CheckWordAsyncResponseType =
 { success: boolean, exists:boolean|undefined, message: string}
 
 export type GetWordAsyncResponseType =
-{ success: boolean, word:string, message: string}
+{ success: boolean, word:string|undefined, message: string}
 
 export type GetMatchCountAsyncResponseType=
-{ success: boolean, count:number, message: string}
+{ success: boolean, count:number|undefined, message: string}
 
-export class WordlessAPI
+
+export default class WordlessAPI
 {
 
      constructor ()
@@ -25,48 +26,32 @@ export class WordlessAPI
 
       async getWordAsync( daysAgo = -1) :  Promise<GetWordAsyncResponseType>
      {
-          return getWordAsync( daysAgo);
-     }
-
-      async checkWordAsync( word :string) : Promise<CheckWordAsyncResponseType> 
-      {
-          return checkWordAsync( word);
-      }
-
-      async getMatchCountAsync( answer :string, guessArray: string[]  ) : Promise<GetMatchCountAsyncResponseType>
-     {
-          return getMatchCountAsync( answer, guessArray );
-     }
-}
-
-export  async function getWordAsync( daysAgo = -1) :  Promise<GetWordAsyncResponseType>
-     {
           try
           {
-               let json = await _fetchAndGetJson( `${API_SITE}${GETWORD_URI}/${daysAgo}` );
+               let json = await this._fetchAndGetJson( `${API_SITE}${GETWORD_URI}/${daysAgo}` );
                return  { word: json.word.toUpperCase(), success : true, message:'' };  
           }
           catch(err :any)
           {
-               return  { word: '', success : false, message: err.message };  
+               return  { word: undefined, success : false, message: err.message };  
           }  
-     };
+     }
 
-export async function checkWordAsync( Word :string) : Promise<CheckWordAsyncResponseType> 
+      async checkWordAsync( Word :string) : Promise<CheckWordAsyncResponseType> 
       {
           let WordLC = Word.toLowerCase();
           try
           {
-               let json = await _fetchAndGetJson( `${API_SITE}${CHECKWORD_URI}/${WordLC}` );
+               let json = await this._fetchAndGetJson( `${API_SITE}${CHECKWORD_URI}/${WordLC}` );
                return { exists: json.exists, success: true, message: '' };
           }
           catch( err :any )
           {
-               return { exists: false, success: false, message: err.message,  };
+               return { exists: undefined, success: false, message: err.message,  };
           }
-      };
+      }
 
-export async function getMatchCountAsync( answer :string, guessArray: string[]  ) : Promise<GetMatchCountAsyncResponseType>
+      async getMatchCountAsync( answer :string, guessArray: string[]  ) : Promise<GetMatchCountAsyncResponseType>
      {
           let postData = 
           { 
@@ -76,16 +61,16 @@ export async function getMatchCountAsync( answer :string, guessArray: string[]  
 
           try
           {
-               let json = await _fetchAndGetJson( `${API_SITE}${GETMATCHCOUNT_URI}`, postData );
+               let json = await this._fetchAndGetJson( `${API_SITE}${GETMATCHCOUNT_URI}`, postData );
                return { count: json.count, success: true, message: '' };
           }
           catch( err : any)
           {
-               return { count: -1, success: false, message: err.message,  };
+               return { count: undefined, success: false, message: err.message,  };
           }
-     };
+     }
 
-     async function _fetchAndGetJson( Url: string, PostData: {[key:string] : any}|null = null ) : Promise<{ [key:string]: any }>
+     async _fetchAndGetJson( Url: string, PostData: {[key:string] : any}|null = null ) : Promise<{ [key:string]: any }>
      {
           let RequestParams;
           if ( PostData === null )
@@ -118,7 +103,7 @@ export async function getMatchCountAsync( answer :string, guessArray: string[]  
           }
           return response.json();
      }
-
-export const wordlessApiService = new WordlessAPI();
+}
+export const wordlessAPISvc =  new WordlessAPI ();
 
 
