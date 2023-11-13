@@ -3,24 +3,26 @@
 
 import { defineStore } from 'pinia'
 import { calcLetterColor, } from '@/utils/Game';
-import { CustomEventNames, GameStates, MatchCodes, KeyCodes, } from '@/types';
+import { GameStates, } from '@/types';
 
-export const useStateStore = defineStore('state', {
+export const useStateStore = defineStore( 'state', {
      state: () => ({ 
                answer: "", 
                activeRow: 0,
                gameOver: false,
-               guessList: Array(7).fill('') as string[],
+               guessList: Array(7).fill( '' ) as string[],
                statusMessage: '', 
                gameState: 'game-starting', //GameStates.INIT as string,
                KeyColorMap: {} as Record<string,string>,
           }
      ),
+
      getters: {
           cursorCol: (state) => (state.activeRow <= 5 ? state.guessList[state.activeRow].length : 0),
           guessLen: (state) => (state.activeRow <= 5 ? state.guessList[state.activeRow].length : 0),
           typedGuess: (state) => (state.guessList[state.activeRow]),
      },
+
      actions: {
           /**
            * Increments the active Guess row, 0-6*.
@@ -37,7 +39,7 @@ export const useStateStore = defineStore('state', {
            * the keyboard).
            */
           setStatusMsg( msg:string ) {
-               console.log("Setstatus", msg);
+               console.log( "Setstatus", msg );
                this.statusMessage = msg;
           },
           setGameState( state: string ) {
@@ -58,8 +60,8 @@ export const useStateStore = defineStore('state', {
                let r = this.activeRow;
                for( let col = 0; col < this.guessList[r].length; col++ )
                {
-                    let resp = calcLetterColor(this.guessList[r], this.answer, col);
-                    this.setKeyColor( resp.letter, resp.color);
+                    let resp = calcLetterColor( this.guessList[r], this.answer, col );
+                    this.setKeyColor( resp.letter, resp.color );
                }
           },
      }

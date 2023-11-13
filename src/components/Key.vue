@@ -36,11 +36,14 @@ export default Vue.extend({
                type: String as PropType<string>,
                default: "",
           },
+
           special_key : {
                type: Boolean as PropType<boolean>,
                default: false,
           },
+
           char : String,       // character/mnemonic emitted with key click event
+          
           refMap : {
                type: Object as PropType<Record<string,any>>,
           },
@@ -48,18 +51,18 @@ export default Vue.extend({
 //     emits: [ 'click', ],
      computed: 
      {
-          ...mapState(useStateStore, ['KeyColorMap',]),
+          ...mapState( useStateStore, ['KeyColorMap',] ),
           getCSSClasses()
           {
 
-               let colorClass = (this.KeyColorMap!== null && this.char in this.KeyColorMap) 
-                              ? this.KeyColorMap[this.char]
+               let colorClass = ( this.KeyColorMap !== null && this.char in this.KeyColorMap ) 
+                              ? this.KeyColorMap[ this.char ]
                               : MatchCodes.DEFAULT;
 
                let classes = {
                     special_key: this.special_key,
-                    ['key-' + this.char.toLowerCase()]: true,
-                    [this.special_key?'key-nonalpha':'key-alpha']: true,
+                    [ 'key-' + this.char.toLowerCase() ]: true,
+                    [ this.special_key ? 'key-nonalpha' : 'key-alpha' ] : true,
                     [ colorClass ]: true,
                     'key-down': this.keyDown,
                };
@@ -77,20 +80,20 @@ export default Vue.extend({
                 * calls are ignored (native click will be 
                 * disabled by css setting natively.)
                 **/
-               if(!this.isCssPointerEventDisabled())
+               if( !this.isCssPointerEventDisabled() )
                {
                     this.keyDown = true;
-                    this.$emit('click', {character: this.char } );
-                    setTimeout( ()=>(this.keyDown = false), 100);
+                    this.$emit( 'click', {character: this.char } );
+                    setTimeout( ()=>(this.keyDown = false), 100 );
                }
           },
+
           isCssPointerEventDisabled() : boolean 
           {
-               let styles = window.getComputedStyle(this.$el);
-               let val = styles.getPropertyValue('pointer-events');
-               return (val === 'none');
+               let styles = window.getComputedStyle( this.$el );
+               let val = styles.getPropertyValue( 'pointer-events' );
+               return ( val === 'none') ;
           },
-
      },
 
      mounted() {

@@ -47,7 +47,6 @@
 
 import Vue  from 'vue'
 import Key from './Key.vue'
-import { CustomEventNames, GameStates, MatchCodes, KeyCodes, } from '@/types';
 
 export default Vue.extend({
      name: 'keyboard',
@@ -55,13 +54,10 @@ export default Vue.extend({
      data() 
      {
           return {
-//                KEYCODES,
                 refMap : {} as Record<string,any>,
           };
      },
-
-     emit: ['key-press', 'reset' ],
-
+    // emit: ['key-press', 'reset' ],
      computed: {
      },
 
@@ -72,15 +68,15 @@ export default Vue.extend({
      methods: {
           keyHandler( args: KeyPressEventArgs ) : void 
           {
-               this.$emit('key-press', args );
+               this.$emit( 'key-press', args );
           },
 
-          handleRealKey(e : KeyboardEvent) : void
+          handleRealKey( e : KeyboardEvent ) : void
           {
-               let ucKey = (e.key || '').toUpperCase();
+               let ucKey = ( e.key || '' ).toUpperCase();
                if( ucKey in this.refMap )
                {
-                    let keyRef = this.refMap[ucKey];
+                    let keyRef = this.refMap[ ucKey ];
                     {
                          keyRef.clickHandler();
                     }
@@ -94,7 +90,6 @@ export default Vue.extend({
            * We overwrite this in mounted()
            */
           _handleRealKeyThis: ()=>null,
-
      },
 
      beforeMount(){
@@ -102,12 +97,12 @@ export default Vue.extend({
 
      mounted() {
           this.handleRealKey = this.handleRealKey.bind(this);   
-          window.addEventListener('keydown', this.handleRealKey);
+          window.addEventListener( 'keydown', this.handleRealKey );
      },
 
      beforeDestroy() 
      {
-          window.removeEventListener('keydown', this._handleRealKeyThis);
+          window.removeEventListener( 'keydown', this._handleRealKeyThis );
      },
      
      created() {

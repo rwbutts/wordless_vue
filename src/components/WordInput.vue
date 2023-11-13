@@ -18,7 +18,7 @@
      import { EventBus,  } from '@/EventBus'
      import { calcLetterColor } from '@/utils/Game';
      import { useStateStore } from '@/Store';
-     import { CustomEventNames, GameStates, MatchCodes, KeyCodes, } from '@/types';
+     import { CustomEventNames, KeyCodes, } from '@/types';
      
      export default Vue.extend({
           name: 'word-input',
@@ -33,9 +33,7 @@
           components: { Keyboard },
 
           inject: [],
-
 //          emits : {'guess-validated':null,'update:target':null, 'message':null, } as any,
-          
           props: 
           {    
                'target': {
@@ -62,27 +60,27 @@
                     let word = this.target || '';
                     let len = word.length;
 
-                    this.statusMsg('');
+                    this.statusMsg( '' );
                     switch( true )
                     {
-                         case key === KeyCodes.ENTER && len >=5:
+                         case key === KeyCodes.ENTER && len >= 5:
                               resp = await this.validator( word );
                               if( resp.exists === false )
                               {
                                    word = word.substring(0, len - 1 )
-                                   this.statusMsg(`Sorry, ${word} is not in my dictionary!`);
+                                   this.statusMsg( `Sorry, ${word} is not in my dictionary!` );
                               }
                               else if( resp.exists === true )
                               {
-                                   this.$emit('guess-validated', word, calcLetterColor );
+                                   this.$emit( 'guess-validated', word, calcLetterColor );
                               }  
                               else if( resp.exists === undefined )
                               {
-                                   this.statusMsg(`Error validating word: ${resp.message}. Try again in a few moments.`);
+                                   this.statusMsg( `Error validating word: ${resp.message}. Try again in a few moments.` );
                               }
                               break;
                          case key === KeyCodes.DELETE && len > 0:
-                              word = word.substring(0, len - 1 )
+                              word = word.substring( 0, len - 1 )
                               break;
                          case key.length === 1 && key >= 'A' && key <= 'Z' && len < 5:
                               word = word + key;

@@ -46,14 +46,14 @@
 /* eslint-disable no-unused-vars */
 
 import Vue  from 'vue'
-import { wordlessApiService, type CheckWordAsyncResponseType} from '@/WordlessAPI'
 import GuessList from '@/components/GuessList.vue'
 import WordInput from '@/components/WordInput.vue'
 import Stats from '@/components/Stats.vue'
 import { mapState, mapActions,  } from 'pinia'
-import { EventBus, } from '@/EventBus';
 import { useStateStore, } from '@/Store';
-import { CustomEventNames, GameStates, MatchCodes, KeyCodes, } from '@/types';
+import { EventBus, } from '@/EventBus';
+import { wordlessApiService, type CheckWordAsyncResponseType} from '@/WordlessAPI'
+import { CustomEventNames, GameStates, KeyCodes, } from '@/types';
 
 
 export default Vue.extend({
@@ -61,10 +61,11 @@ export default Vue.extend({
 
      data() { 
           return {
-               statsReport : null as any,
+               statsReport: null as any,
                modalActive: false,
           };
      },
+
      components: { 
           'guess-list': GuessList,
           'word-input': WordInput,
@@ -87,7 +88,7 @@ export default Vue.extend({
                this.setGameState( GameStates.RUNNING );
           },
 
-          guessValidated( guess : string ) : void
+          guessValidated( guess: string ) : void
           {
                this.sendActiveGuessColorsToKB();
                this.advanceNextRow();
@@ -102,27 +103,28 @@ export default Vue.extend({
                     this.statsReport = { finalState: GameStates.LOST };
                }
                else
-                    this.displayMatchingWordCount( this.answer, this.guessList.slice(0, this.activeRow));
+                    this.displayMatchingWordCount( this.answer, this.guessList.slice(0, this.activeRow) );
           },
 
-          async displayMatchingWordCount( answer: string, guesses: string[] ) : Promise<void>
+          async displayMatchingWordCount( answer: string, guesses: string[] ): Promise<void>
           {
                let apiResp = await wordlessApiService.getMatchCountAsync( answer, guesses );
-               if(!apiResp.success)
+               if( !apiResp.success )
                {
-                    this.setStatusMsg(`Error retrieving match count: ${apiResp.message} `);
+                    this.setStatusMsg( `Error retrieving match count: ${apiResp.message}` );
                }
                else
                {
-                    this.setStatusMsg(`${apiResp.count} remaining word(s) match the clues above.`);
+                    this.setStatusMsg( `${apiResp.count} remaining word(s) match the clues above.` );
                }
           },
 
-          async validateWord( word :string ) : Promise<CheckWordAsyncResponseType>
+          async validateWord( word :string ): Promise<CheckWordAsyncResponseType>
           {
                return await wordlessApiService.checkWordAsync( word );
           }
      },
+
      beforeMount()
      {
      },
@@ -135,7 +137,6 @@ export default Vue.extend({
      {
           EventBus.stopListen( this.resetEventHandler, CustomEventNames.RESET_COMPONENTS );
      },
-
 });
 </script>
 
@@ -146,6 +147,7 @@ export default Vue.extend({
      --title-font-size: min( 4vw , 25px );
      --footer-font-size: min( 3vw, 15px );
 }
+
 @media (min-width: 576px) 
 {
      :root {
@@ -156,6 +158,7 @@ export default Vue.extend({
 @media (min-width: 768px) 
 {
 }
+
 @media (min-width: 992px) 
 {
 }
@@ -225,9 +228,11 @@ body { margin: 0; height: auto; width: auto;}
 .disable-tap-zoom  {   
      touch-action: none;     /* disable iphone default tap zoom action */
 }
+
 .game-container {
      position: static;
 }
+
 .game-container.modal-active {
      pointer-events: none;
 }
@@ -250,8 +255,6 @@ span.miss { background-color: var(--color-miss); }
      margin: auto;
 }
 
-
-
 </style>
 
 <style>
@@ -259,6 +262,7 @@ span.miss { background-color: var(--color-miss); }
      min-height: 20px;
      margin-top: 10px;
 }
+
 .status { 
      font-size: var(--status-font-size);
      display: block;
@@ -285,5 +289,3 @@ span.miss { background-color: var(--color-miss); }
 */
 
 </style>
-
-

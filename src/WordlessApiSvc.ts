@@ -13,7 +13,7 @@ export type CheckWordAsyncResponseType =
 export type GetWordAsyncResponseType =
 { success: boolean, word:string|undefined, message: string}
 
-export type GetMatchCountAsyncResponseType=
+export type GetMatchCountAsyncResponseType =
 { success: boolean, count:number|undefined, message: string}
 
 
@@ -24,21 +24,21 @@ export default class WordlessAPI
      {
      }
 
-      async getWordAsync( daysAgo = -1) :  Promise<GetWordAsyncResponseType>
+     async getWordAsync( daysAgo = -1 ) :  Promise<GetWordAsyncResponseType>
      {
           try
           {
                let json = await this._fetchAndGetJson( `${API_SITE}${GETWORD_URI}/${daysAgo}` );
                return  { word: json.word.toUpperCase(), success : true, message:'' };  
           }
-          catch(err :any)
+          catch( err :any )
           {
                return  { word: undefined, success : false, message: err.message };  
           }  
      }
 
-      async checkWordAsync( Word :string) : Promise<CheckWordAsyncResponseType> 
-      {
+     async checkWordAsync( Word :string ) : Promise<CheckWordAsyncResponseType> 
+     {
           let WordLC = Word.toLowerCase();
           try
           {
@@ -49,9 +49,9 @@ export default class WordlessAPI
           {
                return { exists: undefined, success: false, message: err.message,  };
           }
-      }
+     }
 
-      async getMatchCountAsync( answer :string, guessArray: string[]  ) : Promise<GetMatchCountAsyncResponseType>
+     async getMatchCountAsync( answer :string, guessArray: string[]  ) : Promise<GetMatchCountAsyncResponseType>
      {
           let postData = 
           { 
@@ -73,6 +73,7 @@ export default class WordlessAPI
      async _fetchAndGetJson( Url: string, PostData: {[key:string] : any}|null = null ) : Promise<{ [key:string]: any }>
      {
           let RequestParams;
+
           if ( PostData === null )
           {
                RequestParams = {
@@ -93,17 +94,21 @@ export default class WordlessAPI
                          'Accept': '*/*',
                          'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(PostData),
+                    body: JSON.stringify( PostData ),
                }
           }
+
           let response = await fetch( Url, RequestParams as any );
+          
           if (!response.ok )
           {
                throw new Error( `${response.statusText}: status ${response.status}` );
           }
+
           return response.json();
      }
 }
-export const wordlessAPISvc =  new WordlessAPI ();
+
+export const wordlessAPISvc = new WordlessAPI ();
 
 

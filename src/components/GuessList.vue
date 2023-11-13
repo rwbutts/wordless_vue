@@ -24,11 +24,8 @@
 "use strict";
 // @ts-check
 
-/* eslint-disable no-unused-vars */
-
-import Vue  from 'vue'
+import Vue, { PropType }  from 'vue'
 import GuessLetter from './GuessLetter.vue';
-import { CustomEventNames, GameStates, MatchCodes, KeyCodes, } from '@/types';
 
 import { calcLetterColor } from '@/utils/Game';
 
@@ -42,18 +39,26 @@ export default Vue.extend({
 
      components: { GuessLetter },
 
-     inject: [],
-
      props: 
-          ['guessList', 'activeRow', 'answer']
-     ,     
+     {
+          'guessList': {
+               'type': Array as PropType<string[]>,
+          },
+          'activeRow': {
+               'type': Number as PropType<number>,
+          },
+          'answer': {
+               'type': String as PropType<string>,
+          },
+     },     
 
      computed: {
+          currentGuess() : string {
+               return this.guessList[ this.activeRow ];
+          },
+
           cursorCol() {
                return this.currentGuess.length;
-          },
-          currentGuess() : string {
-               return this.guessList[this.activeRow];
           },
      },
 
@@ -62,11 +67,11 @@ export default Vue.extend({
           {
                return calcLetterColor( this.guessList[row], this.answer, col).color;
           },
+
           getBoxLetter( row: number, col: number ) : string
           {
                return calcLetterColor( this.guessList[row], this.answer, col).letter;
           },
-
      },
 
      created(){

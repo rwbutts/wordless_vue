@@ -11,13 +11,16 @@ import { EventBus, } from '@/EventBus';
 import { useStateStore } from '@/Store';
 import { createPinia, PiniaVuePlugin, mapStores } from 'pinia'
 import VueCompositionAPI from '@vue/composition-api'
-import { CustomEventNames, GameStates, MatchCodes, KeyCodes, } from '@/types';
+import { CustomEventNames, GameStates, } from '@/types';
 
 
 Vue.use(PiniaVuePlugin)
-const pinia = createPinia()
 Vue.use(VueCompositionAPI)
+
+const pinia = createPinia()
+
 console.log(`init = -${GameStates.INIT}`);
+
 export const app = new Vue({
      el: '#app',
      render: h => h(App),
@@ -58,8 +61,8 @@ export const app = new Vue({
 
      async mounted()
      {
-          EventBus.startListen(() => this.restartApp(), CustomEventNames.RESET_KEY );
-          setTimeout( ()=>this.restartApp(), 2000);
-          this.stateStore.setStatusMsg(`V${this.VERSION}: Loading word...`);
+          EventBus.startListen( () => this.restartApp(), CustomEventNames.RESET_KEY );
+          setTimeout( ()=>this.restartApp(), 2000 );
+          this.stateStore.setStatusMsg( `V${this.VERSION}: Loading word...` );
      }
 });

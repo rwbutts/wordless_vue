@@ -10,7 +10,7 @@
 "use strict";
 // @ts-check
 
-import Vue  from 'vue'
+import Vue, { PropType }  from 'vue'
 
 export default Vue.extend({
      name: 'statsbar',
@@ -22,6 +22,7 @@ export default Vue.extend({
 
      props: {
           percent : {
+               'type' : Number as PropType<number>,
           },
           caption : {
           },

@@ -21,7 +21,7 @@ export default class CumulativeStats
 
      static recordWin( numGuesses : number ) : CumulativeStats
      {
-          var statObj  = CumulativeStats.fromStorage();
+          var statObj = CumulativeStats.fromStorage();
 
           if( numGuesses >= statObj.histogramBins.length || numGuesses <= 0 )
                throw new RangeError( 'RecordWin() invalid Attempts parameter value' );
@@ -35,7 +35,7 @@ export default class CumulativeStats
           return statObj;
      }
 
-     static recordLoss( ): CumulativeStats
+     static recordLoss(): CumulativeStats
      {
           var statObj = CumulativeStats.fromStorage();
 
@@ -72,7 +72,8 @@ export default class CumulativeStats
           if( statJSON !== null )
           {
                let statObj : CumulativeStats;
-               try {
+               try 
+               {
                     statObj = JSON.parse( statJSON );
                }
                catch(err)
@@ -86,6 +87,5 @@ export default class CumulativeStats
                // if not found, return an empty stat object
           return new CumulativeStats();
      }
-
 }
 

@@ -7,32 +7,39 @@
                {{ character }}
           </div>
      </div>
-  </template>
+</template>
   
 <script lang='ts'>
 "use strict";
 // @ts-check
 
-import Vue  from 'vue'
+import Vue,{ PropType}   from 'vue'
 
 export default Vue.extend({
-    name: 'guess-letter',
+     name: 'guess-letter',
 
-    data() {
-         return { 
-         };
-    },
-
-    props: ['character', 'color' ],
-
-    methods: {
+     data() {
+          return { 
+          };
      },
 
-    mounted() {
+     props: {
+          'character': {
+               'type': String as PropType<string>,
+          },
+          'color': {
+               'type': String as PropType<string>,
+          },
      },
-    
-    beforeDestroy() {
-    },
+
+     methods: {
+     },
+
+     mounted() {
+     },
+
+     beforeDestroy() {
+     },
   });
   
   </script>
@@ -58,6 +65,7 @@ export default Vue.extend({
      height: 100%; 
      width: 100%;
 }
+
 .back {
      transform: rotateY( 180deg );
 }
@@ -70,12 +78,15 @@ export default Vue.extend({
      --color-miss: #AAA;
      --color-default: #FFF;
 }
+
 .guess-letter.miss .back {
      background-color: var(--color-miss);
 }
+
 .guess-letter.correct .back {
      background-color: var(--color-correct);
 }
+
 .guess-letter.elsewhere .back {
      background-color: var(--color-elsewhere);
 }
