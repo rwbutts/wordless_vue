@@ -84,8 +84,8 @@ export default Vue.extend({
 
           resetEventHandler( eventArgs  : ResetGameEventArgs) : void
           {
-               this.setAnswer( eventArgs.answer);
                this.setGameState( GameStates.RUNNING );
+               this.setAnswer( eventArgs.answer);
           },
 
           guessValidated( guess: string ) : void
@@ -267,7 +267,7 @@ span.miss { background-color: var(--color-miss); }
      font-size: var(--status-font-size);
      display: block;
      transform: scale( 0, 0 );
-     transition: transform 0s 3s;
+     /* transition: transform 0s 3s; */
      margin: 0;
      height: 0;
 }

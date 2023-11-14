@@ -6,7 +6,6 @@ export const enum KeyCodes
      DELETE = "BACKSPACE",
      LETTER = "LETTER",
      ALL = "ALL",
-//     NONALPHA= ['ENTER','BACKSPACE'],
      RESET = 'RESET'
 };
      

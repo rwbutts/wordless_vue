@@ -25,7 +25,7 @@
                <key :refMap='refMap' char='L' @click='keyHandler' />
           </div>
           <div class='kb-row' >
-               <key :refMap='refMap' char='DELETE'  special_key label='DELETE' @click='keyHandler' />
+               <key :refMap='refMap' char='BACKSPACE'  special_key label='DELETE' @click='keyHandler' />
                <key :refMap='refMap' char='Z' @click='keyHandler' />
                <key :refMap='refMap' char='X' @click='keyHandler' />
                <key :refMap='refMap' char='C' @click='keyHandler' />
@@ -74,6 +74,7 @@ export default Vue.extend({
           handleRealKey( e : KeyboardEvent ) : void
           {
                let ucKey = ( e.key || '' ).toUpperCase();
+               console.log(`key ${ucKey}`);
                if( ucKey in this.refMap )
                {
                     let keyRef = this.refMap[ ucKey ];

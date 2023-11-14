@@ -67,8 +67,8 @@
                               resp = await this.validator( word );
                               if( resp.exists === false )
                               {
-                                   word = word.substring(0, len - 1 )
                                    this.statusMsg( `Sorry, ${word} is not in my dictionary!` );
+                                   word = word.substring(0, len - 1 )
                               }
                               else if( resp.exists === true )
                               {
@@ -101,8 +101,10 @@
 
                },
           },
+
           created(){
           },     
+          
           beforeMount(){
           },     
 

@@ -22,8 +22,7 @@ export default class CumulativeStats
      static recordWin( numGuesses : number ) : CumulativeStats
      {
           var statObj = CumulativeStats.fromStorage();
-
-          if( numGuesses >= statObj.histogramBins.length || numGuesses <= 0 )
+          if( numGuesses > statObj.histogramBins.length || numGuesses <= 0 )
                throw new RangeError( 'RecordWin() invalid Attempts parameter value' );
 
           statObj.winningStreak++;
