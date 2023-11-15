@@ -2,7 +2,7 @@ interface KeyPressEventArgs { character: string };
 interface ResetGameEventArgs { answer: string }; 
 interface ResetKeyEventArgs {  };
 
-interface CalcLetterColorResponse{
+interface LetterColor{
      letter: string,
      color: string,
 };

@@ -3,7 +3,7 @@
 
 import { defineStore } from 'pinia'
 import { calcLetterColor, } from '@/utils/Game';
-import { GameStates, } from '@/types';
+import { GameStates, MatchCodes, } from '@/types';
 
 export const useStateStore = defineStore( 'state', {
      state: () => ({ 
@@ -33,6 +33,7 @@ export const useStateStore = defineStore( 'state', {
           advanceNextRow() {
                this.activeRow++;
           },
+
           /**
            * 
            * Sets the message text (between the Guess list and
@@ -42,26 +43,36 @@ export const useStateStore = defineStore( 'state', {
                console.log( "Setstatus", msg );
                this.statusMessage = msg;
           },
+
           setGameState( state: string ) {
                this.gameState = state;
                if( state===GameStates.WON || state===GameStates.LOST )
                     this.gameOver = true;
           },
+
           setAnswer( answer:string ) {
                this.answer = answer;
           },
-           setKeyColor( key:string, color:string )
+
+          setKeyColor( letterColor: LetterColor )
           {
-               //Vue.set(this.KeyColorMap, key, color);
-               this.KeyColorMap = Object.assign( {}, this.KeyColorMap, { [key]: color } );
+               const { letter, color } = letterColor;
+
+               // if key color is green, don't downgrade unless it's a reset
+               if( this.KeyColorMap[letter] !== MatchCodes.CORRECT
+                    || color === MatchCodes.DEFAULT )
+               {
+                    this.KeyColorMap = Object.assign( {}, this.KeyColorMap, { [letter]:  color });
+               }
           },
+
           sendActiveGuessColorsToKB()
           {
                let r = this.activeRow;
                for( let col = 0; col < this.guessList[r].length; col++ )
                {
-                    let resp = calcLetterColor( this.guessList[r], this.answer, col );
-                    this.setKeyColor( resp.letter, resp.color );
+                    let letterColor = calcLetterColor( this.guessList[r], this.answer, col );
+                    this.setKeyColor( letterColor );
                }
           },
      }

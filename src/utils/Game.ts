@@ -3,7 +3,7 @@
 
 import { MatchCodes, } from '@/types';
 
-export function calcLetterColor( guess:string, answer:string, column:number ): CalcLetterColorResponse
+export function calcLetterColor( guess:string, answer:string, column:number ): LetterColor
 {
      if( !guess || !answer )
      {

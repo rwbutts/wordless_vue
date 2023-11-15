@@ -55,9 +55,10 @@ export default Vue.extend({
           getCSSClasses()
           {
 
-               let colorClass = ( this.KeyColorMap !== null && this.char in this.KeyColorMap ) 
-                              ? this.KeyColorMap[ this.char ]
-                              : MatchCodes.DEFAULT;
+               // let colorClass = ( this.KeyColorMap !== null && this.char in this.KeyColorMap ) 
+               //                ? this.KeyColorMap[ this.char ]
+               //                : MatchCodes.DEFAULT;
+               let colorClass = this.KeyColorMap[ this.char ] ?? MatchCodes.DEFAULT;
 
                let classes = {
                     special_key: this.special_key,

@@ -1,7 +1,7 @@
 /// <reference path='./globals.ts' />
 "use strict";
 
-const VERSION = '2.23';
+const VERSION = '2.3';
 
 import Vue  from 'vue'
 import { wordlessApiService,  } from '@/WordlessAPI';
