@@ -21,7 +21,7 @@ export default class CumulativeStats
 
      static recordWin( numGuesses : number ) : CumulativeStats
      {
-          var statObj = CumulativeStats.fromStorage();
+          const statObj = CumulativeStats.fromStorage();
           if( numGuesses > statObj.histogramBins.length || numGuesses <= 0 )
                throw new RangeError( 'RecordWin() invalid Attempts parameter value' );
 
@@ -36,7 +36,7 @@ export default class CumulativeStats
 
      static recordLoss(): CumulativeStats
      {
-          var statObj = CumulativeStats.fromStorage();
+          const statObj = CumulativeStats.fromStorage();
 
           statObj.winningStreak = 0;
           statObj.gamesPlayed++;
@@ -46,7 +46,7 @@ export default class CumulativeStats
 
      static reset() : void
      {
-          var statObj = new CumulativeStats();
+          const statObj = new CumulativeStats();
           statObj.persist();
      }
 
@@ -56,18 +56,18 @@ export default class CumulativeStats
      }
 
           // copy the array elements to target element-by-element to preserve reactivity
-     copyHistogramBins( destArray: number[])
+     copyHistogramBins( destArray: number[]) : void
      {
           if ( destArray.length != this.histogramBins.length ) 
                throw new RangeError( 'CopyBins() source and dest are different sizes' );
 
-          for( var i = 0; i < this.histogramBins.length; i++ )
+          for( let i = 0; i < this.histogramBins.length; i++ )
                destArray[ i ] = this.histogramBins[ i ];
      }
 
-     static fromStorage( forceReset : boolean = false) : CumulativeStats
+     static fromStorage( forceReset = false) : CumulativeStats
      {
-          let statJSON = forceReset ? null : localStorage.getItem( STAT_STORAGE_NAME );
+          const statJSON = forceReset ? null : localStorage.getItem( STAT_STORAGE_NAME );
           if( statJSON !== null )
           {
                let statObj : CumulativeStats;
@@ -77,7 +77,7 @@ export default class CumulativeStats
                }
                catch(err)
                {
-                    let msg = err instanceof(Error) ? err.message : '** Exception unknown **';
+                    const msg = err instanceof(Error) ? err.message : '** Exception unknown **';
                     console.warn(`JSON Exception loading stat from localstorage: ${msg}`);
                     statObj = new CumulativeStats();
                }

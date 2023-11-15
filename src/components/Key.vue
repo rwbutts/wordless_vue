@@ -15,12 +15,10 @@
 "use strict";
 // @ts-check
 
-/* eslint-disable no-unused-vars */
-
 import Vue, {PropType, }  from 'vue'
 import { mapState,  } from 'pinia'
 import { useStateStore, } from '@/Store';
-import { CustomEventNames, GameStates, MatchCodes, KeyCodes, } from '@/types';
+import {  MatchCodes, } from '@/types';
 
 export default Vue.extend({
      name: 'key',
@@ -45,14 +43,14 @@ export default Vue.extend({
           char : String,       // character/mnemonic emitted with key click event
           
           refMap : {
-               type: Object as PropType<Record<string,any>>,
+               type: Object as PropType<Record<string, unknown>>,
           },
      },
-//     emits: [ 'click', ],
+
      computed: 
      {
           ...mapState( useStateStore, ['KeyColorMap',] ),
-          getCSSClasses()
+          getCSSClasses() : Record<string, boolean>
           {
 
                // let colorClass = ( this.KeyColorMap !== null && this.char in this.KeyColorMap ) 
@@ -74,7 +72,7 @@ export default Vue.extend({
 
      methods: 
      {
-          clickHandler( )  
+          clickHandler( ) : void
           {
                /**                
                 * check if disabled in css so keypress-
@@ -101,8 +99,6 @@ export default Vue.extend({
           this.refMap[ this.char ] = this;
      },
 
-     beforeDestroy() {
-     },
 });
 
 </script>

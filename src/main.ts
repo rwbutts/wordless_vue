@@ -1,4 +1,3 @@
-/// <reference path='./globals.ts' />
 "use strict";
 
 const VERSION = '2.3';
@@ -41,7 +40,7 @@ export const app = new Vue({
           {
                this.stateStore.$reset();
 
-               let response = await wordlessApiService.getWordAsync();
+               const response = await wordlessApiService.getWordAsync();
                if( response.success )
                {
                     this.stateStore.setStatusMsg(`Guess the 5-letter word in 6 tries. Good luck!`);
@@ -52,9 +51,6 @@ export const app = new Vue({
                     this.stateStore.setStatusMsg( `Error loading word - ${response.message}` );
                }
           },
-     },
-
-     beforeMount() {
      },
 
      pinia,

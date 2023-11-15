@@ -18,7 +18,7 @@
      import { EventBus,  } from '@/EventBus'
      import { calcLetterColor } from '@/utils/Game';
      import { useStateStore } from '@/Store';
-     import { CustomEventNames, KeyCodes, } from '@/types';
+     import { CustomEventNames, KeyCodes, KeyPressEventArgs, } from '@/types';
      
      export default Vue.extend({
           name: 'word-input',
@@ -97,16 +97,11 @@
                },
 
                resetEventHandler(  ) : void
+               // eslint-disable-next-line @typescript-eslint/no-empty-function
                {
 
                },
           },
-
-          created(){
-          },     
-          
-          beforeMount(){
-          },     
 
           mounted() {
                EventBus.startListen( this.resetEventHandler, CustomEventNames.RESET_COMPONENTS );

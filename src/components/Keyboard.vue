@@ -47,6 +47,7 @@
 
 import Vue  from 'vue'
 import Key from './Key.vue'
+import { KeyPressEventArgs, }  from '@/types'
 
 export default Vue.extend({
      name: 'keyboard',
@@ -54,10 +55,9 @@ export default Vue.extend({
      data() 
      {
           return {
-                refMap : {} as Record<string,any>,
+                refMap : {} as Record<string, unknown>,
           };
      },
-    // emit: ['key-press', 'reset' ],
      computed: {
      },
 
@@ -79,7 +79,7 @@ export default Vue.extend({
                {
                     let keyRef = this.refMap[ ucKey ];
                     {
-                         keyRef.clickHandler();
+                         (keyRef as {clickHandler: ()=>void}).clickHandler();
                     }
                }
           },
@@ -93,9 +93,6 @@ export default Vue.extend({
           _handleRealKeyThis: ()=>null,
      },
 
-     beforeMount(){
-     },
-
      mounted() {
           this.handleRealKey = this.handleRealKey.bind(this);   
           window.addEventListener( 'keydown', this.handleRealKey );
@@ -105,9 +102,7 @@ export default Vue.extend({
      {
           window.removeEventListener( 'keydown', this._handleRealKeyThis );
      },
-     
-     created() {
-     }
+
 });
 
 </script>

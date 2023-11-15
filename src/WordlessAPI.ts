@@ -18,22 +18,17 @@ export type GetMatchCountAsyncResponseType=
 
 export class WordlessAPI
 {
-
-     constructor ()
-     {
-     }
-
-      async getWordAsync( daysAgo = -1) :  Promise<GetWordAsyncResponseType>
+     async getWordAsync( daysAgo = -1) :  Promise<GetWordAsyncResponseType>
      {
           return getWordAsync( daysAgo);
      }
 
-      async checkWordAsync( word :string) : Promise<CheckWordAsyncResponseType> 
-      {
+     async checkWordAsync( word :string) : Promise<CheckWordAsyncResponseType> 
+     {
           return checkWordAsync( word);
-      }
+     }
 
-      async getMatchCountAsync( answer :string, guessArray: string[]  ) : Promise<GetMatchCountAsyncResponseType>
+     async getMatchCountAsync( answer :string, guessArray: string[]  ) : Promise<GetMatchCountAsyncResponseType>
      {
           return getMatchCountAsync( answer, guessArray );
      }
@@ -43,32 +38,32 @@ export  async function getWordAsync( daysAgo = -1) :  Promise<GetWordAsyncRespon
      {
           try
           {
-               let json = await _fetchAndGetJson( `${API_SITE}${GETWORD_URI}/${daysAgo}` );
-               return  { word: json.word.toUpperCase(), success : true, message:'' };  
+               const json = await _fetchAndGetJson( `${API_SITE}${GETWORD_URI}/${daysAgo}` );
+               return  { word: (json.word as string).toUpperCase(), success : true, message:'' };  
           }
-          catch(err :any)
+          catch(err : unknown)
           {
-               return  { word: '', success : false, message: err.message };  
+               return  { word: '', success : false, message: (err as Error).message };  
           }  
-     };
+     }
 
 export async function checkWordAsync( Word :string) : Promise<CheckWordAsyncResponseType> 
       {
-          let WordLC = Word.toLowerCase();
+          const WordLC = Word.toLowerCase();
           try
           {
-               let json = await _fetchAndGetJson( `${API_SITE}${CHECKWORD_URI}/${WordLC}` );
-               return { exists: json.exists, success: true, message: '' };
+               const json = await _fetchAndGetJson( `${API_SITE}${CHECKWORD_URI}/${WordLC}` );
+               return { exists: json.exists as boolean, success: true, message: '' };
           }
-          catch( err :any )
+          catch( err : unknown )
           {
-               return { exists: false, success: false, message: err.message,  };
+               return { exists: false, success: false, message: (err as Error).message,  };
           }
-      };
+      }
 
 export async function getMatchCountAsync( answer :string, guessArray: string[]  ) : Promise<GetMatchCountAsyncResponseType>
      {
-          let postData = 
+          const postData = 
           { 
                answer: answer.toLowerCase(), 
                guesses: guessArray.map( (d) => d.toLowerCase() ),
@@ -76,18 +71,18 @@ export async function getMatchCountAsync( answer :string, guessArray: string[]  
 
           try
           {
-               let json = await _fetchAndGetJson( `${API_SITE}${GETMATCHCOUNT_URI}`, postData );
-               return { count: json.count, success: true, message: '' };
+               const json = await _fetchAndGetJson( `${API_SITE}${GETMATCHCOUNT_URI}`, postData );
+               return { count: json.count as number, success: true, message: '' };
           }
-          catch( err : any)
+          catch( err : unknown )
           {
-               return { count: -1, success: false, message: err.message,  };
+               return { count: -1, success: false, message: (err as Error).message,  };
           }
-     };
+     }
 
-     async function _fetchAndGetJson( Url: string, PostData: {[key:string] : any}|null = null ) : Promise<{ [key:string]: any }>
+     async function _fetchAndGetJson( Url: string, PostData: Record<string,unknown>|null = null ) : Promise<Record<string,unknown>>
      {
-          let RequestParams;
+          let RequestParams: RequestInit;
           if ( PostData === null )
           {
                RequestParams = {
@@ -111,7 +106,7 @@ export async function getMatchCountAsync( answer :string, guessArray: string[]  
                     body: JSON.stringify(PostData),
                }
           }
-          let response = await fetch( Url, RequestParams as any );
+          const response = await fetch( Url, RequestParams );
           if (!response.ok )
           {
                throw new Error( `${response.statusText}: status ${response.status}` );

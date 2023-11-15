@@ -43,8 +43,6 @@
 "use strict";
 // @ts-check
 
-/* eslint-disable no-unused-vars */
-
 import Vue  from 'vue'
 import GuessList from '@/components/GuessList.vue'
 import WordInput from '@/components/WordInput.vue'
@@ -52,8 +50,9 @@ import Stats from '@/components/Stats.vue'
 import { mapState, mapActions,  } from 'pinia'
 import { useStateStore, } from '@/Store';
 import { EventBus, } from '@/EventBus';
-import { wordlessApiService, type CheckWordAsyncResponseType} from '@/WordlessAPI'
-import { CustomEventNames, GameStates, KeyCodes, } from '@/types';
+import { wordlessApiService, CheckWordAsyncResponseType} from '@/WordlessAPI'
+import { CustomEventNames, GameStates, StatsReportGameResult,
+     ResetGameEventArgs, } from '@/types';
 
 
 export default Vue.extend({
@@ -61,7 +60,7 @@ export default Vue.extend({
 
      data() { 
           return {
-               statsReport: null as any,
+               statsReport: {} as StatsReportGameResult,
                modalActive: false,
           };
      },
@@ -125,17 +124,15 @@ export default Vue.extend({
           }
      },
 
-     beforeMount()
-     {
-     },
-
      mounted() {
-          EventBus.startListen( this.resetEventHandler, CustomEventNames.RESET_COMPONENTS );
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          EventBus.startListen( this.resetEventHandler as any, CustomEventNames.RESET_COMPONENTS );
      },
      
      beforeDestroy() 
      {
-          EventBus.stopListen( this.resetEventHandler, CustomEventNames.RESET_COMPONENTS );
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          EventBus.stopListen( this.resetEventHandler as any, CustomEventNames.RESET_COMPONENTS );
      },
 });
 </script>

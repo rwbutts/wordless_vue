@@ -57,7 +57,7 @@ export default Vue.extend({
                return this.guessList[ this.activeRow ];
           },
 
-          cursorCol() {
+          cursorCol() : number {
                return this.currentGuess.length;
           },
      },
@@ -72,20 +72,6 @@ export default Vue.extend({
           {
                return calcLetterColor( this.guessList[row], this.answer, col).letter;
           },
-     },
-
-     created(){
-     },     
-
-     beforeMount(){
-     },     
-
-     mounted() 
-     {
-     },
-     
-     beforeDestroy() 
-     {
      },
 });
  

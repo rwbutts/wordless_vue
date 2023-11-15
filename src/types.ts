@@ -1,5 +1,3 @@
-
-
 export const enum KeyCodes
 {
      ENTER = "ENTER",
@@ -7,7 +5,7 @@ export const enum KeyCodes
      LETTER = "LETTER",
      ALL = "ALL",
      RESET = 'RESET'
-};
+}
      
 export const enum MatchCodes 
 {
@@ -27,9 +25,24 @@ export const enum GameStates
      GAMEOVER = "game-over",
 }
 
-
 export const enum CustomEventNames 
 {
      RESET_KEY = 'user-reset-key',
      RESET_COMPONENTS = "init-components",
 }
+
+export interface KeyPressEventArgs { character: string }
+export interface ResetGameEventArgs { answer: string } 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface ResetKeyEventArgs {  }
+
+export interface LetterColor{
+     letter: string,
+     color: string,
+}
+
+export interface StatsReportGameResult {
+     finalState: string,
+     numGuesses?: number,
+}
+

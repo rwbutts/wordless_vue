@@ -35,11 +35,6 @@ export default Vue.extend({
      methods: {
      },
 
-     mounted() {
-     },
-
-     beforeDestroy() {
-     },
   });
   
   </script>

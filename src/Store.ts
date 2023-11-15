@@ -68,10 +68,10 @@ export const useStateStore = defineStore( 'state', {
 
           sendActiveGuessColorsToKB()
           {
-               let r = this.activeRow;
+               const r = this.activeRow;
                for( let col = 0; col < this.guessList[r].length; col++ )
                {
-                    let letterColor = calcLetterColor( this.guessList[r], this.answer, col );
+                    const letterColor = calcLetterColor( this.guessList[r], this.answer, col );
                     this.setKeyColor( letterColor );
                }
           },

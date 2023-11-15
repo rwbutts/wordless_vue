@@ -10,8 +10,8 @@ export function calcLetterColor( guess:string, answer:string, column:number ): L
           return { letter:'', color: MatchCodes.DEFAULT };
      }
 
-     let answerChar = answer.substring( column, column + 1 );
-     let guessChar = guess.substring( column, column + 1 );
+     const answerChar = answer.substring( column, column + 1 );
+     const guessChar = guess.substring( column, column + 1 );
      
      let matchCode : string;
 

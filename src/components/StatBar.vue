@@ -36,12 +36,6 @@ export default Vue.extend({
                return Math.floor( ( this.percent + 5) / 10 );
           }
      },
-
-     mounted() {
-     },
-
-     beforeDestroy() {
-     },
 });
 
 </script>
