@@ -1,4 +1,4 @@
-# wordless
+# wordless.vue
 
 ## Project setup
 ```

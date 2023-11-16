@@ -13,7 +13,7 @@
                     }"
      >
 
-          <h3 class='title' >Bill's VueJS Wordle Clone</h3>
+          <h3 class='title' >Bill's VUE.js Wordless Game</h3>
  
           <guess-list :guessList='guessList' :answer='answer'
                     :activeRow='activeRow' />

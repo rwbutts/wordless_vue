@@ -1,6 +1,6 @@
 "use strict";
 
-const VERSION = '2.3';
+const VERSION = process.env.VUE_VERSION;
 
 import Vue  from 'vue'
 import { wordlessApiService,  } from '@/WordlessAPI';
