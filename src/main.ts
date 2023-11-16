@@ -1,8 +1,8 @@
 "use strict";
 
-const VERSION = '2.3';
+const VERSION = process.env.VUE_APP_VERSION;
 
-import Vue  from 'vue'
+import Vue from 'vue'
 import { wordlessApiService,  } from '@/WordlessAPI';
 import App from '@/App.vue'
 import { EventBus, } from '@/EventBus';
@@ -13,10 +13,10 @@ import VueCompositionAPI from '@vue/composition-api'
 import { CustomEventNames, GameStates, } from '@/types';
 
 
-Vue.use(PiniaVuePlugin)
-Vue.use(VueCompositionAPI)
+Vue.use( PiniaVuePlugin );
+Vue.use( VueCompositionAPI );
 
-const pinia = createPinia()
+const pinia = createPinia();
 
 console.log(`init = -${GameStates.INIT}`);
 

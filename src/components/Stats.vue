@@ -32,7 +32,7 @@ import Vue  from 'vue'
 import StatBar from './StatBar.vue'
 import CumulativeStats from '@/CumulativeStats'
 import { assert } from '@/utils/Misc';
-import { CustomEventNames, GameStates, MatchCodes, KeyCodes, } from '@/types';
+import { GameStates, StatsReportGameResult, } from '@/types';
 
 export default Vue.extend({
      name: 'statbox',
@@ -63,7 +63,7 @@ export default Vue.extend({
           //      if( typeof newVal === 'boolean' )
           //           this.showDialog = newVal;       }
           // },
-          report( newVal : StatsReportGameResult, oldVal : StatsReportGameResult)  // eslint-disable-line no-unused-vars
+          report( newVal : StatsReportGameResult )
           {
                if( !newVal || typeof newVal !== 'object' ) 
                     return;
@@ -116,14 +116,12 @@ export default Vue.extend({
                return Math.floor( ( ( this.cumStats.gamesPlayed - this.cumStats.gamesWon ) / this.cumStats.gamesPlayed ) * 100 + 0.5 );
           }
      },
+
      mounted() {
           this.handleKey = this.handleKey.bind(this);   
           window.addEventListener('keydown', this.handleKey);
      },
 
-     beforeDestroy() {
-
-     },
 });
 
 </script>
