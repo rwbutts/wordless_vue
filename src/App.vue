@@ -10,6 +10,7 @@
                     [gameState]:true, 
                     ['game-over'] : gameOver,
                     ['modal-active'] : modalActive, 
+                    'enable-hard-mode' : hardMode,
                     }"
      >
 
@@ -29,10 +30,24 @@
                :validator='validateWord' 
                @message='setStatusMsg'/>
 
+
           <div class='footer'>
+               <!--
                <span class='correct'>Green</span>: letter is in correct position
                <br><span class='elsewhere'>Yellow</span>: letter is elsewhere in word
                <br><span class='miss'>Grey</span>: letter is not present in the word
+               -->
+          
+               <label class='hard-checkbox small-text' >
+                    <input type="checkbox" v-model="hardMode">
+                    <b>Hard Mode:</b> when checked, grey letters cannot be reused
+               </label>
+               <br><br>
+               <span class='correct'>Green</span>: correct; 
+               <span class='elsewhere'>Yellow</span>: wrong position;
+               <span class='miss'>Grey</span>: not in word
+               <br>
+               <span class='small-text'>The unknown word may be plural</span>
           </div>
 
      </div>
@@ -62,6 +77,7 @@ export default Vue.extend({
           return {
                statsReport: {} as StatsReportGameResult,
                modalActive: false,
+               hardMode: false,
           };
      },
 
@@ -250,6 +266,17 @@ span.miss { background-color: var(--color-miss); }
      font-size: var(--footer-font-size);
      font-weight: bold;
      margin: auto;
+}
+
+.small-text {
+     font-weight: normal;
+     font-size: smaller;
+}
+
+.hard-checkbox input {
+     margin-bottom: 0px;
+     height: 1.5vh;
+     width: 1.5vh;
 }
 
 </style>

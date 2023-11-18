@@ -117,6 +117,6 @@ export default Vue.extend({
 }
 .keyboard { 
      margin-top: 3vh;
-     margin-bottom: 4vh;
+     margin-bottom: 2vh;
 }
 </style>

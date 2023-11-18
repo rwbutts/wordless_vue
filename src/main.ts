@@ -10,15 +10,13 @@ import { EventBus, } from '@/EventBus';
 import { useStateStore } from '@/Store';
 import { createPinia, PiniaVuePlugin, mapStores } from 'pinia'
 import VueCompositionAPI from '@vue/composition-api'
-import { CustomEventNames, GameStates, } from '@/types';
+import { CustomEventNames, } from '@/types';
 
 
 Vue.use( PiniaVuePlugin );
 Vue.use( VueCompositionAPI );
 
 const pinia = createPinia();
-
-console.log(`init = -${GameStates.INIT}`);
 
 export const app = new Vue({
      el: '#app',

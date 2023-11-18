@@ -142,6 +142,10 @@ button.key-button.enabled,
 .key-button.elsewhere {  background-color: var(--color-elsewhere); }
 .key-button.correct {  background-color: var(--color-correct); }
 
+/* 
+     key down immediately makes dark, when down is removed, 
+     fade back to normal
+*/
 .key-button {
      transition: all  .2s 0s;
 }
@@ -150,6 +154,14 @@ button.key-button.enabled,
      background-color: #444;
      transition: all  0s 0s;
 }
+
+/*   if expert mode, disable the key if it's a miss.
+     duplicate .miss to increase priority of selector 
+*/
+.enable-hard-mode .key-button.miss.miss { 
+     opacity: .4; pointer-events: none; 
+}
+
 </style>
 
 <style scoped>
