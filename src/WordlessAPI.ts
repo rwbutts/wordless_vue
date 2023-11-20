@@ -11,10 +11,10 @@ export type CheckWordAsyncResponseType =
 { success: boolean, exists:boolean|undefined, message: string}
 
 export type GetWordAsyncResponseType =
-{ success: boolean, word:string, message: string}
+{ success: boolean, word:string|undefined, message: string}
 
 export type GetMatchCountAsyncResponseType=
-{ success: boolean, count:number, message: string}
+{ success: boolean, count:number|undefined, message: string}
 
 export class WordlessAPI
 {
@@ -43,7 +43,7 @@ export  async function getWordAsync( daysAgo = -1) :  Promise<GetWordAsyncRespon
           }
           catch(err : unknown)
           {
-               return  { word: '', success : false, message: (err as Error).message };  
+               return  { word: undefined, success : false, message: (err as Error).message };  
           }  
      }
 
@@ -57,7 +57,7 @@ export async function checkWordAsync( Word :string) : Promise<CheckWordAsyncResp
           }
           catch( err : unknown )
           {
-               return { exists: false, success: false, message: (err as Error).message,  };
+               return { exists: undefined, success: false, message: (err as Error).message,  };
           }
       }
 
@@ -76,7 +76,7 @@ export async function getMatchCountAsync( answer :string, guessArray: string[]  
           }
           catch( err : unknown )
           {
-               return { count: -1, success: false, message: (err as Error).message,  };
+               return { count: undefined, success: false, message: (err as Error).message,  };
           }
      }
 
@@ -109,11 +109,9 @@ export async function getMatchCountAsync( answer :string, guessArray: string[]  
           const response = await fetch( Url, RequestParams );
           if (!response.ok )
           {
-               throw new Error( `${response.statusText}: status ${response.status}` );
+               throw new Error( `[${response.status}] ${response.statusText}` );
           }
           return response.json();
      }
 
 export const wordlessApiService = new WordlessAPI();
-
-

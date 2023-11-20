@@ -1,4 +1,5 @@
 <template>
+
      <div class='guess-letter '>
           <div class='front'>
                {{ character }}
@@ -7,6 +8,7 @@
                {{ character }}
           </div>
      </div>
+
 </template>
   
 <script lang='ts'>
@@ -27,21 +29,16 @@ export default Vue.extend({
           'character': {
                'type': String as PropType<string>,
           },
-          'color': {
-               'type': String as PropType<string>,
-          },
      },
 
      methods: {
      },
 
-  });
+});
   
-  </script>
+</script>
   
-  <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-   
 .guess-letter {
      display: inline-block;
      position: absolute;
@@ -52,7 +49,6 @@ export default Vue.extend({
 </style>
 
 <style scoped>
- 
 /* opposing sides of the wrapper content */
 .back, .front { 
      position: absolute;
@@ -85,6 +81,5 @@ export default Vue.extend({
 .guess-letter.elsewhere .back {
      background-color: var(--color-elsewhere);
 }
-
 </style>
   
