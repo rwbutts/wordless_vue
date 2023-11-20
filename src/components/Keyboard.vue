@@ -1,5 +1,5 @@
-
 <template>
+
      <div class='keyboard' >
           <div class='kb-row' >
                <key :refMap='refMap' char='Q' @click='keyHandler' />
@@ -39,10 +39,10 @@
                <key :refMap='refMap' class="reset-key" char='RESET'  special_key label='PLAY AGAIN' @click="$emit('reset');" />
          </div>
      </div>
+     
 </template>
 
 <script lang='ts'>
-
 /* eslint-disable no-unused-vars */
 
 import Vue  from 'vue'
@@ -58,6 +58,7 @@ export default Vue.extend({
                 refMap : {} as Record<string, unknown>,
           };
      },
+
      computed: {
      },
 
@@ -104,17 +105,16 @@ export default Vue.extend({
      },
 
 });
-
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
 .keyboard .kb-row {
      display: flex;
      justify-content: center;
      margin: 2vh 0 0 0;
 }
+
 .keyboard { 
      margin-top: 3vh;
      margin-bottom: 2vh;

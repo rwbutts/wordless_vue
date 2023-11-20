@@ -1,10 +1,9 @@
 <template>
-<div id="app" class='disable-tap-zoom' >
-     
-     <stats :report='statsReport' 
-     :isActive.sync='modalActive'  
-     />
 
+<div id="app" class='disable-tap-zoom' >
+     <stats :report='statsReport' 
+          :isActive.sync='modalActive'  
+     />
      <div class='game-container disable-tap-zoom' 
           :class="{
                     [gameState]:true, 
@@ -13,45 +12,34 @@
                     'enable-hard-mode' : hardMode,
                     }"
      >
-
           <h3 class='title' >Bill's VUE.js Wordless Game</h3>
- 
-          <guess-list :guessList='guessList' :answer='answer'
-                    :activeRow='activeRow' />
-
+          <guess-list :guessList='guessList' :answer='answer' :activeRow='activeRow' />
           <div class='status-area'>
                <h3 class='status status-game-in-progress'> {{ statusMessage }}</h3> 
                <h3 class='status status-game-lost'>Sorry, the answer is {{answer}}</h3> 
                <h3 class='status status-game-won'>Congratulations, you got it! Please hire me!</h3> 
           </div>
-
           <word-input v-bind:target.sync='guessList[activeRow]'
                @guess-validated='guessValidated' 
                :validator='validateWord' 
-               @message='setStatusMsg'/>
-
-
+               @message='setStatusMsg'
+          />
           <div class='footer'>
-               <!--
-               <span class='correct'>Green</span>: letter is in correct position
-               <br><span class='elsewhere'>Yellow</span>: letter is elsewhere in word
-               <br><span class='miss'>Grey</span>: letter is not present in the word
-               -->
-          
                <label class='hard-checkbox small-text' >
                     <input type="checkbox" v-model="hardMode">
                     <b>Hard Mode:</b> when checked, grey letters cannot be reused
                </label>
-               <br><br>
+               <br>
+               <br>
                <span class='correct'>Green</span>: correct; 
                <span class='elsewhere'>Yellow</span>: wrong position;
                <span class='miss'>Grey</span>: not in word
                <br>
                <span class='small-text'>The unknown word may be plural</span>
           </div>
-
      </div>
 </div>
+
 </template>
 
 <script lang='ts'>
@@ -88,14 +76,14 @@ export default Vue.extend({
      },
 
      computed: {
-          ...mapState(useStateStore, [ 'answer', 'statusMessage', 'gameState', 
-               'guessList','activeRow', 'gameOver', ]),
+          ...mapState( useStateStore, [ 'answer', 'statusMessage', 'gameState', 
+               'guessList','activeRow', 'gameOver', ] ),
      },
 
      methods: {
-          ...mapActions(useStateStore,['setGameState','setStatusMsg', 
+          ...mapActions( useStateStore,[ 'setGameState','setStatusMsg', 
                 'advanceNextRow', 'sendActiveGuessColorsToKB',
-                 'setAnswer', ]),
+                 'setAnswer', ] ),
 
           resetEventHandler( eventArgs  : ResetGameEventArgs) : void
           {
@@ -107,18 +95,18 @@ export default Vue.extend({
           {
                this.sendActiveGuessColorsToKB();
                this.advanceNextRow();
-               if(guess === this.answer)
+               if( guess === this.answer )
                {
-                    this.setGameState(GameStates.WON);
+                    this.setGameState( GameStates.WON );
                     this.statsReport = { finalState: GameStates.WON, numGuesses: this.activeRow };
                }
                else if (this.activeRow >= 6 )
                {
-                    this.setGameState(GameStates.LOST);
+                    this.setGameState( GameStates.LOST );
                     this.statsReport = { finalState: GameStates.LOST };
                }
                else
-                    this.displayMatchingWordCount( this.answer, this.guessList.slice(0, this.activeRow) );
+                    this.displayMatchingWordCount( this.answer, this.guessList.slice( 0, this.activeRow ) );
           },
 
           async displayMatchingWordCount( answer: string, guesses: string[] ): Promise<void>
@@ -126,7 +114,7 @@ export default Vue.extend({
                let apiResp = await wordlessApiService.getMatchCountAsync( answer, guesses );
                if( !apiResp.success )
                {
-                    this.setStatusMsg( `Error retrieving match count: ${apiResp.message}` );
+                    this.setStatusMsg( `Failed to calc remaining: ${apiResp.message}` );
                }
                else
                {
@@ -154,7 +142,6 @@ export default Vue.extend({
 </script>
 
 <style>
-
 :root {
      --status-font-size: 12px;
      --title-font-size: min( 4vw , 25px );
@@ -219,19 +206,13 @@ body { margin: 0; height: auto; width: auto;}
      border: 1px solid #aaa;
      box-shadow: 7px 7px #ddd;
      padding: 5px 10px;
-     /*
-     border-radius: 5px;
-     */
-
      -webkit-font-smoothing: antialiased;
      -moz-osx-font-smoothing: grayscale;
      touch-action:'manipulation';     /* disable iphone default tap zoom action */
-
      display: flex;
      justify-content: center; 
      align-items:center;
      text-align: center;
-
      position: relative;
      width: auto;
      height: auto;
@@ -278,7 +259,6 @@ span.miss { background-color: var(--color-miss); }
      height: 1.5vh;
      width: 1.5vh;
 }
-
 </style>
 
 <style>
@@ -291,7 +271,6 @@ span.miss { background-color: var(--color-miss); }
      font-size: var(--status-font-size);
      display: block;
      transform: scale( 0, 0 );
-     /* transition: transform 0s 3s; */
      margin: 0;
      height: 0;
 }
@@ -311,5 +290,4 @@ span.miss { background-color: var(--color-miss); }
 .gb { border: 1px solid blue!important;}
 .gy { border: 1px solid yellow!important;}
 */
-
 </style>

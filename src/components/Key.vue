@@ -49,7 +49,7 @@ export default Vue.extend({
 
      computed: 
      {
-          ...mapState( useStateStore, ['KeyColorMap',] ),
+          ...mapState( useStateStore, ['KeyColorMap', ] ),
           getCSSClasses() : Record<string, boolean>
           {
 
@@ -100,13 +100,11 @@ export default Vue.extend({
      },
 
 });
-
 </script>
 
 <style>
-
 button.key-button,
-.modal-active.modal-active.modal-active button.key-button{ 
+.modal-active.modal-active.modal-active button.key-button { 
      --key-width : min( 7vw, 30px );
      display: inline-block; 
      border: 2px solid grey;
@@ -149,6 +147,7 @@ button.key-button.enabled,
 .key-button {
      transition: all  .2s 0s;
 }
+
 .key-button.key-down {
      color: white;
      background-color: #444;
@@ -161,9 +160,7 @@ button.key-button.enabled,
 .enable-hard-mode .key-button.miss.miss { 
      opacity: .4; pointer-events: none; 
 }
-
 </style>
 
 <style scoped>
-
 </style>

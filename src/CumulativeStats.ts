@@ -55,7 +55,7 @@ export default class CumulativeStats
           localStorage.setItem( STAT_STORAGE_NAME, JSON.stringify( this ) );
      }
 
-          // copy the array elements to target element-by-element to preserve reactivity
+     // copy the array elements to target element-by-element to preserve reactivity
      copyHistogramBins( destArray: number[]) : void
      {
           if ( destArray.length != this.histogramBins.length ) 
@@ -87,4 +87,3 @@ export default class CumulativeStats
           return new CumulativeStats();
      }
 }
-

@@ -18,7 +18,6 @@ export class EventBus
 
      static emit( eventArgument: unknown, eventName: string ) : void
      {
-          console.log( 'EventBus::emit', eventName, eventArgument); 
           this.eventSource.$emit( eventName, eventArgument );
      }
 

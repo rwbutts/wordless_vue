@@ -1,4 +1,5 @@
 <template>
+
 <div class='stat-box' :class='{ showdialog : showDialog }' >
      <h1 class='title' >Cumulative Statistics</h1>
      <h2 class='subtitle'>Words Guessed</h2>
@@ -18,10 +19,8 @@
           @keyup.enter="closeDialog"
           >Close</button>
      </div>
-
-
 </div>
-<!-- </div> -->
+
 </template>
 
 <script lang='ts'>
@@ -58,11 +57,6 @@ export default Vue.extend({
      },
 
      watch: {
-          // isActive( newVal, oldVal)  // eslint-disable-line no-unused-vars
-          // {
-          //      if( typeof newVal === 'boolean' )
-          //           this.showDialog = newVal;       }
-          // },
           report( newVal : StatsReportGameResult )
           {
                if( !newVal || typeof newVal !== 'object' ) 
@@ -78,23 +72,23 @@ export default Vue.extend({
                          newStats = CumulativeStats.recordWin( newVal.numGuesses as number);
                          break;
                     case GameStates.LOST:
-                         newStats = CumulativeStats.recordLoss( );
+                         newStats = CumulativeStats.recordLoss();
                          break;
                     default:
-                         throw new Error('impossible  game state encountered');
+                         throw new Error( 'impossible  game state encountered' );
                }
                this.cumStats = Object.assign( {}, this.cumStats, newStats );
                this.$emit('update:isActive', true );
 
                this.showDialog = true;
           },
-
      },
 
      methods: {
           histogramPct( NTries:number  ) : number {
                return Math.floor(  ( this.cumStats.histogramBins[ NTries - 1 ] / this.cumStats.gamesWon ) * 100 + 0.5) ;
           },
+
           closeDialog() : void
           {
                this.showDialog = false;
@@ -112,6 +106,7 @@ export default Vue.extend({
           winPct: function() : number {
                return Math.floor( ( this.cumStats.gamesWon / this.cumStats.gamesPlayed ) * 100 + 0.5 );
           },
+
           lossPct: function() : number {
                return Math.floor( ( ( this.cumStats.gamesPlayed - this.cumStats.gamesWon ) / this.cumStats.gamesPlayed ) * 100 + 0.5 );
           }
@@ -121,14 +116,11 @@ export default Vue.extend({
           this.handleKey = this.handleKey.bind(this);   
           window.addEventListener('keydown', this.handleKey);
      },
-
 });
-
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
 .stat-box.showdialog {
      display: block;
      visibility: visible;

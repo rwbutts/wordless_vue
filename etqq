@@ -1,0 +1,65 @@
+[33mcommit 6c20687ed4c85333ab875b0e691999127bf2a32b[m[33m ([m[1;36mHEAD -> [m[1;32mexpert-mode[m[33m, [m[1;33mtag: V2.34[m[33m)[m
+Author: Ronald W. (Bill) Butts, Jr <rwbutts@gmail.com>
+Date:   Mon Nov 20 00:15:30 2023 -0500
+
+    V23.45 release. Fix api error handling & cleanup.
+
+[33mcommit 524387630f78f2c60b33041260f0c94377daf748[m
+Author: Ronald W. (Bill) Butts, Jr <rwbutts@gmail.com>
+Date:   Fri Nov 17 20:26:09 2023 -0500
+
+    release candidate: hard mode working
+
+[33mcommit f37c6e3327eeb60ed2e7d3bb123a4fe58eab07a9[m[33m ([m[1;33mtag: V2.31[m[33m, [m[1;32mmaster[m[33m)[m
+Author: Ronald W. (Bill) Butts, Jr <rwbutts@gmail.com>
+Date:   Thu Nov 16 17:36:59 2023 -0500
+
+    Relese V2.31
+
+[33mcommit 08b99fbd451b2dfd6a3d4a21938aa7e2f71c5d53[m
+Author: Ronald W. (Bill) Butts, Jr <rwbutts@gmail.com>
+Date:   Wed Nov 15 00:11:57 2023 -0500
+
+    V2,3 Release candidate, linted
+
+[33mcommit 64b895b40411245e38b85c8bd480ac98d35e881f[m
+Author: Ronald W. (Bill) Butts, Jr <rwbutts@gmail.com>
+Date:   Tue Nov 14 20:08:25 2023 -0500
+
+    package.json
+
+[33mcommit 72e46505cc2dc53253c07c791923a55cdbeacbc0[m
+Author: Ronald W. (Bill) Butts, Jr <rwbutts@gmail.com>
+Date:   Tue Nov 14 20:08:02 2023 -0500
+
+    release candidate 2.3
+
+[33mcommit b1b0e0d16cd21190066b263eeb09d320de14f3e3[m
+Author: Ronald W. (Bill) Butts, Jr <rwbutts@gmail.com>
+Date:   Tue Nov 14 01:29:29 2023 -0500
+
+    fix ui bugs
+
+[33mcommit 69538cfb4cd1fa056d9914b6f4e9154e61ca7060[m
+Author: Ronald W. (Bill) Butts, Jr <rwbutts@gmail.com>
+Date:   Sun Nov 12 23:28:30 2023 -0500
+
+    cleanup refactor
+
+[33mcommit 2e3b052aa11440d591f77938e4134b1591370a1c[m
+Author: Ronald W. (Bill) Butts, Jr <rwbutts@gmail.com>
+Date:   Fri Nov 10 04:37:34 2023 -0500
+
+    refactor to ts enums working
+
+[33mcommit 3ff808e0a6b4f5af45d1be0ea4aa36b49716d038[m
+Author: Ronald W. (Bill) Butts, Jr <rwbutts@gmail.com>
+Date:   Tue Nov 7 04:21:31 2023 -0500
+
+    typescript conversion initial checkin
+
+[33mcommit 06c96f8d49c4364b51456a7de2c7f9a196c33cd0[m
+Author: Ronald W. (Bill) Butts, Jr <rwbutts@gmail.com>
+Date:   Mon Nov 6 13:39:54 2023 -0500
+
+    init

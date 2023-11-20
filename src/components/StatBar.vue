@@ -1,9 +1,11 @@
 <template>
+
 <div class='box-bar'>
      <div class='box-caption1'>{{ caption }}</div>
      <div class='box-caption2'>{{ (isNaN(percent) ? '--' : percent) }}&percnt; </div>
      <div v-for="i in 10"  class='box' :class='{filled : i <= barCount}' :key='i'></div>
 </div>
+
 </template>
 
 <script lang='ts'>
@@ -40,9 +42,7 @@ export default Vue.extend({
 
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
 div { padding: 0; }
 
 .box-bar {
@@ -83,5 +83,4 @@ div { padding: 0; }
      border: 1px solid black;
      background-color : var(--color-miss);
 }
-
 </style>

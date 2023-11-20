@@ -1,16 +1,18 @@
 <template>
+
 <div class='guess-list' >
      <div v-for="row in 6" class='guess-row row' 
           :class="{ 'current': activeRow === row-1,  
                     'reveal': activeRow > row-1,
-                    'correct': (activeRow > row-1 && guessList[row-1] === answer)
-                    }" :key='row' >
-
+                    'correct': activeRow > row-1 && guessList[row-1] === answer,
+                    }" :key='row' 
+     >
           <div v-for="col in 5" :key='col' 
                class='letter-container '
                :class="{
-                         'current': activeRow===row-1 && cursorCol === col-1 ,
-                    }" >
+                         'current': activeRow === row-1 && cursorCol === col-1,
+                    }" 
+          >
                <guess-letter 
                     :class = "[getBoxColor(row-1,col-1)]" 
                     :character='getBoxLetter(row-1,col-1)'
@@ -18,6 +20,7 @@
           </div>
      </div>
 </div>
+
 </template>
 
 <script lang='ts'>
@@ -26,7 +29,6 @@
 
 import Vue, { PropType }  from 'vue'
 import GuessLetter from './GuessLetter.vue';
-
 import { calcLetterColor } from '@/utils/Game';
 
 export default Vue.extend({
@@ -74,7 +76,6 @@ export default Vue.extend({
           },
      },
 });
- 
 </script>
 
 <style>
@@ -91,11 +92,9 @@ export default Vue.extend({
      transition: transform .75s ;
      transform-style: preserve-3D;
 }
-
 </style>
 
 <style scoped>
-  
 .guess-row {
      display: flex;
      justify-content: center;
@@ -111,15 +110,15 @@ export default Vue.extend({
      border: 3px solid #EEE;
 }
 
-
 .game-in-progress .guess-row.current > .letter-container { 
      border: 3px solid #888;
+
 }
+
 .game-in-progress .guess-row.current > .letter-container.current { 
      border: 3px solid #888;
      background-color: #fee;
 }
-
 
 .guess-row.previous  .letter-container { 
      border: 3px solid #888;
@@ -127,21 +126,17 @@ export default Vue.extend({
 
 @keyframes shake {
      0% { transform: translate( 1px, 1px ) rotate( 0deg ); }
-     10% { transform: translate( -1px, -2px ) rotate( -1deg ); }
-     20% { transform: translate( -3px, 0px ) rotate( 1deg ); }
+     10% { transform: translate( -1px, -2px ) rotate( -2deg ); }
+     20% { transform: translate( -3px, 0px ) rotate( 2deg ); }
      30% { transform: translate( 3px, 2px ) rotate( 0deg ); }
-     40% { transform: translate( 1px, -1px ) rotate( 1deg ); }
-     50% { transform: translate( -1px, 2px ) rotate( -1deg ); }
+     40% { transform: translate( 1px, -1px ) rotate( 3deg ); }
+     50% { transform: translate( -1px, 2px ) rotate( -3deg ); }
      60% { transform: translate( -3px, 1px ) rotate( 0deg ); }
-     70% { transform: translate( 3px, 1px ) rotate( -1deg ); }
+     70% { transform: translate( 3px, 1px ) rotate( -4deg ); }
      80% { transform: translate( -1px, -1px ) rotate( 1deg ); }
      90% { transform: translate( 1px, 2px ) rotate( 0deg ); }
-     100% { transform: translate( 1px, -2px ) rotate( -1deg ); }
+     100% { transform: translate( 1px, -2px ) rotate( -3deg ); }
 }
-
-
-
-
 
 /* reveal color as default grey, conditionally yellow or green */
 .reveal .back  { background-color : #AAA; }
@@ -149,19 +144,15 @@ export default Vue.extend({
 .reveal .back.correct { background-color : rgb(137, 233, 137); }
 
 /* when reveal class added, flip the wrapper div ocer to expose colored div */
-.reveal .guess-letter
-{
+.reveal .guess-letter {
      transform: rotateY( 180deg );
 }
 
-.game-won .guess-row.reveal.correct
-{
+.game-won .guess-row.reveal.correct {
      animation: shake 0.5s;
-
      animation-iteration-count: 2;
      animation-delay: 2s; 
 }
-
 
 /* flip the columns .5s apart */
 .reveal .letter-container:nth-child( 2 ) .guess-letter { transition-delay: .5s; }
@@ -169,9 +160,5 @@ export default Vue.extend({
 .reveal .letter-container:nth-child( 4 ) .guess-letter  { transition-delay: 1.5s; }
 .reveal .letter-container:nth-child( 5 ) .guess-letter  { transition-delay: 2s; }
 .reveal .letter-container:nth-child( 6 ) .guess-letter  { transition-delay: 2.5s; }
- 
-
- 
-
-  </style>
+</style>
  
