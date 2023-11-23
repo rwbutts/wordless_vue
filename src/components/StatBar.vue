@@ -24,17 +24,18 @@ export default Vue.extend({
 
      props: {
           percent : {
-               'type' : Number as PropType<number>,
+               type : Number as PropType<number>,
+               required : true,
           },
           caption : {
+               type : String as PropType<string>,
+               required : false,
+               default : '',
           },
-     },
-
-     methods: {
      },
 
      computed: {
-          barCount() {
+          barCount() : number {
                return Math.floor( ( this.percent + 5) / 10 );
           }
      },

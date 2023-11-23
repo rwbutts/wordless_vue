@@ -21,19 +21,16 @@ export default Vue.extend({
      name: 'guess-letter',
 
      data() {
-          return { 
+               return { 
           };
      },
 
      props: {
           'character': {
-               'type': String as PropType<string>,
+               type : String as PropType<string>,
+               required : true,
           },
      },
-
-     methods: {
-     },
-
 });
   
 </script>

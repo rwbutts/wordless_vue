@@ -59,9 +59,6 @@ export default Vue.extend({
           };
      },
 
-     computed: {
-     },
-
      components: {
           Key
      },
@@ -84,6 +81,7 @@ export default Vue.extend({
                     }
                }
           },
+
           /**
            * Duplicate copy, but with'this' bound to us
            * otherwise 'this' is window.
@@ -91,7 +89,7 @@ export default Vue.extend({
            * upon init.
            * We overwrite this in mounted()
            */
-          _handleRealKeyThis: ()=>null,
+          _handleRealKeyThis: () => null,
      },
 
      mounted() {

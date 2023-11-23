@@ -3,8 +3,8 @@
 const VERSION = process.env.VUE_APP_VERSION;
 
 import Vue from 'vue'
-import { wordlessApiService,  } from '@/WordlessAPI';
 import App from '@/App.vue'
+import { wordlessApiService,  } from '@/WordlessAPI';
 import { EventBus, } from '@/EventBus';
 import { useStateStore } from '@/Store';
 import { createPinia, PiniaVuePlugin, mapStores } from 'pinia'
@@ -29,7 +29,7 @@ export const app = new Vue({
      },
 
      computed : {
-          ...mapStores( useStateStore, ''),
+          ...mapStores( useStateStore ),
      },
 
      methods: {
@@ -40,8 +40,8 @@ export const app = new Vue({
                const response = await wordlessApiService.getWordAsync();
                if( response.success )
                {
-                    this.stateStore.setStatusMsg( `Guess the 5-letter word in 6 tries. Good luck!` );
-                    EventBus.emitResetEvent( { answer: response.word as string} );
+                    this.stateStore.setStatusMsg( 'Guess the 5-letter word in 6 tries. Good luck!' );
+                    EventBus.emitResetEvent( {answer: response.word as string} );
                }
                else
                {

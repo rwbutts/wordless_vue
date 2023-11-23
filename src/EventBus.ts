@@ -2,7 +2,7 @@
 // @ts-check
 
 import Vue from 'vue'
-import { CustomEventNames,  } from '@/types';
+import { CustomEventNames, ResetGameEventArgs, ResetKeyEventArgs, } from '@/types';
 
 export class EventBus
 {
@@ -11,7 +11,9 @@ export class EventBus
      static get eventSource() : Vue
      {
           if( !this._emitterComponent )
+          {
                this._emitterComponent = new Vue();
+          }
 
           return this._emitterComponent;
      }

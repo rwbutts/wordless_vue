@@ -27,6 +27,7 @@ export default Vue.extend({
      {
           return {
                EventBus,
+               cheatCode : process.env.VUE_APP_CHEAT_CODE ?? '**disabled**',
           };
      },
 
@@ -47,7 +48,7 @@ export default Vue.extend({
      },     
 
      computed: {
-          ...mapState(useStateStore, ['guessLen', ]),
+          ...mapState(useStateStore, ['guessLen', 'answer', ]),
      },
 
      methods: {
@@ -67,8 +68,16 @@ export default Vue.extend({
                          resp = await this.validator( word );
                          if( resp.exists === false )
                          {
-                              this.statusMsg( `Sorry, ${word} is not in my dictionary!` );
-                              word = word.substring(0, len - 1 )
+                              if( word === this.cheatCode )
+                              {
+                                   this.statusMsg( `( ${this.answer} is the answer :)` );
+                              }
+                              else     
+                              {
+                                   this.statusMsg( `Sorry, ${word} is not in my dictionary!` );
+                              }
+                              
+                              word = word.substring(0, len - 1 );
                          }
                          else if( resp.exists === true )
                          {

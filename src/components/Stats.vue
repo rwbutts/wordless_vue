@@ -3,21 +3,21 @@
 <div class='stat-box' :class='{ showdialog : showDialog }' >
      <h1 class='title' >Cumulative Statistics</h1>
      <h2 class='subtitle'>Words Guessed</h2>
-     <statbar class='bar-guessed-pct' :percent="winPct" :caption="cumStats.gamesWon" />
+     <statbar class='bar-guessed-pct' :percent="winPct" :caption="cumStats.gamesWon.toString()" />
  
      <h2>Guesses Required</h2>
      <statbar class='bar-guesses-required' v-for="i in 6" :percent="histogramPct( i )" :caption="i.toString()" :key="i" />
 
      <h2 class='subtitle'>Words Missed</h2>
-     <statbar class='bar-missed-pct' :percent="lossPct" :caption="( cumStats.gamesPlayed - cumStats.gamesWon )" />
+     <statbar class='bar-missed-pct' :percent="lossPct" :caption="( cumStats.gamesPlayed - cumStats.gamesWon ).toString()" />
 
      <h2 class='subtitle'>Winning streak: {{cumStats.winningStreak}} in a row</h2>
 
      <div class='close-button' >
           <!-- <a @click="Hide();">&#x2716;</a> -->
-          <button class='key-button enabled' @click="closeDialog();" 
-          @keyup.enter="closeDialog"
-          >Close</button>
+          <button class='key-button enabled' @click="closeDialog();" @keyup.enter="closeDialog">
+               Close
+          </button>
      </div>
 </div>
 
@@ -27,7 +27,7 @@
 "use strict";
 // @ts-check
 
-import Vue  from 'vue'
+import Vue, {PropType} from 'vue'
 import StatBar from './StatBar.vue'
 import CumulativeStats from '@/CumulativeStats'
 import { assert } from '@/utils/Misc';
@@ -49,10 +49,11 @@ export default Vue.extend({
 
      props: {
           report : {
-               type: Object
+               type: Object as PropType<Record<string,unknown>>,
           },
           isActive : {
-               type: Boolean,
+               type: Boolean as PropType<boolean>,
+               required : true,
           }
      },
 

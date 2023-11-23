@@ -40,10 +40,15 @@ export default Vue.extend({
                default: false,
           },
 
-          char : String,       // character/mnemonic emitted with key click event
+          // character/mnemonic emitted with key click event
+          char : {
+               type: String as PropType<string>, 
+               required : true,
+          },
           
           refMap : {
                type: Object as PropType<Record<string, unknown>>,
+               required : true,
           },
      },
 

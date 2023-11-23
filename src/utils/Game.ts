@@ -1,7 +1,7 @@
 "use strict";
 // @ts-check
 
-import { MatchCodes, } from '@/types';
+import { MatchCodes, LetterColor, } from '@/types';
 
 export function calcLetterColor( guess:string, answer:string, column:number ): LetterColor
 {

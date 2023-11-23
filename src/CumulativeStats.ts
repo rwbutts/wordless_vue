@@ -23,7 +23,9 @@ export default class CumulativeStats
      {
           const statObj = CumulativeStats.fromStorage();
           if( numGuesses > statObj.histogramBins.length || numGuesses <= 0 )
+          {
                throw new RangeError( 'RecordWin() invalid Attempts parameter value' );
+          }
 
           statObj.winningStreak++;
           statObj.gamesPlayed++;
@@ -59,7 +61,9 @@ export default class CumulativeStats
      copyHistogramBins( destArray: number[]) : void
      {
           if ( destArray.length != this.histogramBins.length ) 
+          {
                throw new RangeError( 'CopyBins() source and dest are different sizes' );
+          }
 
           for( let i = 0; i < this.histogramBins.length; i++ )
                destArray[ i ] = this.histogramBins[ i ];
@@ -77,13 +81,17 @@ export default class CumulativeStats
                }
                catch(err)
                {
-                    const msg = err instanceof(Error) ? err.message : '** Exception unknown **';
+                    const msg = ( err instanceof Error ) ? err.message : '** Exception unknown **';
                     console.warn(`JSON Exception loading stat from localstorage: ${msg}`);
                     statObj = new CumulativeStats();
                }
+
                return Object.assign( new CumulativeStats(), statObj );
           }
+          else
+          {
                // if not found, return an empty stat object
-          return new CumulativeStats();
+               return new CumulativeStats();
+          }
      }
 }

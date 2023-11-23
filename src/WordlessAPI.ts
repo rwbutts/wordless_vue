@@ -34,84 +34,86 @@ export class WordlessAPI
      }
 }
 
-export  async function getWordAsync( daysAgo = -1) :  Promise<GetWordAsyncResponseType>
+async function getWordAsync( daysAgo = -1) :  Promise<GetWordAsyncResponseType>
+{
+     try
      {
-          try
-          {
-               const json = await _fetchAndGetJson( `${API_SITE}${GETWORD_URI}/${daysAgo}` );
-               return  { word: (json.word as string).toUpperCase(), success : true, message:'' };  
-          }
-          catch(err : unknown)
-          {
-               return  { word: undefined, success : false, message: (err as Error).message };  
-          }  
+          const json = await _fetchAndGetJson( `${API_SITE}${GETWORD_URI}/${daysAgo}` );
+          return  { word: (json.word as string).toUpperCase(), success : true, message:'' };  
      }
+     catch(err : unknown)
+     {
+          return  { word: undefined, success : false, message: (err as Error).message };  
+     }  
+}
 
 export async function checkWordAsync( Word :string) : Promise<CheckWordAsyncResponseType> 
-      {
-          const WordLC = Word.toLowerCase();
-          try
-          {
-               const json = await _fetchAndGetJson( `${API_SITE}${CHECKWORD_URI}/${WordLC}` );
-               return { exists: json.exists as boolean, success: true, message: '' };
-          }
-          catch( err : unknown )
-          {
-               return { exists: undefined, success: false, message: (err as Error).message,  };
-          }
-      }
+{
+     const WordLC = Word.toLowerCase();
+     try
+     {
+          const json = await _fetchAndGetJson( `${API_SITE}${CHECKWORD_URI}/${WordLC}` );
+          return { exists: json.exists as boolean, success: true, message: '' };
+     }
+     catch( err : unknown )
+     {
+          return { exists: undefined, success: false, message: (err as Error).message,  };
+     }
+}
 
 export async function getMatchCountAsync( answer :string, guessArray: string[]  ) : Promise<GetMatchCountAsyncResponseType>
-     {
-          const postData = 
-          { 
-               answer: answer.toLowerCase(), 
-               guesses: guessArray.map( (d) => d.toLowerCase() ),
-          };
+{
+     const postData = 
+     { 
+          answer: answer.toLowerCase(), 
+          guesses: guessArray.map( (d) => d.toLowerCase() ),
+     };
 
-          try
-          {
-               const json = await _fetchAndGetJson( `${API_SITE}${GETMATCHCOUNT_URI}`, postData );
-               return { count: json.count as number, success: true, message: '' };
+     try
+     {
+          const json = await _fetchAndGetJson( `${API_SITE}${GETMATCHCOUNT_URI}`, postData );
+          return { count: json.count as number, success: true, message: '' };
+     }
+     catch( err : unknown )
+     {
+          return { count: undefined, success: false, message: (err as Error).message,  };
+     }
+}
+
+async function _fetchAndGetJson( Url: string, PostData: Record<string,unknown>|null = null ) : Promise<Record<string,unknown>>
+{
+     let RequestParams: RequestInit;
+     if ( PostData === null )
+     {
+          RequestParams = {
+               method: 'GET',
+               headers: 
+               {
+                    'Accept': '*/*',
+               },
           }
-          catch( err : unknown )
-          {
-               return { count: undefined, success: false, message: (err as Error).message,  };
+     }
+     else
+     {
+          RequestParams = {
+               method: 'POST',
+               mode: 'cors',
+               headers: 
+               {
+                    'Accept': '*/*',
+                    'Content-Type': 'application/json',
+               },
+               body: JSON.stringify(PostData),
           }
      }
 
-     async function _fetchAndGetJson( Url: string, PostData: Record<string,unknown>|null = null ) : Promise<Record<string,unknown>>
+     const response = await fetch( Url, RequestParams );
+     if (!response.ok )
      {
-          let RequestParams: RequestInit;
-          if ( PostData === null )
-          {
-               RequestParams = {
-                    method: 'GET',
-                    headers: 
-                    {
-                         'Accept': '*/*',
-                    },
-               }
-          }
-          else
-          {
-               RequestParams = {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: 
-                    {
-                         'Accept': '*/*',
-                         'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(PostData),
-               }
-          }
-          const response = await fetch( Url, RequestParams );
-          if (!response.ok )
-          {
-               throw new Error( `[${response.status}] ${response.statusText}` );
-          }
-          return response.json();
+          throw new Error( `[${response.status}] ${response.statusText}` );
      }
+     
+     return response.json();
+}
 
 export const wordlessApiService = new WordlessAPI();

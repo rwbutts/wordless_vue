@@ -77,11 +77,11 @@ export default Vue.extend({
 
      computed: {
           ...mapState( useStateStore, [ 'answer', 'statusMessage', 'gameState', 
-               'guessList','activeRow', 'gameOver', ] ),
+               'guessList', 'activeRow', 'gameOver', ] ),
      },
 
      methods: {
-          ...mapActions( useStateStore,[ 'setGameState','setStatusMsg', 
+          ...mapActions( useStateStore,[ 'setGameState', 'setStatusMsg', 
                 'advanceNextRow', 'sendActiveGuessColorsToKB',
                  'setAnswer', ] ),
 

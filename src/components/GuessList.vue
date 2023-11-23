@@ -44,13 +44,16 @@ export default Vue.extend({
      props: 
      {
           'guessList': {
-               'type': Array as PropType<string[]>,
+               type: Array as PropType<string[]>,
+               required : true,
           },
           'activeRow': {
-               'type': Number as PropType<number>,
+               type: Number as PropType<number>,
+               required : true,
           },
           'answer': {
-               'type': String as PropType<string>,
+               type: String as PropType<string>,
+               required : true,
           },
      },     
 

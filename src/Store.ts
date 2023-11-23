@@ -3,7 +3,7 @@
 
 import { defineStore } from 'pinia'
 import { calcLetterColor, } from '@/utils/Game';
-import { GameStates, MatchCodes, } from '@/types';
+import { GameStates, MatchCodes, LetterColor, } from '@/types';
 
 export const useStateStore = defineStore( 'state', {
      state: () => ({ 
@@ -35,19 +35,19 @@ export const useStateStore = defineStore( 'state', {
           },
 
           /**
-           * 
            * Sets the message text (between the Guess list and
            * the keyboard).
            */
           setStatusMsg( msg:string ) {
-               console.log( "Setstatus", msg );
                this.statusMessage = msg;
           },
 
           setGameState( state: string ) {
                this.gameState = state;
                if( state===GameStates.WON || state===GameStates.LOST )
+               {
                     this.gameOver = true;
+               }
           },
 
           setAnswer( answer:string ) {
