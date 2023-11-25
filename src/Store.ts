@@ -13,7 +13,7 @@ export const useStateStore = defineStore( 'state', {
                guessList: Array(7).fill( '' ) as string[],
                statusMessage: '', 
                gameState: 'game-starting', //GameStates.INIT as string,
-               KeyColorMap: {} as Record<string,string>,
+               keyColorMap: {} as Record<string,string>,
           }
      ),
 
@@ -59,10 +59,10 @@ export const useStateStore = defineStore( 'state', {
                const { letter, color } = letterColor;
 
                // if key color is green, don't downgrade unless it's a reset
-               if( this.KeyColorMap[letter] !== MatchCodes.CORRECT
+               if( this.keyColorMap[letter] !== MatchCodes.CORRECT
                     || color === MatchCodes.DEFAULT )
                {
-                    this.KeyColorMap = Object.assign( {}, this.KeyColorMap, { [letter]:  color });
+                    this.keyColorMap = Object.assign( {}, this.keyColorMap, { [letter]:  color });
                }
           },
 

@@ -6,9 +6,9 @@
      />
      <div class='game-container disable-tap-zoom' 
           :class="{
-                    [gameState]:true, 
-                    ['game-over'] : gameOver,
-                    ['modal-active'] : modalActive, 
+                    [gameState] : true, 
+                    'game-over' : gameOver,
+                    'modal-active' : modalActive, 
                     'enable-hard-mode' : hardMode,
                     }"
      >
@@ -196,7 +196,6 @@ html {
 
 div { box-sizing: border-box; }
 
-/* body { margin: 0; height: 100%; width: 500px;} */
 body { margin: 0; height: auto; width: auto;}
 
 #app {
