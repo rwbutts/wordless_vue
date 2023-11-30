@@ -31,18 +31,18 @@ export default Vue.extend({
 
      props: {
           label : {
-               type: String as PropType<string>,
-               default: "",
+               type : String as PropType<string>,
+               default : "",
           },
 
           special_key : {
-               type: Boolean as PropType<boolean>,
-               default: false,
+               type : Boolean as PropType<boolean>,
+               default : false,
           },
 
           // character/mnemonic emitted with key click event
           char : {
-               type: String as PropType<string>, 
+               type : String as PropType<string>, 
                required : true,
           },
           
@@ -54,18 +54,18 @@ export default Vue.extend({
 
      computed: 
      {
-          ...mapState( useStateStore, ['keyColorMap', ] ),
+          ...mapState( useStateStore, [ 'keyColorMap', ] ),
           getCSSClasses() : Record<string, boolean>
           {
 
                let colorClass = this.keyColorMap[ this.char ] ?? MatchCodes.DEFAULT;
 
                let classes = {
-                    special_key: this.special_key,
-                    [ 'key-' + this.char.toLowerCase() ]: true,
+                    special_key : this.special_key,
+                    [ 'key-' + this.char.toLowerCase() ] : true,
                     [ this.special_key ? 'key-nonalpha' : 'key-alpha' ] : true,
-                    [ colorClass ]: true,
-                    'key-down': this.keyDown,
+                    [ colorClass ] : true,
+                    'key-down' : this.keyDown,
                };
 
                return classes;
@@ -84,8 +84,8 @@ export default Vue.extend({
                if( !this.isCssPointerEventDisabled() )
                {
                     this.keyDown = true;
-                    this.$emit( 'click', {character: this.char } );
-                    setTimeout( ()=>(this.keyDown = false), 100 );
+                    this.$emit( 'click', { character: this.char } );
+                    setTimeout( ()=>( this.keyDown = false ), 100 );
                }
           },
 
@@ -93,7 +93,7 @@ export default Vue.extend({
           {
                let styles = window.getComputedStyle( this.$el );
                let val = styles.getPropertyValue( 'pointer-events' );
-               return ( val === 'none') ;
+               return ( val === 'none' ) ;
           },
      },
 

@@ -64,7 +64,7 @@ export default Vue.extend({
      },
 
      methods: {
-          keyHandler( args: KeyPressEventArgs ) : void 
+          keyHandler( args : KeyPressEventArgs ) : void 
           {
                this.$emit( 'key-press', args );
           },
@@ -77,7 +77,7 @@ export default Vue.extend({
                {
                     let keyRef = this.refMap[ ucKey ];
                     {
-                         (keyRef as {clickHandler: ()=>void}).clickHandler();
+                         ( keyRef as { clickHandler: ()=>void } ).clickHandler();
                     }
                }
           },
@@ -89,7 +89,7 @@ export default Vue.extend({
            * upon init.
            * We overwrite this in mounted()
            */
-          _handleRealKeyThis: () => null,
+          _handleRealKeyThis : () => null,
      },
 
      mounted() {
