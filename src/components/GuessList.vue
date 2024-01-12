@@ -142,9 +142,9 @@ export default Vue.extend({
 }
 
 /* reveal color as default grey, conditionally yellow or green */
-.reveal .back  { background-color : #AAA; }
-.reveal .back.present { background-color : rgb(238, 222, 152); }
-.reveal .back.correct { background-color : rgb(137, 233, 137); }
+.reveal .back  { background-color : var(--color-miss); }
+.reveal .back.present { background-color : var(--color-elsewhere); }
+.reveal .back.correct { background-color : var(--color-correct); }
 
 /* when reveal class added, flip the wrapper div ocer to expose colored div */
 .reveal .guess-letter {

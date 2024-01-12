@@ -141,30 +141,6 @@ export default Vue.extend({
 </style>
 
 <style scoped>
-/* reveal color as default grey, conditionally yellow or green */
-.reveal .back  { background-color : #AAA; }
-.reveal .back.present { background-color : rgb(238, 222, 152); }
-.reveal .back.correct { background-color : rgb(137, 233, 137); }
 
-/* when reveal class added, flip the wrapper div ocer to expose colored div */
-.reveal .guess-letter
-{
-     transform: rotateY( 180deg );
-}
-
-.game-won .guess-row.reveal.correct
-{
-     animation: shake 0.5s;
-
-     animation-iteration-count: 2;
-     animation-delay: 2s; 
-}
-
-/* flip the columns .5s apart */
-.reveal .letter-container:nth-child( 2 ) .guess-letter { transition-delay: .5s; }
-.reveal .letter-container:nth-child( 3 ) .guess-letter  { transition-delay: 1s; }
-.reveal .letter-container:nth-child( 4 ) .guess-letter  { transition-delay: 1.5s; }
-.reveal .letter-container:nth-child( 5 ) .guess-letter  { transition-delay: 2s; }
-.reveal .letter-container:nth-child( 6 ) .guess-letter  { transition-delay: 2.5s; }
 </style>
       

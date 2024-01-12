@@ -146,6 +146,10 @@ export default Vue.extend({
      --status-font-size: 12px;
      --title-font-size: min( 4vw , 25px );
      --footer-font-size: min( 3vw, 15px );
+     --color-correct: rgb(137, 233, 137);
+     --color-elsewhere: rgb(238, 222, 152);
+     --color-miss: #AAA;
+     --color-default: #FFF;
 }
 
 @media (min-width: 576px) 

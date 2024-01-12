@@ -60,12 +60,6 @@ export default Vue.extend({
 </style>
 
 <style>
-:root {
-     --color-correct: rgb(137, 233, 137);
-     --color-elsewhere: rgb(238, 222, 152);
-     --color-miss: #AAA;
-     --color-default: #FFF;
-}
 
 .guess-letter.miss .back {
      background-color: var(--color-miss);

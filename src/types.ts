@@ -46,11 +46,4 @@ export interface StatsReportGameResult {
      numGuesses?: number,
 }
 
-export interface KeyPressEventArgs { character: string }
-
-export interface ResetGameEventArgs { answer: string } 
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface ResetKeyEventArgs {  }
-
 

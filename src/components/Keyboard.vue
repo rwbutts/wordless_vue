@@ -82,14 +82,6 @@ export default Vue.extend({
                }
           },
 
-          /**
-           * Duplicate copy, but with'this' bound to us
-           * otherwise 'this' is window.
-           * Declare as junk function so Vue knows its type
-           * upon init.
-           * We overwrite this in mounted()
-           */
-          _handleRealKeyThis : () => null,
      },
 
      mounted() {
@@ -99,7 +91,7 @@ export default Vue.extend({
 
      beforeDestroy() 
      {
-          window.removeEventListener( 'keydown', this._handleRealKeyThis );
+          window.removeEventListener( 'keydown', this.handleRealKey );
      },
 
 });
