@@ -12,10 +12,10 @@
                     'enable-hard-mode' : hardMode,
                     }"
      >
-          <h3 class='title' >Bill's VUE.js Wordless Game</h3>
+          <h3 class='title'>Bill's NYTimes <a href='https://www.nytimes.com/games/wordle/index.html' target='_blank'>Wordle</a>&trade; Clone</h3>
           <guess-list :guessList='guessList' :answer='answer' :activeRow='activeRow' />
           <div class='status-area'>
-               <h3 class='status status-game-in-progress'> {{ statusMessage }}</h3> 
+               <h3 class='status status-game-in-progress'> {{statusMessage}}</h3> 
                <h3 class='status status-game-lost'>Sorry, the answer is {{answer}}</h3> 
                <h3 class='status status-game-won'>Congratulations, you got it! Please hire me!</h3> 
           </div>
@@ -35,7 +35,11 @@
                <span class='elsewhere'>Yellow</span>: wrong position;
                <span class='miss'>Grey</span>: not in word
                <br>
-               <span class='small-text'>The unknown word may be plural</span>
+               <!-- <span class='small-text'>The unknown word may be plural</span> -->
+               <span class='small-text version-info'>
+                    app_ver: {{appVersion}}
+                    <span v-if="apiVersion !== ''">, api_ver: {{ apiVersion}} </span>
+               </span> 
           </div>
      </div>
 </div>
@@ -77,7 +81,7 @@ export default Vue.extend({
 
      computed: {
           ...mapState( useStateStore, [ 'answer', 'statusMessage', 'gameState', 
-               'guessList', 'activeRow', 'gameOver', ] ),
+               'guessList', 'activeRow', 'gameOver', 'apiVersion', 'appVersion', ] ),
      },
 
      methods: {
@@ -255,6 +259,10 @@ span.miss { background-color: var(--color-miss); }
 .small-text {
      font-weight: normal;
      font-size: smaller;
+}
+
+.version-info {
+     color: #bbb;
 }
 
 .hard-checkbox input {

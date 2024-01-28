@@ -14,6 +14,8 @@ export const useStateStore = defineStore( 'state', {
                statusMessage: '', 
                gameState: 'game-starting', //GameStates.INIT as string,
                keyColorMap: {} as Record<string,string>,
+               appVersion: process.env.VUE_APP_VERSION,
+               apiVersion: '',
           }
      ),
 
@@ -52,6 +54,10 @@ export const useStateStore = defineStore( 'state', {
 
           setAnswer( answer:string ) {
                this.answer = answer;
+          },
+
+          setAPIVersion( version:string ) {
+               this.apiVersion = version;
           },
 
           setKeyColor( letterColor: LetterColor )
