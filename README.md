@@ -1,4 +1,5 @@
 # wordless.vue
+Note: this project was built with Nodejs 16.2 and has not been tested with later versions.
 
 ## Project setup
 ```
@@ -22,3 +23,4 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
