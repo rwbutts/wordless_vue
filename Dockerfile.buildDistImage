@@ -1,0 +1,11 @@
+FROM us-docker.pkg.dev/wordless-412000/miscellaneous/node16-minideb-base:1.0.0 as BASE
+
+WORKDIR /src
+COPY . .
+RUN npm install --legacy-peer-deps \
+    && npm install @vue/cli-service@4.5.19 --legacy-peer-deps \
+    && npm run build
+
+FROM alpine:3.14
+WORKDIR /dist
+COPY --from=BASE /src/dist .
