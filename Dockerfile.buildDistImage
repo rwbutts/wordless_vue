@@ -1,4 +1,7 @@
-FROM us-docker.pkg.dev/wordless-412000/miscellaneous/node16-minideb-base:1.0.0 as BASE
+FROM us-docker.pkg.dev/wordless-412000/miscellaneous/node16-minideb-base:latest as BASE
+
+ARG TAG_NAME='0.0.0'
+ENV VUE_APP_VERSION=${TAG_NAME}
 
 WORKDIR /src
 COPY . .

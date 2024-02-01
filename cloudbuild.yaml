@@ -4,7 +4,9 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'gcr.io/$PROJECT_ID/github.com/rwbutts/wordless_vue_dist:$TAG_NAME', 
         '-t', 'gcr.io/$PROJECT_ID/github.com/rwbutts/wordless_vue_dist:latest', 
-        '-f', 'Dockerfile.buildDistImage', '.']
+        '-f', 'Dockerfile.buildDistImage', 
+        '--build-arg', 'TAG_NAME=$TAG_NAME',
+        '.']
 
 # Push the container image to Container Registry
 - name: 'gcr.io/cloud-builders/docker'
