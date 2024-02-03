@@ -2,17 +2,33 @@ steps:
 # Build the container image
 
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'gcr.io/$PROJECT_ID/github.com/rwbutts/wordless_vue_dist:$TAG_NAME', 
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/github.com/rwbutts/wordless_vue_dist:$_TAG_VERSION', 
         '-t', 'gcr.io/$PROJECT_ID/github.com/rwbutts/wordless_vue_dist:latest', 
         '-f', 'Dockerfile.buildDistImage', 
-        '--build-arg', 'TAG_NAME=$TAG_NAME',
+        '--build-arg', 'TAG_VERSION=$_TAG_VERSION',
         '.']
 
 # Push the container image to Container Registry
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'gcr.io/$PROJECT_ID/github.com/rwbutts/wordless_vue_dist:latest']
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'gcr.io/$PROJECT_ID/github.com/rwbutts/wordless_vue_dist:$TAG_NAME']
+  args: ['push', 'gcr.io/$PROJECT_ID/github.com/rwbutts/wordless_vue_dist:$_TAG_VERSION']
+
+# If tag ended in -deoloy, build and push the final server
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  script:  |
+    #!/usr/bin/env bash
+    echo _TAG_ACTION = ${_TAG_ACTION}
+    if [ "${_TAG_ACTION}" = "deploy" ]; then
+      echo gcloud builds triggers run go-server-deployed-app --region=us-west2
+      gcloud builds triggers run go-server-deployed-app --region=us-west2
+    fi
+
 
 images:
-- gcr.io/$PROJECT_ID/github.com/rwbutts/wordless_vue_dist:$TAG_NAME
+- gcr.io/$PROJECT_ID/github.com/rwbutts/wordless_vue_dist:$_TAG_VERSION
+options:
+  dynamic_substitutions : true
+  env:
+  - '_TAG_VERSION=$_TAG_VERSION'
+  - '_TAG_ACTION=$_TAG_ACTION'
