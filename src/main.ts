@@ -41,7 +41,7 @@ export const app = new Vue({
                {
                     this.setStatusMsg( 'Guess the 5-letter word in 6 tries. Good luck!' );
                     this.setAPIVersion( response.apiVersion ?? '');
-                    EventBus.emitResetEvent( {answer: response.word as string} );
+                    EventBus.emitStartGameEvent( {answer: response.word as string} );
                }
                else
                {

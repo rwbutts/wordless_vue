@@ -15,7 +15,7 @@
 import Vue, { PropType }  from 'vue'
 import { mapState,  } from 'pinia'
 import Keyboard from './Keyboard.vue';
-import { EventBus,  } from '@/EventBus'
+import EventBus from '@/EventBus'
 import { calcLetterColor } from '@/utils/Game';
 import { useStateStore } from '@/Store';
 import { CustomEventNames, KeyCodes, KeyPressEventArgs, } from '@/types';
@@ -28,6 +28,8 @@ export default Vue.extend({
           return {
                EventBus,
                cheatCode : process.env.VUE_APP_CHEAT_CODE ?? '**disabled**',
+               currentGuessNumber: 0,
+               cursor: 0,
           };
      },
 

@@ -18,7 +18,8 @@
 import Vue, {PropType, }  from 'vue'
 import { mapState,  } from 'pinia'
 import { useStateStore, } from '@/Store';
-import {  MatchCodes, } from '@/types';
+import {  MatchCodes,  KeyCodes, KBCommandEventArgs } from '@/types';
+import { EventBus } from '../EventBus';
 
 export default Vue.extend({
      name: 'key',
@@ -72,33 +73,45 @@ export default Vue.extend({
           },
       },
 
-     methods: 
-     {
-          clickHandler( ) : void
-          {
-               /**                
-                * check if disabled in css so keypress-
-                * calls are ignored (native click will be 
-                * disabled by css setting natively.)
-                **/
-               if( !this.isCssPointerEventDisabled() )
-               {
-                    this.keyDown = true;
-                    this.$emit( 'click', { character: this.char } );
-                    setTimeout( ()=>( this.keyDown = false ), 100 );
-               }
-          },
+    methods:
+    {
+        clickHandler(): void {
+            /**                
+             * check if disabled in css so keypress-
+             * calls are ignored (native click will be 
+             * disabled by css setting natively.)
+             **/
+            if (!this.isCssPointerEventDisabled()) {
+                this.keyDown = true;
+                this.$emit('click', new KeyPressEventArgs(this, this.char, this.special_key));
+                setTimeout(() => (this.keyDown = false), 100);
+            }
+        },
 
-          isCssPointerEventDisabled() : boolean 
-          {
-               let styles = window.getComputedStyle( this.$el );
-               let val = styles.getPropertyValue( 'pointer-events' );
-               return ( val === 'none' ) ;
-          },
-     },
+        isCssPointerEventDisabled(): boolean {
+            let styles = window.getComputedStyle(this.$el);
+            let val = styles.getPropertyValue('pointer-events');
+            return (val === 'none');
+        },
+        KBCommand(args: KBCommandEventArgs) {
+            let forMe = false;
+    
+            if (args.enabled)
+                this.enabled = args.enabled;
+
+            if (args.color)
+                this.colorClass = args.colorClass;
+        },
+        isInKeyList( keyList: string[] ) {
+            let matches = keyList.some(k =>
+                k === KeyCodes.ALL || k === this.char || k == KeyCodes.ALPHA && !this.special_key || k == KeyCodes.NONALPHA && this.special_key);
+            
+        }
+    },
 
      mounted() {
-          this.refMap[ this.char ] = this;
+        EventBus.startListen( this.KBCommand , CustomEventNames.KB_COMMAND );
+        this.refMap[ this.char ] = this;
      },
 
 });

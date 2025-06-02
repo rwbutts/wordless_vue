@@ -2,45 +2,61 @@
 // @ts-check
 
 import Vue from 'vue'
-import { CustomEventNames, ResetGameEventArgs, ResetKeyEventArgs, } from '@/types';
+import mitt, { Emitter } from 'mitt'
+
+import { CustomEventNames, InitializeEventArgs, KeyPressEventArgs, WordLoadedEventArgs, KBCommandEventArgs, EventArgs } from '@/types';
 
 export class EventBus
 {
-     static _emitterComponent : Vue;
+    static readonly DEFAULT_EVENT_NAME = "DEFAULT";
 
-     static get eventSource() : Vue
+     _emitter : Emitter<EventArgs> = mitt<EventArgs>();
+
+     emit( eventArgument: EventArgs, eventName?: string ) : void
      {
-          if( !this._emitterComponent )
-          {
-               this._emitterComponent = new Vue();
-          }
-
-          return this._emitterComponent;
+        let event = eventName ?? eventArgument?.event;
+        if(event)
+            this._emitter.emit( event, eventArgument );
      }
 
-     static emit( eventArgument: unknown, eventName: string ) : void
+     emitEvent( eventArgument: any, event: string = EventBus.DEFAULT_EVENT_NAME) : void
      {
-          this.eventSource.$emit( eventName, eventArgument );
+        if(event)
+            this._emitter.emit( event, eventArgument );
      }
 
-     static emitResetEvent( eventArgument: ResetGameEventArgs ) : void
+     emitNewWord( eventArgument: WordLoadedEventArgs ) : void
      {
-          this.emit( eventArgument, CustomEventNames.RESET_COMPONENTS ); 
+          this.emit( eventArgument ); 
      }
 
-     static emitResetRequestEvent( eventArgument: ResetKeyEventArgs ) : void
+     emitKeyPress( eventArgument: KeyPressEventArgs ) : void
      {
-          this.emit( eventArgument, CustomEventNames.RESET_KEY ); 
+          this.emit( eventArgument ); 
      }
 
-     static startListen( handler:( arg: unknown ) => void, eventName: string ) : void
+     emitInitialize( eventArgument: InitializeEventArgs ) : void
      {
-          this.eventSource.$on( eventName, handler );
+          this.emit( eventArgument ); 
      }
 
-     static stopListen( handler:( arg: unknown ) => void, eventName: string ) : void 
+     emitEnableKeySet( eventArgument: KBCommandEventArgs ) : void
      {
-          this.eventSource.$off( eventName, handler );
+          this.emit( eventArgument ); 
+     }
+
+     startListen( handler:( arg: any ) => void, eventName: string = EventBus.DEFAULT_EVENT_NAME) : void
+     {
+            this._emitter.on( eventName, handler );
+     }
+
+     stopListen( handler?:( arg: any ) => void, eventName: string = EventBus.DEFAULT_EVENT_NAME) : void 
+     {
+          this._emitter.off( eventName, handler );
      }
 }
+
+const defaultEventBus = new EventBus();
+export default defaultEventBus;
+
 
