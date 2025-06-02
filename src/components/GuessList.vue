@@ -28,15 +28,20 @@
 // @ts-check
 
 import Vue, { PropType }  from 'vue'
-import GuessLetter from './GuessLetter.vue';
-import { calcLetterColor } from '@/utils/Game';
+import GuessLetter from './GuessLetter.vue'
+import { EventNames, EvtReceiver, WordLoadedEvt, GuessAcceptedEvt, UILetterEvt, } from '@/types2'
+import EventBus from '@/EventBus';
+import { MatchCodes } from '@/types';
 
 export default Vue.extend({
      name: 'guess-list',
 
      data() 
      {
-          return {};
+          return {
+            answer: '' as string,
+            activeRow: 0,
+          };
      },
 
      components: { GuessLetter },
@@ -51,13 +56,9 @@ export default Vue.extend({
                type: Number as PropType<number>,
                required : true,
           },
-          'answer': {
-               type: String as PropType<string>,
-               required : true,
-          },
      },     
 
-     computed: {
+    computed: {
           currentGuess() : string {
                return this.guessList[ this.activeRow ];
           },
@@ -65,17 +66,26 @@ export default Vue.extend({
           cursorCol() : number {
                return this.currentGuess.length;
           },
+    },
+     mounted() {
+        EventBus.On( {event: EventNames.WORD_LOADED, handler: this.onWordLoaded, This: this })
+        EventBus.On( {event: EventNames.GUESS_ACCEPTED, handler: this.onGuessAccepted, This: this })
      },
 
      methods: {
-          getBoxColor( row: number, col: number ) : string
-          {
-               return calcLetterColor( this.guessList[row], this.answer, col).color;
-          },
 
-          getBoxLetter( row: number, col: number ) : string
+          onWordLoaded( evt: WordLoadedEvt)
           {
-               return calcLetterColor( this.guessList[row], this.answer, col).letter;
+               this.answer = evt.word
+               this.activeRow = 0;
+               EventBus.EmitEvent( { event: EventNames.UI_STYLE, currentGuess: undefined, cursorCol: undefined, letter: ' ', color: MatchCodes.DEFAULT, } as UILetterEvt)
+          },
+          _emitResetLetters() {
+                let styles = [{}]
+          },
+          onGuessAccepted( evt: GuessAcceptedEvt ) 
+          {
+               this.activeRow = evt.guess_number + 1;
           },
      },
 });

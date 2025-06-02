@@ -1,16 +1,7 @@
 <template>
         <div class='guess-row row' :class="{ current : guessNumber == my_row_prop }">
-            <div v-for="col in 5" :key='col' 
-                class='letter-container '
-                :class="{
-                            'current': cursorColumn==(col-1) && have_focus_prop
-                    }" 
-            >
-                <guess-letter 
-                    :character_prop='letters[col-1]' :my_column_prop="col-1" :my_row_prop="my_row_prop" :answer_prop="answer"
-                    :am_focused_prop="guessNumber==col-1 && cursorColumn==col-1"
-                     @mounted="letterMounted"
-                />
+            <div v-for="col in 5" :key='col' >
+                <guess-letter :my_column_prop="col-1" :my_row_prop="my_row_prop" />
             </div>
         </div>
 
@@ -23,6 +14,7 @@
     import Vue, { PropType }  from 'vue'
     import GuessLetter from './GuessLetter.vue';
     import { KeyPressEventArgs, CustomEventNames, GuessSubmittedEventArgs, WordLoadedEventArgs } from '@/types';
+    import SharedState from '@/SharedState.vue'
     import { EventBus } from '../EventBus';
 
     export default Vue.extend({
@@ -31,12 +23,6 @@
          data() 
          {
               return {
-                    letters : ['', '', '', '', '', ''],
-                    columnToLetterMap : {} as Record<number,Vue>,
-                    reveal : false,
-                    answer : "",
-                    guessNumber: 0,
-                    cursorColumn : 0,
               };
          },
     
@@ -55,7 +41,11 @@
          },     
     
          computed: {
-         },
+            SharedState,
+            haveFocus() {
+                return this.SharedState.guessNumber === this.SharedState.cursorColumn;
+            }
+        },
          methods: {
             letterMounted( sender: any )
             {

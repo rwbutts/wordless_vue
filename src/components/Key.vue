@@ -1,77 +1,54 @@
 <template>
 
-     <BUTTON
-          href = '#'
-          class = 'key-button'
-          @click = "clickHandler"
-          :class= "getCSSClasses"
-     >
-          {{ label ? label : char }}
-     </BUTTON>
+    <BUTTON href='#' class='key-button' @click="clickHandler"
+        :class="{ [color]: true, 'key-down': keyDown, enabled: enabled }">
+        {{ label ? label : char }}
+    </BUTTON>
 
 </template>
 
 <script lang='ts'>
 "use strict";
 // @ts-check
-
-import Vue, {PropType, }  from 'vue'
-import { mapState,  } from 'pinia'
-import { useStateStore, } from '@/Store';
-import {  MatchCodes,  KeyCodes, KBCommandEventArgs } from '@/types';
-import { EventBus } from '../EventBus';
+import SharedState from '@SharedState'
+import Vue, { PropType, } from 'vue'
+import { MatchCodes, KeyCodes, KBCommandEventArgs } from '@/types';
+import { KBKeyStyle, KBKeyStyleEvt, EventNames, KBRawKeyClickEvt, EvtReceiver, } from '@/types2';
+import EventBus from '../EventBus';
 
 export default Vue.extend({
-     name: 'key',
+    name: 'key',
 
-     data  () {
-          return { 
-               keyDown : false,
-          };
-     },
+    data() {
+        return {
+            keyDown: false,
+            color: MatchCodes.DEFAULT,
+            enabled: false,
+        };
+    },
 
-     props: {
-          label : {
-               type : String as PropType<string>,
-               default : "",
-          },
+    props: {
+        label: {
+            type: String as PropType<string>,
+            default: "",
+        },
 
-          special_key : {
-               type : Boolean as PropType<boolean>,
-               default : false,
-          },
+        control_key: {
+            type: Boolean as PropType<boolean>,
+            default: false,
+        },
 
-          // character/mnemonic emitted with key click event
-          char : {
-               type : String as PropType<string>, 
-               required : true,
-          },
-          
-          refMap : {
-               type: Object as PropType<Record<string, unknown>>,
-               required : true,
-          },
-     },
+        // character/mnemonic emitted with key click event
+        char: {
+            type: String as PropType<string>,
+            required: true,
+        },
 
-     computed: 
-     {
-          ...mapState( useStateStore, [ 'keyColorMap', ] ),
-          getCSSClasses() : Record<string, boolean>
-          {
+    },
 
-               let colorClass = this.keyColorMap[ this.char ] ?? MatchCodes.DEFAULT;
-
-               let classes = {
-                    special_key : this.special_key,
-                    [ 'key-' + this.char.toLowerCase() ] : true,
-                    [ this.special_key ? 'key-nonalpha' : 'key-alpha' ] : true,
-                    [ colorClass ] : true,
-                    'key-down' : this.keyDown,
-               };
-
-               return classes;
-          },
-      },
+    computed:
+    {
+    },
 
     methods:
     {
@@ -81,101 +58,109 @@ export default Vue.extend({
              * calls are ignored (native click will be 
              * disabled by css setting natively.)
              **/
-            if (!this.isCssPointerEventDisabled()) {
+            if ('none' !== window.getComputedStyle(this.$el).getPropertyValue('pointer-events')) {
                 this.keyDown = true;
-                this.$emit('click', new KeyPressEventArgs(this, this.char, this.special_key));
+                EventBus.emitEvent({ event: EventNames.KB_RAWKEY, key: this.char } as KBRawKeyClickEvt);
                 setTimeout(() => (this.keyDown = false), 100);
             }
         },
 
-        isCssPointerEventDisabled(): boolean {
-            let styles = window.getComputedStyle(this.$el);
-            let val = styles.getPropertyValue('pointer-events');
-            return (val === 'none');
+        KBStyleCommand(args: KBKeyStyleEvt) {
+            for (let style of [args.styles].flat()) {
+                let k = style.key;
+                if (k === KeyCodes.ALL || k === this.char || k == KeyCodes.ALPHA && !this.control_key || k == KeyCodes.NONALPHA && this.control_key) {
+                    this.color = style.color ?? this.color;
+                    this.enabled = style.enabled ?? this.enabled;
+                }
+            }
         },
-        KBCommand(args: KBCommandEventArgs) {
-            let forMe = false;
-    
-            if (args.enabled)
-                this.enabled = args.enabled;
-
-            if (args.color)
-                this.colorClass = args.colorClass;
-        },
-        isInKeyList( keyList: string[] ) {
-            let matches = keyList.some(k =>
-                k === KeyCodes.ALL || k === this.char || k == KeyCodes.ALPHA && !this.special_key || k == KeyCodes.NONALPHA && this.special_key);
-            
-        }
+        handleKeyboardKey( e : KeyboardEvent ) : void
+          {
+               if (( e.key || '' ).toUpperCase() == this.char )
+               {
+                    this.clickHandler();
+               };
+          },
     },
 
-     mounted() {
-        EventBus.startListen( this.KBCommand , CustomEventNames.KB_COMMAND );
-        this.refMap[ this.char ] = this;
-     },
+    mounted() {
+        window.addEventListener('keydown', this.handleKeyboardKey.bind(this));
+        EventBus.On({handler: this.KBStyleCommand, event: EventNames.KB_STYLE, This: this } as EvtReceiver );
+    },
 
 });
 </script>
 
 <style>
 button.key-button,
-.modal-active.modal-active.modal-active button.key-button { 
-     --key-width : min( 7vw, 30px );
-     display: inline-block; 
-     border: 2px solid grey;
-     border-radius: 5px;
-     padding: 0px 4px;
-     margin: 0 calc(  var( --key-width ) * .1) ;
-     min-width: var( --key-width ); 
-     height: calc(  var( --key-width ) * .8 );
-     font-size: calc(var( --key-width ) * .5 );
-     font-weight: normal;
-     color: black;
+.modal-active.modal-active.modal-active button.key-button {
+    --key-width: min(7vw, 30px);
+    display: inline-block;
+    border: 2px solid grey;
+    border-radius: 5px;
+    padding: 0px 4px;
+    margin: 0 calc(var(--key-width) * .1);
+    min-width: var(--key-width);
+    height: calc(var(--key-width) * .8);
+    font-size: calc(var(--key-width) * .5);
+    font-weight: normal;
+    color: black;
 
-     opacity: .4; pointer-events: none;
+    opacity: .4;
+    pointer-events: none;
 }
 
-button.key-button:active { 
-     border: 2px solid black;
+button.key-button:active {
+    border: 2px solid black;
 
 }
 
-button.key-button.enabled, 
+button.key-button.enabled,
 .game-in-progress .keyboard.guess-is-not-empty .key-backspace,
-.game-in-progress .keyboard.guess-is-full-word .key-enter, 
+.game-in-progress .keyboard.guess-is-full-word .key-enter,
 .game-in-progress .keyboard.guess-is-not-full-word .key-alpha,
-.game-over .key-reset
-{ 
-     opacity: 1.0; 
-     pointer-events: all; 
+.game-over .key-reset {
+    opacity: 1.0;
+    pointer-events: all;
 }
 
-.key-button.default {  background-color: var(--color-default); }
-.key-button.miss {  background-color: var(--color-miss); }
-.key-button.elsewhere {  background-color: var(--color-elsewhere); }
-.key-button.correct {  background-color: var(--color-correct); }
+.key-button.default {
+    background-color: var(--color-default);
+}
+
+.key-button.miss {
+    background-color: var(--color-miss);
+}
+
+.key-button.elsewhere {
+    background-color: var(--color-elsewhere);
+}
+
+.key-button.correct {
+    background-color: var(--color-correct);
+}
 
 /* 
      key down immediately makes dark, when down is removed, 
      fade back to normal
 */
 .key-button {
-     transition: all  .2s 0s;
+    transition: all .2s 0s;
 }
 
 .key-button.key-down {
-     color: white;
-     background-color: #444;
-     transition: all  0s 0s;
+    color: white;
+    background-color: #444;
+    transition: all 0s 0s;
 }
 
 /*   if expert mode, disable the key if it's a miss.
      duplicate .miss to increase priority of selector 
 */
-.enable-hard-mode .key-button.miss.miss { 
-     opacity: .4; pointer-events: none; 
+.enable-hard-mode .key-button.miss.miss {
+    opacity: .4;
+    pointer-events: none;
 }
 </style>
 
-<style scoped>
-</style>
+<style scoped></style>

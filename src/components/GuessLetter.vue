@@ -14,7 +14,10 @@
 <script lang='ts'>
 "use strict";
 import { MatchCodes, KBCommandEventArgs, CustomEventNames, KeyCodes } from '@/types';
-import { EventBus } from '../EventBus';
+import { UILetterEvt, EventNames, EvtReceiver,  } from '@/types2';
+import SharedState from '@/SharedState'
+import  EventBus  from '../EventBus';
+
 // @ts-check
 
 import Vue,{ PropType, }   from 'vue'
@@ -25,18 +28,12 @@ export default Vue.extend({
      data() {
                return { 
                 colorClass: MatchCodes.DEFAULT,
+                letter: '',
                 enabled: false,
+                haveFocus: false,
           };
      },
      props: {
-          'character_prop': {
-               type : String as PropType<string>,
-               required : true,
-          },
-          'answer_prop': {
-               type : String,
-               required : true,
-          },
           'my_column_prop': {
                type : Number,
                required : true,
@@ -45,31 +42,29 @@ export default Vue.extend({
                type : Number,
                required : true,
           },
-          'am_active_prop': {
-                   type: Boolean as PropType<Boolean>,
-                   required : true,
-              },
-     },
+      },
      methods: {
         getColumn(): Number {
             return this.my_column_prop;
         },
+        onUIStyle( evt: UILetterEvt ) {
+            if( (evt.col_number===undefined || evt.col_number===this.my_column_prop) && (evt.row_number===undefined || evt.row_number===this.my_row_prop) )
+            {
+                if( evt.letter !== undefined ) this.letter=evt.letter;
+                if( evt.color !== undefined ) this.colorClass=evt.color;
+                if( evt.focus !== undefined ) this.haveFocus=evt.focus;
+            }
+            else{
+                if( evt.focus === true ) this.haveFocus=false;
+            }
+        }
     },
      computed : {
-        computeColor(){
-            if( this.character_prop === "" )
-                this.colorClass = MatchCodes.DEFAULT;
-            else if(this.answer_prop.charAt(this.my_column_prop) === this.character_prop)
-                this.colorClass = MatchCodes.CORRECT;
-            else if(this.answer_prop.indexOf(this.character_prop) >= 0 )
-                this.colorClass = MatchCodes.ELSEWHERE;
-            else
-                this.colorClass = MatchCodes.MISS;
-        },
+        SharedState
      },
      mounted() {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            this.$emit('mounted', this );
+          EventBus.On({ event: EventNames.UI_STYLE, handler: this.onUIStyle, This:this, } as EvtReceiver );
      },
 
 });

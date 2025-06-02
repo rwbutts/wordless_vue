@@ -2,41 +2,41 @@
 
      <div class='keyboard' >
           <div class='kb-row' >
-               <key :refMap='refMap' char='Q' @click='keyHandler' />
-               <key :refMap='refMap' char='W' @click='keyHandler' />
-               <key :refMap='refMap' char='E' @click='keyHandler' />
-               <key :refMap='refMap' char='R' @click='keyHandler' />
-               <key :refMap='refMap' char='T' @click='keyHandler' />
-               <key :refMap='refMap' char='Y' @click='keyHandler' />
-               <key :refMap='refMap' char='U' @click='keyHandler' />
-               <key :refMap='refMap' char='I' @click='keyHandler' />
-               <key :refMap='refMap' char='O' @click='keyHandler' />
-               <key :refMap='refMap' char='P' @click='keyHandler' />
+               <key char='Q'/>
+               <key char='W'/>
+               <key char='E'/>
+               <key char='R'/>
+               <key char='T'/>
+               <key char='Y'/>
+               <key char='U'/>
+               <key char='I'/>
+               <key char='O'/>
+               <key char='P'/>
           </div>
           <div class='kb-row' >
-               <key :refMap='refMap' char='A' @click='keyHandler' />
-               <key :refMap='refMap' char='S' @click='keyHandler' />
-               <key :refMap='refMap' char='D' @click='keyHandler' />
-               <key :refMap='refMap' char='F' @click='keyHandler' />
-               <key :refMap='refMap' char='G' @click='keyHandler' />
-               <key :refMap='refMap' char='H' @click='keyHandler' />
-               <key :refMap='refMap' char='J' @click='keyHandler' />
-               <key :refMap='refMap' char='K' @click='keyHandler' />
-               <key :refMap='refMap' char='L' @click='keyHandler' />
+               <key char='A'/>
+               <key char='S'/>
+               <key char='D'/>
+               <key char='F'/>
+               <key char='G'/>
+               <key char='H'/>
+               <key char='J'/>
+               <key char='K'/>
+               <key char='L'/>
           </div>
           <div class='kb-row' >
-               <key :refMap='refMap' char='DELETE'  special_key label='DELETE' @click='keyHandler' />
-               <key :refMap='refMap' char='Z' @click='keyHandler' />
-               <key :refMap='refMap' char='X' @click='keyHandler' />
-               <key :refMap='refMap' char='C' @click='keyHandler' />
-               <key :refMap='refMap' char='V' @click='keyHandler' />
-               <key :refMap='refMap' char='B' @click='keyHandler' />
-               <key :refMap='refMap' char='N' @click='keyHandler' />
-               <key :refMap='refMap' char='M' @click='keyHandler' />
-               <key :refMap='refMap' char='ENTER'  special_key label='ENTER' @click='keyHandler' />
+               <key char='DELETE'  control_key label='DELETE'/>
+               <key char='Z'/>
+               <key char='X'/>
+               <key char='C'/>
+               <key char='V'/>
+               <key char='B'/>
+               <key char='N'/>
+               <key char='M'/>
+               <key char='ENTER'  control_key label='ENTER'/>
          </div>
          <div class='kb-row' >
-               <key :refMap='refMap' class="reset-key" char='RESET'  special_key label='PLAY AGAIN' @click="$emit('reset');" />
+               <key class="reset-key" char='RESET'  control_key label='PLAY AGAIN' @click="$emit('reset');" />
          </div>
      </div>
      
@@ -48,6 +48,8 @@
 import Vue  from 'vue'
 import Key from './Key.vue'
 import { KeyPressEventArgs, }  from '@/types'
+import EventBus from '../EventBus'
+import { EventNames } from '@/types2';
 
 export default Vue.extend({
      name: 'keyboard',
@@ -55,7 +57,6 @@ export default Vue.extend({
      data() 
      {
           return {
-                refMap : {} as Record<string, unknown>,
           };
      },
 
@@ -64,34 +65,16 @@ export default Vue.extend({
      },
 
      methods: {
-          keyHandler( args : KeyPressEventArgs ) : void 
-          {
-               this.$emit( 'key-press', args );
-          },
-
-          handleRealKey( e : KeyboardEvent ) : void
-          {
-               let ucKey = ( e.key || '' ).toUpperCase();
-               console.log(`key ${ucKey}`);
-               if( ucKey in this.refMap )
-               {
-                    let keyRef = this.refMap[ ucKey ];
-                    {
-                         ( keyRef as { clickHandler: ()=>void } ).clickHandler();
-                    }
-               }
-          },
-
+        broadcastReseet(){
+            EventBus.emit({}, EventNames.LOAD_WORD);
+        }
      },
 
      mounted() {
-          this.handleRealKey = this.handleRealKey.bind(this);   
-          window.addEventListener( 'keydown', this.handleRealKey );
      },
 
      beforeDestroy() 
      {
-          window.removeEventListener( 'keydown', this.handleRealKey );
      },
 
 });
