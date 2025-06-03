@@ -4,14 +4,8 @@ export const KeyCodes =  class
      static DELETE = "DELETE";
      static ALPHA = "ALPHA";
      static NONALPHA = "SPECIAL";
-     static ALL = "ALL";
+     static ALL = "*";
      static RESET = 'RESET';
-     static M_NEWWORD = ['ALPHA'];
-     static M_KEYS1_4 = ['ALPHA', 'DELETE'];
-     static M_KEY5 = ['DELETE', 'ENTER'];
-     static M_GAMEOVER = ['RESET'];
-     static M_RESETTING= ['-'];
-     static M_LOADFAIL= ['-'];
 }
 
 export const enum KBCommandTypes

@@ -1,112 +1,113 @@
 <template>
 
-     <div class='guess-letter :class="{[colorClass]: true}"'>
-          <div class='front'>
-               {{ character_prop }}
-          </div>
-          <div class='back ' >
-               {{ character_prop }}
-          </div>
-     </div>
+    <div class='guess-letter :class="{[letterColor]: true}"'>
+        <div class='front'>
+            {{ letter }}
+        </div>
+        <div class='back '>
+            {{ letter }}
+        </div>
+    </div>
 
 </template>
-  
+
 <script lang='ts'>
 "use strict";
-import { MatchCodes, KBCommandEventArgs, CustomEventNames, KeyCodes } from '@/types';
-import { UILetterEvt, EventNames, EvtReceiver,  } from '@/types2';
-import SharedState from '@/SharedState'
-import  EventBus  from '../EventBus';
+// @ts-check
+import { MatchCodes, KBCommandEventArgs, CustomEventNames, KeyCodes } from '../types';
+import { UILetterEvt, EventNames, EvtHandler, ISharedState, } from '../types2';
+import SharedState from '../SharedState'
+import EventBus from '../EventBus';
 
 // @ts-check
 
-import Vue,{ PropType, }   from 'vue'
+import Vue, { PropType, } from 'vue'
 
 export default Vue.extend({
-     name: 'guess-letter',
+    name: 'guess-letter',
 
-     data() {
-               return { 
-                colorClass: MatchCodes.DEFAULT,
-                letter: '',
-                enabled: false,
-                haveFocus: false,
-          };
-     },
-     props: {
-          'my_column_prop': {
-               type : Number,
-               required : true,
-          },
-          'my_row_prop': {
-               type : Number,
-               required : true,
-          },
-      },
-     methods: {
-        getColumn(): Number {
-            return this.my_column_prop;
-        },
-        onUIStyle( evt: UILetterEvt ) {
-            if( (evt.col_number===undefined || evt.col_number===this.my_column_prop) && (evt.row_number===undefined || evt.row_number===this.my_row_prop) )
-            {
-                if( evt.letter !== undefined ) this.letter=evt.letter;
-                if( evt.color !== undefined ) this.colorClass=evt.color;
-                if( evt.focus !== undefined ) this.haveFocus=evt.focus;
-            }
-            else{
-                if( evt.focus === true ) this.haveFocus=false;
-            }
-        }
+    data() {
+        return {
+            colorClass: MatchCodes.DEFAULT,
+            letter: '',
+            enabled: false,
+            haveFocus: false,
+        };
     },
-     computed : {
-        SharedState
-     },
-     mounted() {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          EventBus.On({ event: EventNames.UI_STYLE, handler: this.onUIStyle, This:this, } as EvtReceiver );
-     },
+    props: {
+        'letter_prop': {
+            type: String,
+            required: true,
+        },
+        'my_column_prop': {
+            type: Number,
+            required: true,
+        },
+        'my_row_prop': {
+            type: Number,
+            required: true,
+        },
+    },
+    methods: {
+    },
+    computed: {
+        SharedState,
+        letter(): string {
+            return this.SharedState.guesses[this.my_row_prop][this.my_column_prop];
+        },
+        letterColor(): MatchCodes {
+            let s = this.SharedState;
+            return this.letter_prop === s.answer.charAt(s.cursorColumn)
+                ? MatchCodes.CORRECT
+                : (s.answer.includes(this.letter_prop) ? MatchCodes.ELSEWHERE : MatchCodes.MISS);
+        },
+        focus() {
+            let s = this.SharedState;
+            return s.cursorColumn === this.my_column_prop && s.guessNumber === this.my_row_prop;
+        },
+    },
+    mounted() {
+    },
 
 });
-  
+
 </script>
-  
+
 <style scoped>
 .guess-letter {
-     display: inline-block;
-     position: absolute;
-     height: 100%; 
-     width: 100%;
+    display: inline-block;
+    position: absolute;
+    height: 100%;
+    width: 100%;
 
 }
 </style>
 
 <style scoped>
 /* opposing sides of the wrapper content */
-.back, .front { 
-     position: absolute;
-     backface-visibility: hidden;
-     height: 100%; 
-     width: 100%;
+.back,
+.front {
+    position: absolute;
+    backface-visibility: hidden;
+    height: 100%;
+    width: 100%;
 }
 
 .back {
-     transform: rotateY( 180deg );
+    transform: rotateY(180deg);
 }
 </style>
 
 <style>
-
 .guess-letter.miss .back {
-     background-color: var(--color-miss);
+    background-color: var(--color-miss);
 }
 
 .guess-letter.correct .back {
-     background-color: var(--color-correct);
+    background-color: var(--color-correct);
 }
 
 .guess-letter.elsewhere .back {
-     background-color: var(--color-elsewhere);
+    background-color: var(--color-elsewhere);
 }
 </style>
-  

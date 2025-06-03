@@ -4,46 +4,42 @@
 import Vue from 'vue'
 import mitt, { Emitter } from 'mitt'
 
-import { CustomEventNames, InitializeEventArgs, KeyPressEventArgs, WordLoadedEventArgs, KBCommandEventArgs, EventArgs,
-    EvtReceiver } from '@/types';
-
+//import { CustomEventNames, InitializeEventArgs, KeyPressEventArgs, WordLoadedEventArgs, KBCommandEventArgs, EventArgs,
+//    EvtReceiver,  } from '@/types';
+import { EventNames, KBKeyStyleEvt, WordLoadedEvt, GuessAcceptedEvt, EvtHandler, KBRawKeyClickEvt,
+        RequestWordLoadEvt, BaseEvt, PlainObject,
+    } from '@/types2';
+    
 export class EventBus
 {
     static readonly DEFAULT_EVENT_NAME = "DEFAULT";
 
-     _emitter : Emitter<EventArgs> = mitt<EventArgs>();
+     _emitter : Emitter<BaseEvt> = mitt<BaseEvt>();
 
-     emit( eventArgument: any, eventName?: string ) : void
+     emit( eventName: string, eventArgument: any, sender?: any ) : void
      {
-        let event = eventName ?? eventArgument?.event;
-        if(event)
-            this._emitter.emit( event, eventArgument );
+        let _eventArgument = sender !== undefined ? Object.assign( {_sender: sender}, eventArgument) : eventArgument;
+        this._emitter.emit( eventName, _eventArgument );
      }
 
-     emitEvent( eventArgument: any, event: string = EventBus.DEFAULT_EVENT_NAME) : void
+     emitWordLoaded( eventArgument: WordLoadedEvt ) : void
      {
-        if(event)
-            this._emitter.emit( event, eventArgument );
+          this.emit( EventNames.WORD_LOADED, eventArgument ); 
      }
 
-     emitNewWord( eventArgument: WordLoadedEventArgs ) : void
+     emitKeyPress( eventArgument: KBRawKeyClickEvt ) : void
      {
-          this.emit( eventArgument ); 
+          this.emit( EventNames.KB_RAWKEY, eventArgument ); 
      }
 
-     emitKeyPress( eventArgument: KeyPressEventArgs ) : void
+     emitInitialize( eventArgument: RequestWordLoadEvt ) : void
      {
-          this.emit( eventArgument ); 
+          this.emit( EventNames.LOAD_WORD, eventArgument ); 
      }
 
-     emitInitialize( eventArgument: InitializeEventArgs ) : void
+     emitEnableKeySet( eventArgument: KBKeyStyleEvt ) : void
      {
-          this.emit( eventArgument ); 
-     }
-
-     emitEnableKeySet( eventArgument: KBCommandEventArgs ) : void
-     {
-          this.emit( eventArgument ); 
+          this.emit( EventNames.KB_STYLE, eventArgument ); 
      }
 
      startListen( handler:( arg: any ) => void, eventName: string = EventBus.DEFAULT_EVENT_NAME) : void
@@ -51,23 +47,23 @@ export class EventBus
             this._emitter.on( eventName, handler );
      }
 
-     On( receivers : EvtReceiver | EvtReceiver[]  )
+     On( receivers : EvtHandler | EvtHandler[]  )
      {
             if(Array.isArray(receivers)) {
-                receivers.forEach( r => this._emitter.on( r.event, r.This ? r.handler : (r.boundHandler = r.handler.bind(r.This))));
+                receivers.forEach( r => this._emitter.on( r.event, r.This ? (r._boundHandler = r.handler.bind(r.This)) : r.handler ));
             }
             else {
-                this._emitter.on( receivers.event, receivers.This ? receivers.handler : (receivers._boundHandler = receivers.handler.bind(receivers.This)));
+                this._emitter.on( receivers.event, receivers.This ? (receivers._boundHandler = receivers.handler.bind(receivers.This)) : receivers.handler );
             }
      }
 
-     Off( receivers : EvtReceiver | EvtReceiver[]  )
+     Off( receivers : EvtHandler | EvtHandler[]  )
      {
         if(Array.isArray(receivers)) {
-            receivers.forEach( r => this._emitter.off( r.event, r.boundHandler ? r._boundHandler : r.handler));
+            receivers.forEach( r => this._emitter.off( r.event, r._boundHandler ? r._boundHandler : r.handler));
         }
         else {
-            this._emitter.off( receivers.event, receivers.boundHandler ? receivers._boundHandler : receivers.handler );
+            this._emitter.off( receivers.event, receivers._boundHandler ? receivers._boundHandler : receivers.handler );
         }
     }
 

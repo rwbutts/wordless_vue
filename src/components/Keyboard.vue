@@ -36,7 +36,7 @@
                <key char='ENTER'  control_key label='ENTER'/>
          </div>
          <div class='kb-row' >
-               <key class="reset-key" char='RESET'  control_key label='PLAY AGAIN' @click="$emit('reset');" />
+               <key class="reset-key" char='RESET'  control_key label='PLAY AGAIN' @click="broadcastReset();" />
          </div>
      </div>
      
@@ -65,8 +65,8 @@ export default Vue.extend({
      },
 
      methods: {
-        broadcastReseet(){
-            EventBus.emit({}, EventNames.LOAD_WORD);
+        broadcastReset(){
+            EventBus.emit(EventNames.LOAD_WORD, {});
         }
      },
 

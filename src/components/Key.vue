@@ -13,7 +13,7 @@
 import SharedState from '@SharedState'
 import Vue, { PropType, } from 'vue'
 import { MatchCodes, KeyCodes, KBCommandEventArgs } from '@/types';
-import { KBKeyStyle, KBKeyStyleEvt, EventNames, KBRawKeyClickEvt, EvtReceiver, } from '@/types2';
+import { KBKeyStyle, KBKeyStyleEvt, EventNames, KBRawKeyClickEvt, EvtHandler, } from '@/types2';
 import EventBus from '../EventBus';
 
 export default Vue.extend({
@@ -74,18 +74,19 @@ export default Vue.extend({
                 }
             }
         },
-        handleKeyboardKey( e : KeyboardEvent ) : void
-          {
-               if (( e.key || '' ).toUpperCase() == this.char )
-               {
-                    this.clickHandler();
-               };
-          },
+        handleKeyboardKey(e: KeyboardEvent): void {
+            if ((e.key || '').toUpperCase() == this.char) {
+                this.clickHandler();
+            };
+        },
+        setColor(color: MatchCodes) {
+            this.color = color;
+        },
     },
 
     mounted() {
         window.addEventListener('keydown', this.handleKeyboardKey.bind(this));
-        EventBus.On({handler: this.KBStyleCommand, event: EventNames.KB_STYLE, This: this } as EvtReceiver );
+        EventBus.On({ handler: this.KBStyleCommand, event: EventNames.KB_STYLE, This: this } as EvtHandler);
     },
 
 });

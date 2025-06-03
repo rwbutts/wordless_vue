@@ -11,17 +11,14 @@ function getStateInstance() {
         statusMessage: '',
         statModalIsActive: false,
         gamePlayState: GamePlayStates.BOOTING_UP,
-        enableHardMode: false,
-        cssGuessNotEmpty: false,
-        cssGuessIsFullWord: false,
-        cssGuessNotFullWord: false,
+        enableHardMode : false,
     
     };
 }
 
-const SharedState: ISharedState = Vue.observable(getStateInstance());
+const SharedState = Vue.observable(getStateInstance());
 
-export default (()=>(SharedState)) as ()=>ISharedState;
+export default (()=>(SharedState)) ;
 
 export const resetSharedState = function () {
     Object.assign(SharedState, getStateInstance());
