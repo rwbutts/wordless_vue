@@ -59,12 +59,7 @@ export const enum CustomEventNames
      GAME_OVER = 'game-over',
      KEY_PRESS = 'key-press',
      WORD_LOADED = 'new-word',
-     KB_CONFIG = 'enable-keys',
-     GUESS_SUBMITTED = 'guess-validating',
-     GUESS_VALIDATED = 'guess-validated',
-     POST_LETTER = 'post-letter',
      SET_MESSAGE = 'set-message',
-
 }
 
 export class EventArgs 
@@ -79,36 +74,6 @@ export class EventArgs
     } 
 }
 
-export class KBCommandEventArgs extends EventArgs
-{ 
-    public cmd: KBCommandTypes;
-    public keys?: string[];
-    public color?: MatchCodes;
-    public enabled?: Boolean;
-    constructor( sender: any, cmd: KBCommandTypes, keys?: string[], color?: MatchCodes, enabled? : Boolean )
-    { 
-        super(CustomEventNames.KB_CONFIG, sender);
-        this.cmd=cmd;
-        this.color=color;
-        this.keys=keys?.flat();
-        this.enabled=enabled;
-    }
-}
-
-export class PostLetterEventArgs extends EventArgs
-{ 
-    public row: string;
-    public col: string;
-    public letter: string;
-    constructor( sender: any, letter:string, row: string, col: number)
-    { 
-        super(CustomEventNames., sender);
-        this.row=row;
-        this.col=col;
-        this.letter=letter;
-    }
-}
-
 export class KeyPressEventArgs extends EventArgs
 { 
     public char: string;
@@ -118,26 +83,6 @@ export class KeyPressEventArgs extends EventArgs
         super(CustomEventNames.KEY_PRESS, sender);
         this.char=char;
         this.isNonAlpha = isNonAlpha;
-    }
-}
-
-export class SetMessageEventArgs extends EventArgs
-{ 
-    public message: string;
-    constructor( sender: any, message: string)
-    { 
-        super(CustomEventNames.SET_MESSAGE, sender);
-        this.message=message;
-    }
-}
-
-export class GuessSubmittedEventArgs extends EventArgs
-{ 
-    public correct: boolean;
-    constructor( sender: any, correct: boolean)
-    { 
-        super(CustomEventNames.KEY_PRESS, sender);
-        this.correct=correct;
     }
 }
 

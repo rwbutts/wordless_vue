@@ -1,4 +1,4 @@
-import { ISharedState, GamePlayStates, } from './types2'
+import { ISharedState, GamePlayStates, PlainObject } from './types2'
 import Vue from 'vue';
 
 function getStateInstance() {
@@ -15,7 +15,7 @@ function getStateInstance() {
         cssGuessNotEmpty: false,
         cssGuessIsFullWord: false,
         cssGuessNotFullWord: false,
-    
+        keyObjectMap: [] as PlainObject,
     };
 }
 
@@ -23,6 +23,6 @@ const SharedState: ISharedState = Vue.observable(getStateInstance());
 
 export default (()=>(SharedState)) as ()=>ISharedState;
 
-export const resetSharedState = function () {
-    Object.assign(SharedState, getStateInstance());
+export const resetSharedState = function ( append: PlainObject = {}) {
+    Object.assign(SharedState, getStateInstance(), append );
 }

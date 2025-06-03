@@ -11,6 +11,7 @@
 "use strict";
 // @ts-check
 
+import Key from './Key.vue'
 import Vue, { PropType } from 'vue'
 import GuessWord from './GuessWord.vue'
 import { EventNames, EvtHandler, WordLoadedEvt, GuessAcceptedEvt, GameOverEvt, GamePlayStates, KBStylePresets, } from '@/types2'
@@ -50,25 +51,19 @@ export default Vue.extend({
     },
 
     methods: {
-        scoreGuessColumn(guess: string, column: number): LetterColorPair {
-            let a = this.S.answer.charAt(this.S.cursorColumn);
-            let g = guess.charAt(this.S.cursorColumn);
-            let s = this.SharedState;
-            let color = g === a ? MatchCodes.CORRECT : (this.S.answer.includes(g) ? MatchCodes.ELSEWHERE : MatchCodes.MISS);
-            return { color, letter: g };
-        },
-        broadcastKeyColors(guess: string) {
-            for (let i = 0; i < guess.length; i++) {
-                let style = this.scoreGuessColumn(guess, i);
-                let enabled = style.color !== MatchCodes.MISS || !this.S.enableHardMode
-                EventBus.emit(EventNames.KB_STYLE, { key: style.letter, color: style.color, })
+        setKeyColors(guess: string) {
+            let S = this.SharedState;
+            for(let column=0; column<guess.length;column++) {
+                let g = guess.charAt(S.cursorColumn);
+                let color = (g === S.answer.charAt(S.cursorColumn)) ? MatchCodes.CORRECT : (S.answer.includes(g) ? MatchCodes.ELSEWHERE : MatchCodes.MISS);
+                S.keyObjectMap[g]?.setColor(color);
             }
         },
         statusMsg(msg: string) {
             this.S.statusMessage = msg;
         },
         resetData() {
-            resetSharedState();
+            resetSharedState( {keyObjectMap: this.SharedState});
         },
         onWordLoaded(evt: WordLoadedEvt) {
             let s = this.SharedState;
@@ -79,8 +74,6 @@ export default Vue.extend({
             s.gamePlayState = GamePlayStates.IN_PROGRESS;
             s.guessList.length = 0;
             EventBus.emit(EventNames.KB_STYLE, KBStylePresets.EDIT_WORD_BLANK);
-        },
-        onGuessAccepted(evt: GuessAcceptedEvt) {
         },
         async keyEventHandler(eventArgs: KBRawKeyClickEvt): Promise<void> {
             let completedWord;
@@ -108,8 +101,8 @@ export default Vue.extend({
                     else if (resp.exists === true) {
                         S.cursorColumn = 0;
                         S.guessNumber++;
-                        S.gamePlayState = GamePlayStates.LOST;
                         S.guessList.push(completedWord);
+                        this.setKeyColors(completedWord);
                     }
                     else if (resp.exists === undefined) {
                         this.statusMsg(`Error validating word: ${resp.message}. Try again in a few moments.`);
@@ -135,6 +128,9 @@ export default Vue.extend({
                 S.gamePlayState = GamePlayStates.LOST;
                 EventBus.emit(EventNames.GAME_OVER, { won: false } as GameOverEvt);
             }
+            else
+                this.displayMatchingWordCount(this.S.answer, this.S.guessList);
+
 
         },
 
@@ -156,10 +152,10 @@ export default Vue.extend({
         async displayMatchingWordCount(answer: string, guesses: string[]): Promise<void> {
             let apiResp = await wordlessApiService.getMatchCountAsync(answer, guesses);
             if (!apiResp.success) {
-                this._S.statusMessage = `Failed to calc remaining: ${apiResp.message}`;
+                this.S.statusMessage = `Failed to calc remaining: ${apiResp.message}`;
             }
             else {
-                this._S.statusMessage = `${apiResp.count} remaining word(s) match the clues above.`;
+                this.S.statusMessage = `${apiResp.count} remaining word(s) match the clues above.`;
             }
         },
 

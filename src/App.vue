@@ -19,11 +19,7 @@
                <h3 class='status status-game-lost'>Sorry, the answer is {{answer}}</h3> 
                <h3 class='status status-game-won'>Congratulations, you got it! Please hire me!</h3> 
           </div>
-          <word-input v-bind:target.sync='guessList[activeRow]'
-               @guess-validated='guessValidated' 
-               :validator='validateWord' 
-               @message='setStatusMsg'
-          />
+          <keyboard />
           <div class='footer'>
                <label class='hard-checkbox small-text' >
                     <input type="checkbox" v-model="hardMode">

@@ -1,7 +1,7 @@
 <template>
 
     <BUTTON href='#' class='key-button' @click="clickHandler"
-        :class="{ [color]: true, 'key-down': keyDown, enabled: enabled }">
+        :class="{ [color]: true, [keyNameClass]: true, 'key-down': keyDown, enabled: enabled }">
         {{ label ? label : char }}
     </BUTTON>
 
@@ -10,10 +10,10 @@
 <script lang='ts'>
 "use strict";
 // @ts-check
-import SharedState from '@SharedState'
+import SharedState from '@/SharedState'
 import Vue, { PropType, } from 'vue'
-import { MatchCodes, KeyCodes, KBCommandEventArgs } from '@/types';
-import { KBKeyStyle, KBKeyStyleEvt, EventNames, KBRawKeyClickEvt, EvtHandler, } from '@/types2';
+import { MatchCodes, KeyCodes, } from '@/types';
+import { EventNames, KBRawKeyClickEvt, EvtHandler, } from '@/types2';
 import EventBus from '../EventBus';
 
 export default Vue.extend({
@@ -48,6 +48,10 @@ export default Vue.extend({
 
     computed:
     {
+        SharedState,
+        keyNameClass():string {
+            return 'key-'+this.char.toLowerCase();
+        },
     },
 
     methods:
@@ -60,22 +64,12 @@ export default Vue.extend({
              **/
             if ('none' !== window.getComputedStyle(this.$el).getPropertyValue('pointer-events')) {
                 this.keyDown = true;
-                EventBus.emitEvent({ event: EventNames.KB_RAWKEY, key: this.char } as KBRawKeyClickEvt);
+                EventBus.emit(EventNames.KB_RAWKEY, {key: this.char } as KBRawKeyClickEvt);
                 setTimeout(() => (this.keyDown = false), 100);
             }
         },
-
-        KBStyleCommand(args: KBKeyStyleEvt) {
-            for (let style of [args.styles].flat()) {
-                let k = style.key;
-                if (k === KeyCodes.ALL || k === this.char || k == KeyCodes.ALPHA && !this.control_key || k == KeyCodes.NONALPHA && this.control_key) {
-                    this.color = style.color ?? this.color;
-                    this.enabled = style.enabled ?? this.enabled;
-                }
-            }
-        },
         handleKeyboardKey(e: KeyboardEvent): void {
-            if ((e.key || '').toUpperCase() == this.char) {
+            if ((e.key || '').toUpperCase() === this.char) {
                 this.clickHandler();
             };
         },
@@ -85,8 +79,8 @@ export default Vue.extend({
     },
 
     mounted() {
+        this.$set(this.SharedState.keyObjectMap, this.char, this);
         window.addEventListener('keydown', this.handleKeyboardKey.bind(this));
-        EventBus.On({ handler: this.KBStyleCommand, event: EventNames.KB_STYLE, This: this } as EvtHandler);
     },
 
 });
