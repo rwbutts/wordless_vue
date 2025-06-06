@@ -2,7 +2,7 @@
 
     <div id="app" class='disable-tap-zoom'>
         <stats :isActive.sync='SS.statModalIsActive' />
-        <div class='game-container disable-tap-zoom'  >
+        <div class='game-container disable-tap-zoom' :class="{ [SS.gamePlayState]: true, 'enable-hard-mode': SS.enableHardMode }" >
           <h3 class='title'>Bill's NYTimes <a href='https://www.nytimes.com/games/wordle/index.html' target='_blank'>Wordle</a>&trade; Clone</h3>
           <guess-list  />
             <div class='footer'>
@@ -73,6 +73,14 @@ export default Vue.extend({
     --color-elsewhere: rgb(238, 222, 152);
     --color-miss: #AAA;
     --color-default: #FFF;
+    --color-status-err: #822;
+    --color-status: #000;
+    --color-game-background: white;
+    --color-title: rgb(23, 170, 23);
+    --color-stats-background: white;
+    --color-stats-text: #444;
+    --color-modal-game-background: #white;
+    --color-viewport-color: #eee;
 }
 
 @media (min-width: 576px) {
@@ -89,20 +97,6 @@ export default Vue.extend({
 
 @media (min-width: 1400px) {}
 
-:root {
-    --color-correct: rgb(137, 233, 137);
-    --color-elsewhere: rgb(238, 222, 152);
-    --color-miss: #AAA;
-    --color-default: #FFF;
-    --color-status-err: #822;
-    --color-status: #000;
-    --color-game-background: white;
-    --color-title: rgb(23, 170, 23);
-    --color-stats-background: white;
-    --color-stats-text: #444;
-    --color-modal-game-background: #white;
-    --color-viewport-color: #eee;
-}
 
 html {
     height: 100%;

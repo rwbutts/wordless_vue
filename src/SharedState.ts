@@ -7,7 +7,7 @@ kbControlKeysCss: KbControlKeysCss, appVersion: string, apiVersion:string, [key:
 
 function createStateInstance(): ISharedState{
     return {
-        appVersion: '', 
+        appVersion: process.env.VUE_APP_VERSION, 
         apiVersion: '',
         cursorRow: 0,
         cursorColumn: 0,
@@ -32,5 +32,7 @@ export const resetSharedState = function () {
     let newState = createStateInstance();
     Object.keys(newState)
         .filter( (key)=>!doNotResetFieldList.find( (dnrKey) => dnrKey===key))
-        .forEach( k => SharedState[k] = newState[k] );
+        .forEach( k => Vue.set(SharedState, k, newState[k] ));
 }
+
+export const statusMsg = (( message: string )=>{ SharedState.statusMessage = message;});

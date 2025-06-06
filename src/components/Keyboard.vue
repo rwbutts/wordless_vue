@@ -83,7 +83,7 @@ export default Vue.extend({
      },
      methods: {
         broadcastReload(){
-            EventBus.emit(EventNames.LOAD_WORD, {});
+            EventBus.emit(EventNames.TRIGGER_WORD_LOAD, {});
         },
         setKeyColor( key:string|KeyCodes, color : MatchCodes) {
             let keyList: string[];

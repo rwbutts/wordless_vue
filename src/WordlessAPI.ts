@@ -3,6 +3,7 @@
 
 const API_SITE = process.env.VUE_APP_API_SITE;
 
+const HEALTHCHECK_URI = process.env.VUE_APP_API_URI_HEALTHCHECK;
 const GETWORD_URI = process.env.VUE_APP_API_URI_GETWORD;
 const CHECKWORD_URI =  process.env.VUE_APP_API_URI_CHECKWORD;
 const GETMATCHCOUNT_URI = process.env.VUE_APP_API_URI_GETMATCHCOUNT;
@@ -17,6 +18,8 @@ export type GetWordAsyncResponseType =
 
 export type GetMatchCountAsyncResponseType=
 { success: boolean, count:number|undefined, message: string, apiVersion?: string }
+
+export type HealthCheckAsyncResponseType = { healthy: boolean, message: string, apiVersion?:  string }
 
 export class WordlessAPI
 {
@@ -34,6 +37,24 @@ export class WordlessAPI
      {
           return getMatchCountAsync( answer, guessArray );
      }
+
+     async healthCheckAsync( ) : Promise<HealthCheckAsyncResponseType>
+     {
+          return healthCheckAsync( );
+     }
+}
+
+async function healthCheckAsync( ) :  Promise<HealthCheckAsyncResponseType>
+{
+     try
+     {
+          const json = await _fetchAndGetJson( `${API_SITE}${HEALTHCHECK_URI}` );
+          return  { healthy : true, message:'',  apiVersion: json.apiVersion  as string };  
+     }
+     catch(err : unknown)
+     {
+          return  { healthy: false, message: (err as Error).message, };  
+     }  
 }
 
 async function getWordAsync( daysAgo = -1) :  Promise<GetWordAsyncResponseType>

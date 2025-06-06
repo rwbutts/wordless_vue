@@ -75,6 +75,10 @@ export class EventBus {
             );
         }
     }
+
+    emitTriggerWordLoadEvent() {
+        this.emit( EventNames.TRIGGER_WORD_LOAD, {} as RequestWordLoadEvt);
+    }
 }
 
 const defaultEventBus = new EventBus();

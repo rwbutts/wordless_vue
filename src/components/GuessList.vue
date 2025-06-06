@@ -1,12 +1,12 @@
 <template>
 
     <div class='guess-list'>
-        <guess-word v-for="row in 6" :letter_array_prop="letter_row_array_prop[row - 1]" :my_row_prop="row" :key='row'>
+        <guess-word v-for="row in 6" :letter_array_prop="letter_row_array_prop[row - 1]" :my_row_prop="row-1" :key='row'>
         </guess-word>
     </div>
     <div class='status-area'>
-               <h3 class='status status-game-in-progress'> {{ SharedState.statusMessage }}</h3> 
-               <h3 class='status status-game-lost'>Sorry, the answer is {{ SharedState.answer }}</h3> 
+               <h3 class='status status-game-in-progress'> {{ SS.statusMessage }}</h3> 
+               <h3 class='status status-game-lost'>Sorry, the answer is {{ SS.answer }}</h3> 
                <h3 class='status status-game-won'>Congratulations, you got it! Please hire me!</h3> 
     </div>
     
@@ -21,9 +21,10 @@ import Keyboard from '@/components/Keyboard.vue'
 import Vue, { PropType } from 'vue'
 import GuessWord from './GuessWord.vue'
 import { EventNames, EvtHandler, WordLoadedEvt, GuessAcceptedEvt, GameOverEvt, 
-    GamePlayStates, KeyCodes, MatchCodes, LetterColorPair, ILetterColorPair, PlainObject, KBRawKeyClickEvt, } from '@/types'
+    GamePlayStates, KeyCodes, MatchCodes, LetterColorPair, ILetterColorPair, PlainObject, KBRawKeyClickEvt,
+    RequestWordLoadEvt, } from '@/types'
 import EventBus from '@/EventBus';
-import SharedState, { resetSharedState } from '@/SharedState'
+import SharedState, { resetSharedState, statusMsg,  } from '@/SharedState'
 import { wordlessApiService, CheckWordAsyncResponseType } from '@/WordlessAPI'
 
 export default Vue.extend({
@@ -46,11 +47,11 @@ export default Vue.extend({
 },
 
     computed: {
-        SharedState,
         SS: SharedState,
     },
     mounted() {
         EventBus.On({ event: EventNames.WORD_LOADED, handler: this.onWordLoaded, This: this })
+        EventBus.On({ event: EventNames.TRIGGER_WORD_LOAD, handler: this.onTriggerWordLoad, This: this })
     },
 
     methods: {
@@ -63,9 +64,6 @@ export default Vue.extend({
                 (this.$refs['keyboard'] as InstanceType<typeof Keyboard>)?.setKeyColor( pair.letter, pair.color );
             });
         },
-        statusMsg(msg: string) {
-            this.SS.statusMessage = msg;
-        },
         resetState() {
             resetSharedState( );
         },
@@ -75,11 +73,25 @@ export default Vue.extend({
             this.SS.answer = evt.word;
             this.SS.gamePlayState = GamePlayStates.PLAYING;
         },
+        async onTriggerWordLoad(evt: RequestWordLoadEvt) 
+          {
+               const response = await wordlessApiService.getWordAsync();
+               if( response.success )
+               {
+                    statusMsg( 'Guess the 5-letter word in 6 tries. Good luck!' );
+                    this.SS.apiVersion = response.apiVersion ?? '';
+                    EventBus.emit( EventNames.WORD_LOADED, {word: response.word} as WordLoadedEvt );
+               }
+               else
+               {
+                    statusMsg( `Error loading word - ${response.message}. Refresh page to retry.` );
+               }
+          },
         async keyEventHandler(eventArgs: KBRawKeyClickEvt): Promise<void> {
             let SS = this.SS;
             let key = eventArgs.key;
 
-            this.statusMsg('');
+            statusMsg('');
             let len = SS.currentCol;
             let row = SS.currentRow;
 
@@ -92,10 +104,10 @@ export default Vue.extend({
                         case false:
                             // word is NOT a dictionary word.  Keep editing this word.
                             if (completedGuessWord === "xyzzy") {
-                                this.statusMsg(`( ${SS.answer} is the answer :)`);
+                                statusMsg(`( ${SS.answer} is the answer :)`);
                             }
                             else {
-                                this.statusMsg(`Sorry, ${completedGuessWord} is not in my dictionary!`);
+                                statusMsg(`Sorry, ${completedGuessWord} is not in my dictionary!`);
                             }
                             
                             // erase the last letter and moe cursor back onto screen to make the word editable again
@@ -125,7 +137,7 @@ export default Vue.extend({
 
                             break;
                         case undefined:
-                            this.statusMsg(`Error validating word: ${resp.message}. Try again in a few moments.`);
+                            statusMsg(`Error validating word: ${resp.message}. Try again in a few moments.`);
                             break;
                     }
                     break;
@@ -140,14 +152,13 @@ export default Vue.extend({
                     return;
             }
         },
-
         async displayMatchingWordCount(answer: string, guesses: string[]): Promise<void> {
             let apiResp = await wordlessApiService.getMatchCountAsync(answer, guesses);
             if (!apiResp.success) {
-                this.statusMsg(`Failed to calc remaining: ${apiResp.message}`);
+                statusMsg(`Failed to calc remaining: ${apiResp.message}`);
             }
             else {
-                this.statusMsg(`${apiResp.count} remaining word(s) match the clues above.`);
+                statusMsg(`${apiResp.count} remaining word(s) match the clues above.`);
             }
         },
 

@@ -1,5 +1,5 @@
 export const enum EventNames{ KB_RAWKEY='kb_raw_key',  
-    LOAD_WORD='load_word', GUESS_ACCEPTED='guess_accepted', WORD_LOADED='word_loaded', GAME_OVER='game_over',
+    TRIGGER_WORD_LOAD='load_word', GUESS_ACCEPTED='guess_accepted', WORD_LOADED='word_loaded', GAME_OVER='game_over',
 }
 
 export type PlainObject = Record<string, any>;
