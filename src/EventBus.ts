@@ -8,7 +8,6 @@ import mitt, { Emitter } from "mitt";
 //    EvtReceiver,  } from '@/types';
 import {
     EventNames,
-    KBKeyStyleEvt,
     WordLoadedEvt,
     GuessAcceptedEvt,
     EvtHandler,
@@ -16,22 +15,27 @@ import {
     RequestWordLoadEvt,
     BaseEvt,
     PlainObject,
-} from "@/types2";
+} from "@/types";
 
 export class EventBus {
     static readonly DEFAULT_EVENT_NAME = "DEFAULT";
 
     _emitter: Emitter<BaseEvt> = mitt<BaseEvt>();
 
-    emit(eventName: string, eventArgument: any, sender?: any): void {
+    emit(eventName: string, eventArgument: any, sender?: any, delayMS: number=0): void {
         let _eventArgument =
             sender !== undefined
                 ? Object.assign({ _sender: sender }, eventArgument)
                 : eventArgument;
-        this._emitter.emit(eventName, _eventArgument);
+        if( !delayMS ) {
+            this._emitter.emit(eventName, _eventArgument);
+        }else{
+            setTimeout(()=>this._emitter.emit(eventName, _eventArgument), delayMS);
+        }
     }
 
-    On(receivers: EvtHandler | EvtHandler[]) {
+    //On(receivers: EvtHandler | EvtHandler[]): EvtHandler | EvtHandler[] {
+    On<T extends EvtHandler|EvtHandler[]>(receivers: T): T {
         if (Array.isArray(receivers)) {
             receivers.forEach((r) =>
                 this._emitter.on(
@@ -51,6 +55,7 @@ export class EventBus {
                     : receivers.handler
             );
         }
+        return receivers;
     }
 
     Off(receivers: EvtHandler | EvtHandler[]) {

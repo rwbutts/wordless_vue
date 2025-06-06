@@ -1,117 +1,45 @@
-export const KeyCodes =  class 
-{
-     static ENTER = "ENTER";
-     static DELETE = "DELETE";
-     static ALPHA = "ALPHA";
-     static NONALPHA = "SPECIAL";
-     static ALL = "*";
-     static RESET = 'RESET';
+export const enum EventNames{ KB_RAWKEY='kb_raw_key',  
+    LOAD_WORD='load_word', GUESS_ACCEPTED='guess_accepted', WORD_LOADED='word_loaded', GAME_OVER='game_over',
 }
 
-export const enum KBCommandTypes
-{
-     KB_RESET_ONLY = "kb-reset-only",
-     KB_NO_DELETE = "kb-no-delete",
-     KB_NO_ENTER = "kb-no-enter",
-     KB_ENTER_ONLY = "kb-enter-only",
-     KB_SET_KEY_COLOR = "kb-set-color"
-}
-     
-export const enum MatchCodes 
-{
-     DEFAULT= 'default',
-     MISS= 'miss',
-     ELSEWHERE= 'elsewhere',
-     CORRECT= 'correct'
-}
+export type PlainObject = Record<string, any>;
 
-export const enum GameStates
-{
-     INIT = "game-starting",
-     WON = "game-won",
-     LOST = "game-lost",
-     ENDING = "end-in-progress",
-     RUNNING = "game-in-progress",
-     GAMEOVER = "game-over",
-}
+export interface BaseEvt extends PlainObject {}
+export interface GameOverEvt extends BaseEvt { won: boolean, guesses: number, }  
+export interface KBRawKeyClickEvt extends BaseEvt { key: string}
+export interface GuessAcceptedEvt extends BaseEvt { guess_number: number, }
+export interface WordLoadedEvt extends BaseEvt { word: string, }
+export interface SetComponentClassEvt extends BaseEvt { targetClass: string, targetInstance?: string, classes: Record<string, boolean> }
+export interface RequestWordLoadEvt extends BaseEvt { }
 
+export interface EvtHandler{ event: string, handler: (x?: any) => void, This?: object, _boundHandler?: (x?: any) => void }
 
+export interface KbControlKeysCss {enable_delete: boolean, enable_enter: boolean}
 
-export interface IKeyPressEventArgs { character: string }
-export interface IResetGameEventArgs { answer: string } 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IResetKeyEventArgs {  }
+export const enum GamePlayStates { LOADING_WORD='gamestate-loading', PLAYING='gamestate-playing', WON='gamestate-won', LOST='gamestate-lost' }
 
-export interface LetterColor{
-     letter: string,
-     color: string,
-}
+export const enum MatchCodes { DEFAULT= 'default', MISS= 'miss', ELSEWHERE= 'elsewhere', CORRECT= 'correct' }
 
-export interface IStatsReportGameResult {
-     finalState: string,
-     numGuesses?: number,
-}
+export const enum KeyCodes { ENTER = "ENTER", DELETE = "DELETE", ALPHA = "ALPHA", NONALPHA = "SPECIAL", ALL = "*", RESET = 'RESET' }
 
+export interface ILetterColorPair { letter: string, color: MatchCodes }
 
-export const enum CustomEventNames 
-{
-     INITIALIZE = 'initialize',
-     GAME_OVER = 'game-over',
-     KEY_PRESS = 'key-press',
-     WORD_LOADED = 'new-word',
-     SET_MESSAGE = 'set-message',
-}
+export class LetterColorPair {
+    color: MatchCodes;
+    letter: string;
+    constructor( letter: string='', color: MatchCodes = MatchCodes.DEFAULT) {
+        this.color = color;
+        this.letter = letter;
+    }
 
-export class EventArgs 
-{ 
-    [key: string|symbol]: unknown;
-
-    public event: string; 
-    public sender: any;
-    constructor( event: string, sender: any  ){ 
-        this.event=event;
-        this.sender=sender;
-    } 
-}
-
-export class KeyPressEventArgs extends EventArgs
-{ 
-    public char: string;
-    public isNonAlpha : boolean;
-    constructor( sender: any, char: string, isNonAlpha : boolean = false)
-    { 
-        super(CustomEventNames.KEY_PRESS, sender);
-        this.char=char;
-        this.isNonAlpha = isNonAlpha;
+    static createScoredLetter( guessLetter: string, answer: string, guessColumn: number ) : LetterColorPair {
+        let newPair = new LetterColorPair();
+        let color = (guessLetter === answer.charAt(guessColumn)) ? MatchCodes.CORRECT : (answer.includes(guessLetter) ? MatchCodes.ELSEWHERE : MatchCodes.MISS);
+        return new LetterColorPair(guessLetter, color);
+    }
+    static empty( ) {
+        return new LetterColorPair();
     }
 }
 
-export class GameOverEventArgs extends EventArgs
-{ 
-    public won: boolean;
-    public guesses: number;
-    constructor( sender:any, won: boolean, guesses: number=0)
-    { 
-        super(CustomEventNames.GAME_OVER, sender);
-        this.won=won;
-        this.guesses=guesses;
-    }
-}
-
-export class WordLoadedEventArgs extends EventArgs
-{ 
-    public answer: string;
-    constructor( sender: any, answer: string )
-    { 
-        super(CustomEventNames.WORD_LOADED, sender);
-        this.answer=answer;
-    }
-}
-
-export class InitializeEventArgs extends EventArgs
-{ 
-    constructor(sender: any )
-    { 
-        super(CustomEventNames.INITIALIZE, sender);
-    }
-}
+export interface IClassifiedKeyRefs { all: string[], alpha: string[], nonalpha: string[],  }

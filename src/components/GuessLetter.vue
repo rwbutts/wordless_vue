@@ -2,10 +2,10 @@
 
     <div class='guess-letter :class="{[letterColor]: true}"'>
         <div class='front'>
-            {{ letter }}
+            {{ letter_prop.letter }}
         </div>
         <div class='back '>
-            {{ letter }}
+            {{ letter_prop.letter }}
         </div>
     </div>
 
@@ -14,10 +14,8 @@
 <script lang='ts'>
 "use strict";
 // @ts-check
-import { MatchCodes, KBCommandEventArgs, CustomEventNames, KeyCodes } from '../types';
-import { UILetterEvt, EventNames, EvtHandler, ISharedState, } from '../types2';
-import SharedState from '../SharedState'
-import EventBus from '../EventBus';
+import { MatchCodes, LetterColorPair } from '../types';
+import SharedState, { ISharedState, } from '../SharedState'
 
 // @ts-check
 
@@ -36,7 +34,7 @@ export default Vue.extend({
     },
     props: {
         'letter_prop': {
-            type: String,
+            type: LetterColorPair,
             required: true,
         },
         'my_column_prop': {
@@ -51,19 +49,10 @@ export default Vue.extend({
     methods: {
     },
     computed: {
-        SharedState,
-        letter(): string {
-            return this.SharedState.guesses[this.my_row_prop][this.my_column_prop];
-        },
-        letterColor(): MatchCodes {
-            let s = this.SharedState;
-            return this.letter_prop === s.answer.charAt(s.cursorColumn)
-                ? MatchCodes.CORRECT
-                : (s.answer.includes(this.letter_prop) ? MatchCodes.ELSEWHERE : MatchCodes.MISS);
-        },
+        SS: SharedState,
         focus() {
-            let s = this.SharedState;
-            return s.cursorColumn === this.my_column_prop && s.guessNumber === this.my_row_prop;
+            let SS = this.SS;
+            return SS.cursorColumn === this.my_column_prop && SS.cursorRow === this.my_row_prop;
         },
     },
     mounted() {

@@ -3,7 +3,7 @@
      :class="{ 'guess-is-not-empty' : guessLen>0,
                'guess-is-full-word' :  guessLen >= 5,
                'guess-is-not-full-word' : guessLen <5 }"
-               @reset='EventBus.emitResetRequestEvent( {} );'/>
+        />
 </template>
      
 <script lang='ts'>

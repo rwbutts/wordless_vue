@@ -1,28 +1,36 @@
-import { ISharedState, GamePlayStates, PlainObject } from './types2'
+import { PlainObject, GamePlayStates, KbControlKeysCss, LetterColorPair, ILetterColorPair } from './types'
 import Vue from 'vue';
 
-function getStateInstance() {
+export interface ISharedState { cursorRow: number, cursorColumn: number, answer: string, letterGrid: Array<Array<LetterColorPair>>, statusMessage: string, 
+    statModalIsActive: boolean, gamePlayState: GamePlayStates, enableHardMode: boolean, guessList: string[], 
+kbControlKeysCss: KbControlKeysCss, appVersion: string, apiVersion:string, [key: string]: any }
+
+function createStateInstance(): ISharedState{
     return {
-        guessNumber: 0,
+        appVersion: '', 
+        apiVersion: '',
+        cursorRow: 0,
         cursorColumn: 0,
         answer: '',
         guessList: [] as string[],
-        guesses: Array(5).fill(['', '', '', '', '', '']),
+        letterGrid: Array(5).fill([ LetterColorPair.empty(),LetterColorPair.empty(),LetterColorPair.empty(),LetterColorPair.empty(),LetterColorPair.empty(), ]),
         statusMessage: '',
         statModalIsActive: false,
-        gamePlayState: GamePlayStates.BOOTING_UP,
+        gamePlayState: GamePlayStates.LOADING_WORD,
         enableHardMode: false,
-        cssGuessNotEmpty: false,
-        cssGuessIsFullWord: false,
-        cssGuessNotFullWord: false,
-        keyObjectMap: [] as PlainObject,
+        kbControlKeysCss: { enable_delete: false, enable_enter: false,  },
     };
 }
 
-const SharedState: ISharedState = Vue.observable(getStateInstance());
+const doNotResetFieldList = [ 'enableHardMode', ];
+
+const SharedState: ISharedState = Vue.observable(createStateInstance());
 
 export default (()=>(SharedState)) as ()=>ISharedState;
 
-export const resetSharedState = function ( append: PlainObject = {}) {
-    Object.assign(SharedState, getStateInstance(), append );
+export const resetSharedState = function () {
+    let newState = createStateInstance();
+    Object.keys(newState)
+        .filter( (key)=>!doNotResetFieldList.find( (dnrKey) => dnrKey===key))
+        .forEach( k => SharedState[k] = newState[k] );
 }

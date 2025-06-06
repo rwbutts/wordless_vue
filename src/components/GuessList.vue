@@ -1,23 +1,28 @@
 <template>
 
     <div class='guess-list'>
-        <guess-word v-for="row in 6" :my_row_prop="row" :key='row'>
+        <guess-word v-for="row in 6" :letter_array_prop="letter_row_array_prop[row - 1]" :my_row_prop="row" :key='row'>
         </guess-word>
     </div>
-
+    <div class='status-area'>
+               <h3 class='status status-game-in-progress'> {{ SharedState.statusMessage }}</h3> 
+               <h3 class='status status-game-lost'>Sorry, the answer is {{ SharedState.answer }}</h3> 
+               <h3 class='status status-game-won'>Congratulations, you got it! Please hire me!</h3> 
+    </div>
+    
+    <keyboard ref="keyboard" :class="{enable_delete: (SS.cursorColumn >= 1), enable_enter: (SS.cursorColumn >= 5), }" />
 </template>
 
 <script lang='ts'>
 "use strict";
 // @ts-check
 
-import Key from './Key.vue'
+import Keyboard from '@/components/Keyboard.vue'
 import Vue, { PropType } from 'vue'
 import GuessWord from './GuessWord.vue'
-import { EventNames, EvtHandler, WordLoadedEvt, GuessAcceptedEvt, GameOverEvt, GamePlayStates, KBStylePresets, } from '@/types2'
+import { EventNames, EvtHandler, WordLoadedEvt, GuessAcceptedEvt, GameOverEvt, 
+    GamePlayStates, KeyCodes, MatchCodes, LetterColorPair, ILetterColorPair, PlainObject, KBRawKeyClickEvt, } from '@/types'
 import EventBus from '@/EventBus';
-import { KBRawKeyClickEvt, LetterColorPair, } from '@/types2';
-import { KeyCodes, MatchCodes, } from '@/types';
 import SharedState, { resetSharedState } from '@/SharedState'
 import { wordlessApiService, CheckWordAsyncResponseType } from '@/WordlessAPI'
 
@@ -26,136 +31,123 @@ export default Vue.extend({
 
     data() {
         return {
+            keyboardCssClasses : {} as PlainObject,
         };
     },
 
-    components: { GuessWord },
+    components: { GuessWord, Keyboard },
 
     props:
     {
-    },
+        'letter_row_array_prop': {
+            type: Array<Array<LetterColorPair>> as PropType<Array<Array<LetterColorPair>>>,
+            required: true,
+        },
+},
 
     computed: {
         SharedState,
-        S: SharedState,
-        currentRow(): number {
-            return this.S.guessNumber;
-        },
-        currentCol(): number {
-            return this.S.cursorColumn;
-        },
+        SS: SharedState,
     },
     mounted() {
         EventBus.On({ event: EventNames.WORD_LOADED, handler: this.onWordLoaded, This: this })
-        //EventBus.On( {event: EventNames.GUESS_ACCEPTED, handler: this.onGuessAccepted, This: this })
     },
 
     methods: {
-        setKeyColors(guess: string) {
-            let S = this.SharedState;
-            for(let column=0; column<guess.length;column++) {
-                let g = guess.charAt(S.cursorColumn);
-                let color = (g === S.answer.charAt(S.cursorColumn)) ? MatchCodes.CORRECT : (S.answer.includes(g) ? MatchCodes.ELSEWHERE : MatchCodes.MISS);
-                S.keyObjectMap[g]?.setColor(color);
-            }
+        scoreGuessLetter( guessLetter: string, cursorColumn?:number ): ILetterColorPair {
+            let color = (guessLetter === this.SS.answer.charAt(cursorColumn ?? this.SS.cursorColumn)) ? MatchCodes.CORRECT : (this.SS.answer.includes(guessLetter) ? MatchCodes.ELSEWHERE : MatchCodes.MISS);
+            return {color: color, letter: guessLetter } as LetterColorPair;
+        },
+        setKeyColors() {
+            this.SS.letterGrid[this.SS.cursorRow].forEach(pair=>{
+                (this.$refs['keyboard'] as InstanceType<typeof Keyboard>)?.setKeyColor( pair.letter, pair.color );
+            });
         },
         statusMsg(msg: string) {
-            this.S.statusMessage = msg;
+            this.SS.statusMessage = msg;
         },
-        resetData() {
-            resetSharedState( {keyObjectMap: this.SharedState});
+        resetState() {
+            resetSharedState( );
         },
         onWordLoaded(evt: WordLoadedEvt) {
-            let s = this.SharedState;
+            this.resetState();
 
-            s.answer = evt.word;
-            s.guessNumber = s.cursorColumn = 0;
-            this.statusMsg("");
-            s.gamePlayState = GamePlayStates.IN_PROGRESS;
-            s.guessList.length = 0;
-            EventBus.emit(EventNames.KB_STYLE, KBStylePresets.EDIT_WORD_BLANK);
+            this.SS.answer = evt.word;
+            this.SS.gamePlayState = GamePlayStates.PLAYING;
         },
         async keyEventHandler(eventArgs: KBRawKeyClickEvt): Promise<void> {
-            let completedWord;
-            let S = this.SharedState;
+            let SS = this.SS;
             let key = eventArgs.key;
 
             this.statusMsg('');
-            let len = this.currentCol;
-            let row = this.currentRow;
+            let len = SS.currentCol;
+            let row = SS.currentRow;
 
             switch (true) {
                 case key === KeyCodes.ENTER && len >= 5:
-                    completedWord = S.guesses[row].slice(0, len).join('');
-                    let resp = await this.validateWord(completedWord);
-                    if (resp.exists === false) {
-                        if (completedWord === "xyzzy") {
-                            this.statusMsg(`( ${S.answer} is the answer :)`);
-                        }
-                        else {
-                            this.statusMsg(`Sorry, ${completedWord} is not in my dictionary!`);
-                        }
+                    let completedGuessWord = SS.letterGrid[row].slice(0, len).reduce( (acc, item:any )=> acc + item.letter, '');
+                    let resp = await this.validateWord(completedGuessWord);
+                    switch(resp.exists)
+                    {
+                        case false:
+                            // word is NOT a dictionary word.  Keep editing this word.
+                            if (completedGuessWord === "xyzzy") {
+                                this.statusMsg(`( ${SS.answer} is the answer :)`);
+                            }
+                            else {
+                                this.statusMsg(`Sorry, ${completedGuessWord} is not in my dictionary!`);
+                            }
+                            
+                            // erase the last letter and moe cursor back onto screen to make the word editable again
+                            this.$set(SS.letterGrid[row], --SS.cursorColumn, LetterColorPair.empty());
+                            break;
+                        case true:
+                            // Word is valid.  Process the accepted guess.
+                            SS.guessList.push(completedGuessWord);
+                            this.setKeyColors();
 
-                        this.$set(S.guesses[row], --S.cursorColumn, '');
-                    }
-                    else if (resp.exists === true) {
-                        S.cursorColumn = 0;
-                        S.guessNumber++;
-                        S.guessList.push(completedWord);
-                        this.setKeyColors(completedWord);
-                    }
-                    else if (resp.exists === undefined) {
-                        this.statusMsg(`Error validating word: ${resp.message}. Try again in a few moments.`);
+                            // Move to next row (this triggers the css reveal of the row colors) and resets cursor back to start
+                            SS.cursorColumn = 0;
+                            SS.cursorRow++;
+
+                            // see if we've won or lost.  
+                            // Guesses is a 1-based count, so already-incremented S.guessNumber (0-5 playing, 6 if we've lost) is the 1-6 we want.
+                            if (completedGuessWord === SS.answer) {
+                                SS.gamePlayState = GamePlayStates.WON;
+                                EventBus.emit(EventNames.GAME_OVER, { won: true, guesses: SS.cursorRow } as GameOverEvt);
+                            }
+                            else if (SS.cursorRow >= 6) {
+                                SS.gamePlayState = GamePlayStates.LOST;
+                                EventBus.emit(EventNames.GAME_OVER, { won: false, guesses: SS.cursorRow } as GameOverEvt);
+                            }
+                            else
+                                await this.displayMatchingWordCount(this.SS.answer, this.SS.guessList);
+
+                            break;
+                        case undefined:
+                            this.statusMsg(`Error validating word: ${resp.message}. Try again in a few moments.`);
+                            break;
                     }
                     break;
                 case key === KeyCodes.DELETE && len > 0:
-                    this.$set(S.guesses[row], --S.cursorColumn, '');
+                    this.$set(SS.letterGrid[row], --SS.cursorColumn, LetterColorPair.empty());
                     break;
                 case key.length === 1 && key >= 'A' && key <= 'Z' && len < 5:
-                    this.$set(S.guesses[row], S.cursorColumn++, key);
+                    let letterAndColor = this.scoreGuessLetter(key);
+                    this.$set(SS.letterGrid[row], SS.cursorColumn++, letterAndColor);
                     break;
+                default:
+                    return;
             }
-
-            S.cssGuessNotEmpty = (S.cursorColumn >= 0);
-            S.cssGuessNotFullWord = (S.cursorColumn < 5);
-            S.cssGuessIsFullWord = (S.cursorColumn >= 0);
-
-            if (completedWord === S.answer) {
-                S.gamePlayState = GamePlayStates.WON;
-                EventBus.emit(EventNames.GAME_OVER, { won: true } as GameOverEvt);
-            }
-            else if (S.guessNumber >= 6) {
-                S.gamePlayState = GamePlayStates.LOST;
-                EventBus.emit(EventNames.GAME_OVER, { won: false } as GameOverEvt);
-            }
-            else
-                this.displayMatchingWordCount(this.S.answer, this.S.guessList);
-
-
-        },
-
-        guessValidated(guess: string): void {
-            this.sendActiveGuessColorsToKB();
-            this.advanceNextRow();
-            if (guess === this.answer) {
-                this.setGameState(GameStates.WON);
-                this.statsReport = { finalState: GameStates.WON, numGuesses: this.activeRow };
-            }
-            else if (this.activeRow >= 6) {
-                this.setGameState(GameStates.LOST);
-                this.statsReport = { finalState: GameStates.LOST };
-            }
-            else
-                this.displayMatchingWordCount(this.answer, this.guessList.slice(0, this.activeRow));
         },
 
         async displayMatchingWordCount(answer: string, guesses: string[]): Promise<void> {
             let apiResp = await wordlessApiService.getMatchCountAsync(answer, guesses);
             if (!apiResp.success) {
-                this.S.statusMessage = `Failed to calc remaining: ${apiResp.message}`;
+                this.statusMsg(`Failed to calc remaining: ${apiResp.message}`);
             }
             else {
-                this.S.statusMessage = `${apiResp.count} remaining word(s) match the clues above.`;
+                this.statusMsg(`${apiResp.count} remaining word(s) match the clues above.`);
             }
         },
 

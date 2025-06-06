@@ -10,10 +10,9 @@
 <script lang='ts'>
 "use strict";
 // @ts-check
-import SharedState from '@/SharedState'
+//import SharedState from '@/SharedState'
 import Vue, { PropType, } from 'vue'
-import { MatchCodes, KeyCodes, } from '@/types';
-import { EventNames, KBRawKeyClickEvt, EvtHandler, } from '@/types2';
+import { EventNames, KBRawKeyClickEvt, MatchCodes, WordLoadedEvt, } from '@/types';
 import EventBus from '../EventBus';
 
 export default Vue.extend({
@@ -38,17 +37,14 @@ export default Vue.extend({
             default: false,
         },
 
-        // character/mnemonic emitted with key click event
         char: {
             type: String as PropType<string>,
             required: true,
         },
-
     },
 
     computed:
     {
-        SharedState,
         keyNameClass():string {
             return 'key-'+this.char.toLowerCase();
         },
@@ -73,13 +69,16 @@ export default Vue.extend({
                 this.clickHandler();
             };
         },
-        setColor(color: MatchCodes) {
+        setColor(color: MatchCodes = MatchCodes.DEFAULT) {
             this.color = color;
+        },
+        onWordLoaded(evt: WordLoadedEvt) {
+            this.setColor();
         },
     },
 
     mounted() {
-        this.$set(this.SharedState.keyObjectMap, this.char, this);
+        EventBus.On({ event: EventNames.WORD_LOADED, handler: this.onWordLoaded, This: this })
         window.addEventListener('keydown', this.handleKeyboardKey.bind(this));
     },
 

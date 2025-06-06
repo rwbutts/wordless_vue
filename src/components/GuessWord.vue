@@ -2,8 +2,8 @@
     <div class='guess-row row' :class="{ focus: haveFocus, reveal: reveal }">
 
         <div v-for="col in 5" :key='col' class='letter-container'
-            :class="{ focus: haveFocus && col === SharedState.cursorColumn }">
-            <guess-letter :my_column_prop="col - 1" :my_row_prop="my_row_prop" />
+            :class="{ focus: haveFocus && col === SS.cursorColumn }">
+            <guess-letter :letter_prop="letter_array_prop[col -1]" :my_column_prop="col - 1" />
         </div>
 
     </div>
@@ -16,9 +16,8 @@
 
 import Vue, { PropType } from 'vue'
 import GuessLetter from './GuessLetter.vue';
-import { KeyPressEventArgs, CustomEventNames, GuessSubmittedEventArgs, WordLoadedEventArgs } from '@/types';
 import SharedState from '@/SharedState'
-import { EventBus } from '../EventBus';
+import { LetterColorPair } from '@/types';
 
 export default Vue.extend({
     name: 'guess-word',
@@ -36,15 +35,19 @@ export default Vue.extend({
             type: Number as PropType<number>,
             required: true,
         },
+        'letter_array_prop': {
+            type: Array<LetterColorPair> as PropType<Array<LetterColorPair>>,
+            required: true,
+        },
     },
 
     computed: {
-        SharedState,
+        SS:SharedState,
         reveal() {
-            return this.SharedState.guessNumber > this.my_row_prop;
+            return this.SS.cursorRow > this.my_row_prop;
         },
         haveFocus() {
-            return this.SharedState.guessNumber === this.my_row_prop;
+            return this.SS.cursorRow === this.my_row_prop;
         }
     },
     methods: {
