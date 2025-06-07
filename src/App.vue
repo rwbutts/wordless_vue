@@ -184,26 +184,7 @@ span.miss {
 </style>
 
 <style>
-.status-area {
-    min-height: 20px;
-    margin-top: 10px;
-}
 
-.status {
-    font-size: var(--status-font-size);
-    display: block;
-    transform: scale(0, 0);
-    margin: 0;
-    height: 0;
-}
-
-.game-container.game-starting .status.status-game-in-progress,
-.game-container.game-in-progress .status.status-game-in-progress,
-.game-container.game-won .status.status-game-won,
-.game-container.game-lost .status.status-game-lost {
-    transform: scale(1, 1);
-    display: block;
-}
 
 /*
 .gg { border: 1px solid green!important;}

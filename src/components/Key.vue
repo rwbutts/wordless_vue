@@ -112,10 +112,10 @@ button.key-button:active {
 }
 
 button.key-button.enabled,
-.game-in-progress .keyboard.guess-is-not-empty .key-backspace,
-.game-in-progress .keyboard.guess-is-full-word .key-enter,
-.game-in-progress .keyboard.guess-is-not-full-word .key-alpha,
-.game-over .key-reset {
+.gamestate-playing .keyboard.enable_delete .key-delete,
+.gamestate-playing .keyboard.enable_enter .key-enter,
+.gamestate-playing .keyboard:not(.enable_enter) .alpha,
+.gamestate-won .key-reset, .gamestate-lost .key-reset {
     opacity: 1.0;
     pointer-events: all;
 }

@@ -1,6 +1,6 @@
 <template>
 
-    <div class='guess-letter :class="{[letterColor]: true}"'>
+    <div class='guess-letter' :class="{[letterProp.color]: true}">
         <div class='front'>
             {{ letterProp.letter }}
         </div>

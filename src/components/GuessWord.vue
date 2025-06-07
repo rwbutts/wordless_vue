@@ -86,16 +86,16 @@ export default Vue.extend({
     margin: min(.5vw, 5px);
     perspective: 500px;
     box-sizing: content-box;
-    border: 3px solid #EEE;
+    border: 3px solid #CCC;
 }
 
-.game-in-progress .guess-row.current>.letter-container {
+.gamestate-playing .guess-row.focus>.letter-container {
     border: 3px solid #888;
 
 }
 
-.game-in-progress .guess-row.focus>.letter-container.focus {
-    border: 3px solid #888;
+.gamestate-playing .guess-row.focus>.letter-container.focus {
+    border: 3px solid #f37474;
     background-color: #fee;
 }
 
