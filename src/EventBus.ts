@@ -1,20 +1,14 @@
 "use strict";
 // @ts-check
 
-import Vue from "vue";
 import mitt, { Emitter } from "mitt";
 
-//import { CustomEventNames, InitializeEventArgs, KeyPressEventArgs, WordLoadedEventArgs, KBCommandEventArgs, EventArgs,
-//    EvtReceiver,  } from '@/types';
 import {
     EventNames,
-    WordLoadedEvt,
-    GuessAcceptedEvt,
-    EvtHandler,
-    KBRawKeyClickEvt,
+    EventHandler,
     RequestWordLoadEvt,
-    BaseEvt,
     PlainObject,
+    BaseEvt,
 } from "@/types";
 
 export class EventBus {
@@ -22,61 +16,28 @@ export class EventBus {
 
     _emitter: Emitter<BaseEvt> = mitt<BaseEvt>();
 
-    emit(eventName: string, eventArgument: any, sender?: any, delayMS: number=0): void {
-        let _eventArgument =
+    emit(eventName: string, eventArgument: PlainObject, sender?: PlainObject, delayMS: number|false=false): void {
+        const _eventArgument =
             sender !== undefined
                 ? Object.assign({ _sender: sender }, eventArgument)
                 : eventArgument;
-        if( !delayMS ) {
+        if( delayMS===false ) {
             this._emitter.emit(eventName, _eventArgument);
-        }else{
-            setTimeout(()=>this._emitter.emit(eventName, _eventArgument), delayMS);
+        }else {
+            setTimeout((This: InstanceType<typeof EventBus>)=>This._emitter.emit(eventName, _eventArgument), delayMS , this);
         }
     }
 
-    //On(receivers: EvtHandler | EvtHandler[]): EvtHandler | EvtHandler[] {
-    On<T extends EvtHandler|EvtHandler[]>(receivers: T): T {
-        if (Array.isArray(receivers)) {
-            receivers.forEach((r) =>
-                this._emitter.on(
-                    r.event,
-                    r.This
-                        ? (r._boundHandler = r.handler.bind(r.This))
-                        : r.handler
-                )
-            );
-        } else {
-            this._emitter.on(
-                receivers.event,
-                receivers.This
-                    ? (receivers._boundHandler = receivers.handler.bind(
-                          receivers.This
-                      ))
-                    : receivers.handler
-            );
-        }
-        return receivers;
+    On(event: string, handler: EventHandler): EventHandler {
+            this._emitter.on( event, handler );
+            return handler;
     }
 
-    Off(receivers: EvtHandler | EvtHandler[]) {
-        if (Array.isArray(receivers)) {
-            receivers.forEach((r) =>
-                this._emitter.off(
-                    r.event,
-                    r._boundHandler ? r._boundHandler : r.handler
-                )
-            );
-        } else {
-            this._emitter.off(
-                receivers.event,
-                receivers._boundHandler
-                    ? receivers._boundHandler
-                    : receivers.handler
-            );
-        }
+    Off(event: string, handler: EventHandler): void {
+        this._emitter.off( event, handler);
     }
 
-    emitTriggerWordLoadEvent() {
+    emitTriggerWordLoadEvent(): void {
         this.emit( EventNames.TRIGGER_WORD_LOAD, {} as RequestWordLoadEvt);
     }
 }

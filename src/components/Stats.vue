@@ -33,7 +33,7 @@ import Vue, { PropType } from 'vue'
 import StatBar from './StatBar.vue'
 import CumulativeStats from '@/CumulativeStats'
 import { assert } from '@/utils/Misc';
-import { EventNames, GameOverEvt, EvtHandler } from '@/types'
+import { EventNames, GameOverEvt, EventHandler } from '@/types'
 import EventBus from '@/EventBus';
 
 export default Vue.extend({
@@ -43,7 +43,6 @@ export default Vue.extend({
         return {
             cumStats: new CumulativeStats(),
             showDialog: false,
-            _eventHandler: undefined as EvtHandler | undefined,
         };
     },
 
@@ -104,7 +103,7 @@ export default Vue.extend({
     mounted() {
         this.handleKey = this.handleKey.bind(this);
         window.addEventListener('keydown', this.handleKey);
-        this._eventHandler = EventBus.On({ event: EventNames.GAME_OVER, handler: this.onGameOver, This: this } as EvtHandler);
+        EventBus.On( EventNames.GAME_OVER,this.onGameOver as EventHandler);
     },
 });
 </script>

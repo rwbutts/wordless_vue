@@ -1,6 +1,8 @@
 "use strict";
 
 import Vue from 'vue'
+import SharedState, { resetSharedState, statusMsg,  } from '@/SharedState'
+
 import App from '@/App.vue'
 import EventBus, {  } from '@/EventBus';
 import VueCompositionAPI from '@vue/composition-api'
@@ -20,6 +22,7 @@ export const app = new Vue({
      },
 
      computed : {
+        SS:SharedState,
      },
 
      methods: {
@@ -27,6 +30,7 @@ export const app = new Vue({
 
      async mounted()
      {
-          setTimeout( ()=>EventBus.(), 2000 );
+        console.log(this.SS.letterGrid);
+          setTimeout( ()=>EventBus.emitTriggerWordLoadEvent(), 2000 );
      }
 });

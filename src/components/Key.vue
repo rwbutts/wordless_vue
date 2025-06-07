@@ -1,7 +1,7 @@
 <template>
 
     <BUTTON href='#' class='key-button' @click="clickHandler"
-        :class="{ [color]: true, [keyNameClass]: true, 'key-down': keyDown, enabled: enabled }">
+        :class="{ [color]: true, [keyNameClass]: true, 'key-down': keyDown,  }">
         {{ label ? label : char }}
     </BUTTON>
 
@@ -12,8 +12,8 @@
 // @ts-check
 //import SharedState from '@/SharedState'
 import Vue, { PropType, } from 'vue'
-import { EventNames, KBRawKeyClickEvt, MatchCodes, WordLoadedEvt, } from '@/types';
-import EventBus from '../EventBus';
+import { EventNames, KBRawKeyClickEvt, MatchCodes, WordLoadedEvt, EventHandler, } from '@/types';
+import EventBus, {  } from '../EventBus';
 
 export default Vue.extend({
     name: 'key',
@@ -67,18 +67,20 @@ export default Vue.extend({
         handleKeyboardKey(e: KeyboardEvent): void {
             if ((e.key || '').toUpperCase() === this.char) {
                 this.clickHandler();
-            };
+            }
         },
-        setColor(color: MatchCodes = MatchCodes.DEFAULT) {
+        setKeyColor(color: MatchCodes = MatchCodes.DEFAULT) {
             this.color = color;
         },
-        onWordLoaded(evt: WordLoadedEvt) {
-            this.setColor();
+        
+        // eslint-disable-next-line no-unused-vars
+        onWordLoaded(_evt: WordLoadedEvt) {
+            this.setKeyColor();
         },
     },
 
     mounted() {
-        EventBus.On({ event: EventNames.WORD_LOADED, handler: this.onWordLoaded, This: this })
+        EventBus.On(EventNames.WORD_LOADED, this.onWordLoaded.bind(this) as EventHandler)
         window.addEventListener('keydown', this.handleKeyboardKey.bind(this));
     },
 

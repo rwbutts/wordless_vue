@@ -46,20 +46,11 @@ export default Vue.extend({
     },
 
     components: {
-        GuessList, 
+        GuessList, Stats, 
     },
 
     computed: {
         SS:SharedState,
-    },
-
-    methods: {
-    },
-
-    mounted() {
-    },
-
-    beforeDestroy() {
     },
 });
 </script>

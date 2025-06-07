@@ -2,8 +2,8 @@
     <div class='guess-row row' :class="{ focus: haveFocus, reveal: reveal }">
 
         <div v-for="col in 5" :key='col' class='letter-container'
-            :class="{ focus: haveFocus && col === SS.cursorColumn }">
-            <guess-letter :letter_prop="letter_array_prop[col -1]" :my_column_prop="col - 1" />
+            :class="{ focus: haveFocus && col - 1 === SS.cursorColumn }">
+            <guess-letter :letterProp="letterRowArrayProp[col -1]" :myColumnProp="col-1"  :myRowProp="myRowProp" />
         </div>
 
     </div>
@@ -31,29 +31,25 @@ export default Vue.extend({
 
     props:
     {
-        'my_row_prop': {
+        myRowProp: {
             type: Number as PropType<number>,
             required: true,
         },
-        'letter_array_prop': {
-            type: Array<LetterColorPair> as PropType<Array<LetterColorPair>>,
-            required: true,
-        },
-    },
+        letterRowArrayProp: Array,
+    //     'letterRowArrayProp': {
+    //         type: Array as PropType<Array<LetterColorPair>>,
+    //         required: true,
+    //     },
+     },
 
     computed: {
         SS:SharedState,
         reveal() {
-            return this.SS.cursorRow > this.my_row_prop;
+            return this.SS.cursorRow > this.myRowProp;
         },
         haveFocus() {
-            return this.SS.cursorRow === this.my_row_prop;
+            return this.SS.cursorRow === this.myRowProp;
         }
-    },
-    methods: {
-
-    },
-    mounted() {
     },
 });
 </script>

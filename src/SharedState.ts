@@ -1,9 +1,9 @@
-import { PlainObject, GamePlayStates, KbControlKeysCss, LetterColorPair, ILetterColorPair } from './types'
+import { GamePlayStates, KbControlKeysCss, LetterColorPair, PlainObject, } from './types'
 import Vue from 'vue';
 
-export interface ISharedState { cursorRow: number, cursorColumn: number, answer: string, letterGrid: Array<Array<LetterColorPair>>, statusMessage: string, 
+export interface ISharedState extends PlainObject { cursorRow: number, cursorColumn: number, answer: string, letterGrid: Array<Array<LetterColorPair>>, statusMessage: string, 
     statModalIsActive: boolean, gamePlayState: GamePlayStates, enableHardMode: boolean, guessList: string[], 
-kbControlKeysCss: KbControlKeysCss, appVersion: string, apiVersion:string, [key: string]: any }
+kbControlKeysCss: KbControlKeysCss, appVersion: string, apiVersion:string,  }
 
 function createStateInstance(): ISharedState{
     return {
@@ -24,15 +24,17 @@ function createStateInstance(): ISharedState{
 
 const doNotResetFieldList = [ 'enableHardMode', ];
 
+//const SharedState: ISharedState = Vue.observable(createStateInstance());
 const SharedState: ISharedState = Vue.observable(createStateInstance());
 
 export default (()=>(SharedState)) as ()=>ISharedState;
 
-export const resetSharedState = function () {
-    let newState = createStateInstance();
+// eslint-disable-line @typescript-eslint/no-explicit-any
+export const resetSharedState = function (): void {
+    const newState = createStateInstance();
     Object.keys(newState)
-        .filter( (key)=>!doNotResetFieldList.find( (dnrKey) => dnrKey===key))
-        .forEach( k => Vue.set(SharedState, k, newState[k] ));
-}
+        .filter( (key)=>doNotResetFieldList.find( (dnrKey) => dnrKey===key))
+        .forEach( (k ) => Vue.set(SharedState, k, newState[k] ));   }
 
-export const statusMsg = (( message: string )=>{ SharedState.statusMessage = message;});
+
+export const statusMsg = (( message: string )=>{ SharedState.statusMessage = message;}) as (message:string)=>void;

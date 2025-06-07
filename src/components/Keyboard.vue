@@ -48,7 +48,7 @@
 import Vue  from 'vue'
 import Key from './Key.vue'
 import EventBus from '../EventBus'
-import { EventNames, MatchCodes, IClassifiedKeyRefs, KeyCodes,  } from '@/types';
+import { MatchCodes, IClassifiedKeyRefs, KeyCodes,  } from '@/types';
 
 export default Vue.extend({
      name: 'keyboard',
@@ -64,14 +64,14 @@ export default Vue.extend({
      },
      computed: {
             allKeyRefs(): IClassifiedKeyRefs {
-                let result: IClassifiedKeyRefs = { all:[], alpha:[], nonalpha:[]};
+                let result: IClassifiedKeyRefs = { all:[] , alpha:[], nonalpha:[]};
                 Object.keys(this.$refs).filter( k => k.startsWith('KEY_')).forEach ( k=>{
                     let keyObj = this.$refs[k];
                     if(!keyObj) {
                         console.error(`got undefined $ref[${k}]`);
                     } else {
                         result.all.push(k);
-                        if ((keyObj as any).$el?.hasAttribute('control_key')) {
+                        if ((keyObj as InstanceType<typeof Key>).$el?.hasAttribute('control_key')) {
                             result.nonalpha.push(k);
                         } else {
                             result.alpha.push(k);
@@ -83,7 +83,7 @@ export default Vue.extend({
      },
      methods: {
         broadcastReload(){
-            EventBus.emit(EventNames.TRIGGER_WORD_LOAD, {});
+            EventBus.emitTriggerWordLoadEvent();
         },
         setKeyColor( key:string|KeyCodes, color : MatchCodes) {
             let keyList: string[];
@@ -101,29 +101,12 @@ export default Vue.extend({
                     keyList = [key];
                     break;
                 default:
+                    keyList = [];
                     console.error(`keyboard::setKeyColor{} unknown class key ${key}`);
             }
+            keyList.forEach( (k) => {(this.$refs[k] as InstanceType<typeof Key>)?.setKeyColor(color);} );
         },
-        setKeyColors( keys:string[], color : MatchCodes) {
-            keys.forEach(key => {
-                let keyRef = this.$refs['KEY_'+key];
-                if(keyRef) {
-                    (keyRef as any).setColor( color );
-                } else {
-                    console.error(`Keyboard::setKeyColor() this.$refs[${'KEY_'+key}] was undefined!`)
-                }
-            });
-        },
-        
      },
-
-     mounted() {
-     },
-
-     beforeDestroy() 
-     {
-     },
-
 });
 </script>
 

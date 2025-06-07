@@ -2,10 +2,10 @@
 
     <div class='guess-letter :class="{[letterColor]: true}"'>
         <div class='front'>
-            {{ letter_prop.letter }}
+            {{ letterProp.letter }}
         </div>
         <div class='back '>
-            {{ letter_prop.letter }}
+            {{ letterProp.letter }}
         </div>
     </div>
 
@@ -15,11 +15,11 @@
 "use strict";
 // @ts-check
 import { MatchCodes, LetterColorPair } from '../types';
-import SharedState, { ISharedState, } from '../SharedState'
+import SharedState, { } from '../SharedState'
 
 // @ts-check
 
-import Vue, { PropType, } from 'vue'
+import Vue, { } from 'vue'
 
 export default Vue.extend({
     name: 'guess-letter',
@@ -33,31 +33,25 @@ export default Vue.extend({
         };
     },
     props: {
-        'letter_prop': {
+        'letterProp': {
             type: LetterColorPair,
             required: true,
         },
-        'my_column_prop': {
+        'myColumnProp': {
             type: Number,
             required: true,
         },
-        'my_row_prop': {
+        'myRowProp': {
             type: Number,
             required: true,
         },
-    },
-    methods: {
     },
     computed: {
         SS: SharedState,
-        focus() {
-            let SS = this.SS;
-            return SS.cursorColumn === this.my_column_prop && SS.cursorRow === this.my_row_prop;
-        },
+        // focus() {
+        //     return this.SS.cursorColumn === this.my_column_prop && this.SS.cursorRow === this.my_row_prop;
+        // },
     },
-    mounted() {
-    },
-
 });
 
 </script>
