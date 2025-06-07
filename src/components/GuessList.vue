@@ -1,16 +1,16 @@
 <template>
     <div>
         <div class='guess-list'>
-            <guess-word v-for="row in 6" :letterRowArrayProp="letterGrid[row - 1]" :myRowProp="row-1" :key='row'>
+            <guess-word v-for="row in 6" :letterRowArrayProp="letterGrid[row-1]" :myRowProp="row-1" :key='row'>
             </guess-word>
         </div>
         <div class='status-area'>
-                <h3 class='status status-game-in-progress'> {{ SS.statusMessage }}</h3> 
-                <h3 class='status status-game-lost'>Sorry, the answer is {{ SS.answer }}</h3> 
+                <h3 class='status status-game-in-progress'> {{ statusMessage }}</h3> 
+                <h3 class='status status-game-lost'>Sorry, the answer is {{ answer }}</h3> 
                 <h3 class='status status-game-won'>Congratulations, you got it! Please hire me!</h3> 
         </div>
         
-        <keyboard ref="keyboard" :class="{enable_delete: (SS.cursorColumn >= 1), enable_enter: (SS.cursorColumn >= 5), }" />
+        <keyboard ref="keyboard" :class="{enable_delete: (cursorColumn >= 1), enable_enter: (cursorColumn >= 5), }" />
     </div>
 </template>
 
@@ -30,7 +30,7 @@ import { wordlessApiService, CheckWordAsyncResponseType } from '@/WordlessAPI'
 
 export default Vue.extend({
     name: 'guess-list',
-
+/*
     data(){
         return {
             appVersion: process.env.VUE_APP_VERSION, 
@@ -39,7 +39,14 @@ export default Vue.extend({
             cursorColumn: 0,
             answer: '',
             guessList: [] as string[],
-            letterGrid: Array(5).fill([ LetterColorPair.empty(),LetterColorPair.empty(),LetterColorPair.empty(),LetterColorPair.empty(),LetterColorPair.empty(), ]),
+            letterGrid: [
+                    [ LetterColorPair.create("11"),LetterColorPair.create("12"),LetterColorPair.create("13"),LetterColorPair.create("14"),LetterColorPair.create("15")], 
+                    [ LetterColorPair.create("21"),LetterColorPair.create("22"),LetterColorPair.create("23"),LetterColorPair.create("24"),LetterColorPair.create("25")], 
+                    [ LetterColorPair.create("31"),LetterColorPair.create("32"),LetterColorPair.create("33"),LetterColorPair.create("34"),LetterColorPair.create("35")], 
+                    [ LetterColorPair.create("41"),LetterColorPair.create("42"),LetterColorPair.create("43"),LetterColorPair.create("44"),LetterColorPair.create("45")], 
+                    [ LetterColorPair.create("51"),LetterColorPair.create("52"),LetterColorPair.create("53"),LetterColorPair.create("54"),LetterColorPair.create("55")], 
+                    [ LetterColorPair.create("61"),LetterColorPair.create("62"),LetterColorPair.create("63"),LetterColorPair.create("64"),LetterColorPair.create("65")], 
+                ],
             statusMessage: '',
             statModalIsActive: false,
             gamePlayState: GamePlayStates.LOADING_WORD,
@@ -47,7 +54,8 @@ export default Vue.extend({
             kbControlKeysCss: { enable_delete: false, enable_enter: false,  },
         };
     },
-
+*/
+    data : SharedState,
     components: { GuessWord, Keyboard },
     computed: {
         SS() {
@@ -66,11 +74,11 @@ export default Vue.extend({
             return SharedState();
         },
         scoreGuessLetter( guessLetter: string, cursorColumn?:number ): ILetterColorPair {
-            const color = (guessLetter === this.SS.answer.charAt(cursorColumn ?? this.SS.cursorColumn)) ? MatchCodes.CORRECT : (this.SS.answer.includes(guessLetter) ? MatchCodes.ELSEWHERE : MatchCodes.MISS);
+            const color = (guessLetter === this.answer.charAt(cursorColumn ?? this.cursorColumn)) ? MatchCodes.CORRECT : (this.answer.includes(guessLetter) ? MatchCodes.ELSEWHERE : MatchCodes.MISS);
             return {color: color, letter: guessLetter } as LetterColorPair;
         },
         setKeyColors() {
-            this.SS.letterGrid[this.SS.cursorRow].forEach(pair=>{
+            this.letterGrid[this.cursorRow].forEach( (pair:LetterColorPair) =>{
                 (this.$refs['keyboard'] as InstanceType<typeof Keyboard>)?.setKeyColor( pair.letter, pair.color );
             });
         },
@@ -80,8 +88,8 @@ export default Vue.extend({
         onWordLoaded(evt: WordLoadedEvt) {
             this.resetState();
 
-            this.SS.answer = evt.word;
-            this.SS.gamePlayState = GamePlayStates.PLAYING;
+            this.answer = evt.word;
+            this.gamePlayState = GamePlayStates.PLAYING;
         },
         // tslint:disable no-unused-vars
         async onTriggerWordLoad(_evt: RequestWordLoadEvt) 
@@ -90,7 +98,7 @@ export default Vue.extend({
                if( response.success )
                {
                     statusMsg( 'Guess the 5-letter word in 6 tries. Good luck!' );
-                    this.SS.apiVersion = response.apiVersion ?? '';
+                    this.apiVersion = response.apiVersion ?? '';
                     EventBus.emit( EventNames.WORD_LOADED, {word: response.word} as WordLoadedEvt );
                }
                else
@@ -103,18 +111,18 @@ export default Vue.extend({
             const key = eventArgs.key;
 
             statusMsg('');
-            const len = SS.cursorColumn;
-            const row = SS.cursorRow;
+            const len = this.cursorColumn;
+            const row = this.cursorRow;
 
             switch (true) {
                 case key === KeyCodes.ENTER && len >= 5:
                     await this.validateAndAcceptWord();
                     break;
                 case key === KeyCodes.DELETE && len > 0:
-                    this.$set(SS.letterGrid[row], --SS.cursorColumn, LetterColorPair.empty());
+                    this.$set(this.letterGrid[row], --this.cursorColumn, LetterColorPair.empty());
                     break;
                 case key.length === 1 && key >= 'A' && key <= 'Z' && len < 5:
-                    this.$set(SS.letterGrid[row], SS.cursorColumn++, this.scoreGuessLetter(key));
+                    this.$set(this.letterGrid[row], this.cursorColumn++, this.scoreGuessLetter(key));
                     break;
                 default:
                     return;
@@ -122,43 +130,43 @@ export default Vue.extend({
         },
         async validateAndAcceptWord() {
             const SS = this.SS;
-            const completedGuessWord = SS.letterGrid[SS.cursorRow].slice(0, SS.cursorColumn).reduce( (acc, item:LetterColorPair )=> acc + item.letter, '');
+            const completedGuessWord = this.letterGrid[this.cursorRow].slice(0, this.cursorColumn).reduce( (acc: string, item:LetterColorPair )=> acc + item.letter, '');
             const resp = await this.validateExistsApiCall(completedGuessWord);
             switch(resp.exists)
             {
                 case false:
                     // word is NOT a dictionary word.  Keep editing this word.
                     if (completedGuessWord === "xyzzy") {
-                        statusMsg(`( ${SS.answer} is the answer :)`);
+                        statusMsg(`( ${this.answer} is the answer :)`);
                     }
                     else {
                         statusMsg(`Sorry, ${completedGuessWord} is not in my dictionary!`);
                     }
                     
                     // erase the last letter and moe cursor back onto screen to make the word editable again
-                    this.$set(SS.letterGrid[SS.cursorRow], --SS.cursorColumn, LetterColorPair.empty());
+                    this.$set(this.letterGrid[this.cursorRow], --this.cursorColumn, LetterColorPair.empty());
                     break;
                 case true:
-                            // Word is valid.  Process the accepted guess.
-                    SS.guessList.push(completedGuessWord);
+                            // Word is valid.  Process the accepted guethis.
+                    this.guessList.push(completedGuessWord);
                     this.setKeyColors();
 
                     // Move to next row (this triggers the css reveal of the row colors) and resets cursor back to start
-                    SS.cursorColumn = 0;
-                    SS.cursorRow++;
+                    this.cursorColumn = 0;
+                    this.cursorRow++;
 
                     // see if we've won or lost.  
                     // Guesses is a 1-based count, so already-incremented S.guessNumber (0-5 playing, 6 if we've lost) is the 1-6 we want.
-                    if (completedGuessWord === SS.answer) {
-                        SS.gamePlayState = GamePlayStates.WON;
-                        EventBus.emit(EventNames.GAME_OVER, { won: true, guesses: SS.cursorRow } as GameOverEvt);
+                    if (completedGuessWord === this.answer) {
+                        this.gamePlayState = GamePlayStates.WON;
+                        EventBus.emit(EventNames.GAME_OVER, { won: true, guesses: this.cursorRow } as GameOverEvt);
                     }
-                    else if (SS.cursorRow >= 6) {
-                        SS.gamePlayState = GamePlayStates.LOST;
-                        EventBus.emit(EventNames.GAME_OVER, { won: false, guesses: SS.cursorRow } as GameOverEvt);
+                    else if (this.cursorRow >= 6) {
+                        this.gamePlayState = GamePlayStates.LOST;
+                        EventBus.emit(EventNames.GAME_OVER, { won: false, guesses: this.cursorRow } as GameOverEvt);
                     }
                     else
-                        await this.displayMatchingWordCount(this.SS.answer, this.SS.guessList);
+                        await this.displayMatchingWordCount(this.answer, this.guessList);
 
                     break;
                 case undefined:

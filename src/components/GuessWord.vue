@@ -2,11 +2,14 @@
     <div class='guess-row row' :class="{ focus: haveFocus, reveal: reveal }">
 
         <div v-for="col in 5" :key='col' class='letter-container'
-            :class="{ focus: haveFocus && col - 1 === SS.cursorColumn }">
+            :class="{ focus: haveFocus && col-1 === SS.cursorColumn }">
             <guess-letter :letterProp="letterRowArrayProp[col -1]" :myColumnProp="col-1"  :myRowProp="myRowProp" />
         </div>
+ 
+        <!--
+    <pre>|{{ JSON.stringify(letterRowArrayProp) }}|</pre>
+-->    </div>
 
-    </div>
 
 </template>
 

@@ -29,6 +29,7 @@ export interface ILetterColorPair { letter: string, color: MatchCodes }
 export class LetterColorPair {
     color: MatchCodes;
     letter: string;
+    
     constructor( letter = '', color: MatchCodes = MatchCodes.DEFAULT) {
         this.color = color;
         this.letter = letter;
@@ -38,8 +39,11 @@ export class LetterColorPair {
         const color = (guessLetter === answer.charAt(guessColumn)) ? MatchCodes.CORRECT : (answer.includes(guessLetter) ? MatchCodes.ELSEWHERE : MatchCodes.MISS);
         return new LetterColorPair(guessLetter, color);
     }
-    static empty( ): LetterColorPair {
+    static empty(  ): LetterColorPair {
         return new LetterColorPair();
+    }
+    static create( letter = '', color: MatchCodes = MatchCodes.DEFAULT): LetterColorPair {
+        return new LetterColorPair(letter, color);
     }
 }
 
