@@ -31,35 +31,13 @@ import { wordlessApiService, CheckWordAsyncResponseType } from '@/WordlessAPI'
 
 export default Vue.extend({
     name: 'guess-list',
-/*
-    data(){
-        return {
-            appVersion: process.env.VUE_APP_VERSION, 
-            apiVersion: '',
-            cursorRow: 0,
-            cursorColumn: 0,
-            answer: '',
-            guessList: [] as string[],
-            letterGrid: [
-                    [ LetterColorPair.create("11"),LetterColorPair.create("12"),LetterColorPair.create("13"),LetterColorPair.create("14"),LetterColorPair.create("15")], 
-                    [ LetterColorPair.create("21"),LetterColorPair.create("22"),LetterColorPair.create("23"),LetterColorPair.create("24"),LetterColorPair.create("25")], 
-                    [ LetterColorPair.create("31"),LetterColorPair.create("32"),LetterColorPair.create("33"),LetterColorPair.create("34"),LetterColorPair.create("35")], 
-                    [ LetterColorPair.create("41"),LetterColorPair.create("42"),LetterColorPair.create("43"),LetterColorPair.create("44"),LetterColorPair.create("45")], 
-                    [ LetterColorPair.create("51"),LetterColorPair.create("52"),LetterColorPair.create("53"),LetterColorPair.create("54"),LetterColorPair.create("55")], 
-                    [ LetterColorPair.create("61"),LetterColorPair.create("62"),LetterColorPair.create("63"),LetterColorPair.create("64"),LetterColorPair.create("65")], 
-                ],
-            statusMessage: '',
-            statModalIsActive: false,
-            gamePlayState: GamePlayStates.LOADING_WORD,
-            enableHardMode: false,
-            kbControlKeysCss: { enable_delete: false, enable_enter: false,  },
-        };
+    data() { 
+        return {};
     },
-*/
-    data() { return {};},
     components: { GuessWord, Keyboard },
     computed: {
-        SS : SharedState
+        SS : SharedState,
+        activeRowObj(): LetterColorPair[] { return this.SS.letterGrid[this.SS.cursorRow]; },
     },
     mounted() {
         EventBus.On(EventNames.WORD_LOADED, this.onWordLoaded.bind(this) as EventHandler);
@@ -107,7 +85,6 @@ export default Vue.extend({
             }
         },
         async keyEventHandler(eventArgs: KBRawKeyClickEvt): Promise<void> {
-            const SS = this.SS;
             const key = eventArgs.key;
 
             statusMsg('');
@@ -129,7 +106,6 @@ export default Vue.extend({
             }
         },
         async validateAndAcceptWord() {
-            const SS = this.SS;
             const completedGuessWord = this.SS.letterGrid[this.SS.cursorRow].slice(0, this.SS.cursorColumn).reduce( (acc: string, item:LetterColorPair )=> acc + item.letter, '');
             //const resp = await this.validateExistsApiCall(completedGuessWord);
             const resp = { success: true, exists:true, message: "", apiVersion: "0.0" };
@@ -301,7 +277,7 @@ export default Vue.extend({
     transform: rotateY(180deg);
 }
 
-.game-won .guess-row.reveal.correct {
+.gamestate-won .guess-row.reveal.correct {
     animation: shake 0.5s;
     animation-iteration-count: 2;
     animation-delay: 2s;
