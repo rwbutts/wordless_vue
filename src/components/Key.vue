@@ -66,18 +66,12 @@ export default Vue.extend({
             }
         },
         handleKeyboardKey(e: KeyboardEvent): void {
-            if ((e.key || '').toUpperCase() === this.char) {
+            let keyTranslated = e.key==='Backspace' ? 'DELETE': e.key.toUpperCase();
+            if (keyTranslated  === this.char) {
                 this.clickHandler();
             }
         },
-        setKeyColor(color: MatchCodes = MatchCodes.DEFAULT) {
-            this.color = color;
-        },
         
-        // eslint-disable-next-line no-unused-vars
-        onWordLoaded(_evt: WordLoadedEvt) {
-            this.setKeyColor();
-        },
         onSetKeyColor(evt: SetKeyColorEvt) {
             if( evt.key==='*' || evt.key==this.char || evt.key==='alpha' && !this.controlKey || evt.key==='nonalpha' && this.controlKey)
             {
@@ -90,7 +84,6 @@ export default Vue.extend({
     },
 
     mounted() {
-        EventBus.On(EventNames.WORD_LOADED, this.onWordLoaded.bind(this) as EventHandler);
         EventBus.On(EventNames.SET_KEY_COLOR, this.onSetKeyColor.bind(this) as EventHandler);
         window.addEventListener('keydown', this.handleKeyboardKey.bind(this));
     },
@@ -99,6 +92,9 @@ export default Vue.extend({
 </script>
 
 <style>
+/*
+default styles for the keyboard keys and the modal close buttons.
+*/
 button.key-button, button.close-button {
     --key-width: min(7vw, 30px);
     display: inline-block;
@@ -113,6 +109,7 @@ button.key-button, button.close-button {
     color: black;
 }
 
+/* keys diabled by default, enabled selectively below */
 button.key-button, .modal-active.modal-active.modal-active button.key-button {
     opacity: .4;
     pointer-events: none;
@@ -123,6 +120,10 @@ button.key-button:active {
 
 }
 
+/* 
+enable keys at desired times, baed on game state,
+and the position of the cursor in the edited line.
+*/
 .gamestate-playing .keyboard.enable_delete .key-delete,
 .gamestate-playing .keyboard.enable_enter .key-enter,
 .gamestate-playing .keyboard:not(.enable_enter) .alpha,
@@ -131,6 +132,7 @@ button.key-button:active {
     pointer-events: all;
 }
 
+/* handle key color values */
 .key-button.default {
     background-color: var(--color-default);
 }
@@ -162,12 +164,10 @@ button.key-button:active {
 }
 
 /*   if expert mode, disable the key if it's a miss.
-     duplicate .miss to increase priority of selector 
+     Duplicate .miss to increase priority of selector 
 */
 .enable-hard-mode .key-button.miss.miss {
     opacity: .6;
     pointer-events: none;
 }
 </style>
-
-<style scoped></style>

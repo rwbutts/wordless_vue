@@ -1,36 +1,30 @@
 "use strict";
 
-import Vue from 'vue'
-import SharedState, { statusMsg,  } from '@/SharedState'
+import Vue from "vue";
+import SharedState, { statusMsg } from "@/SharedState";
 
-import App from '@/App.vue'
-import EventBus, {  } from '@/EventBus';
-import VueCompositionAPI from '@vue/composition-api'
+import App from "@/App.vue";
+import EventBus from "@/EventBus";
+import VueCompositionAPI from "@vue/composition-api";
 
-
-Vue.use( VueCompositionAPI );
-
+Vue.use(VueCompositionAPI);
 
 export const app = new Vue({
-     el: '#app',
-     render: h => h(App),
+    el: "#app",
+    render: (h) => h(App),
 
-     provide: {
-     },
+    provide: {},
 
-     data: {
-     },
+    data: {},
 
-     computed : {
-        SS:SharedState,
-     },
+    computed: {
+        SS: SharedState,
+    },
 
-     methods: {
-     },
+    methods: {},
 
-     async mounted()
-     {
-        statusMsg('Loading ...');
-        setTimeout( ()=>EventBus.emitTriggerWordLoadEvent(), 2000 );
-     }
+    async mounted() {
+        statusMsg("Loading ...");
+        setTimeout(() => EventBus.emitTriggerWordLoadEvent(), 2000);
+    },
 });

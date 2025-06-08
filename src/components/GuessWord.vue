@@ -2,15 +2,14 @@
     <div class='guess-row row' :class="{ focus: haveFocus, reveal: reveal, latest_reveal: recent_reveal, }">
 
         <div v-for="col in 5" :key='col' class='letter-container'
-            :class="{ focus: haveFocus && col-1 === SS.cursorColumn }">
-            <guess-letter :letterProp="letterRowArrayProp[col -1]" :myColumnProp="col-1"  :myRowProp="myRowProp" />
+            :class="{ focus: haveFocus && col - 1 === SS.cursorColumn }">
+            <guess-letter :letterProp="letterRowArrayProp[col - 1]" :myColumnProp="col - 1" :myRowProp="myRowProp" />
         </div>
- 
+
         <!--
     <pre>|{{ JSON.stringify(letterRowArrayProp) }}|</pre>
--->    </div>
-
-
+-->
+    </div>
 </template>
 
 <script lang='ts'>
@@ -38,19 +37,15 @@ export default Vue.extend({
             required: true,
         },
         letterRowArrayProp: Array,
-    //     'letterRowArrayProp': {
-    //         type: Array as PropType<Array<LetterColorPair>>,
-    //         required: true,
-    //     },
-     },
+    },
 
     computed: {
-        SS:SharedState,
+        SS: SharedState,
         reveal() {
             return this.SS.cursorRow > this.myRowProp;
         },
         recent_reveal() {
-            return this.SS.cursorRow === this.myRowProp+1;
+            return this.SS.cursorRow === this.myRowProp + 1;
         },
         haveFocus() {
             return this.SS.cursorRow === this.myRowProp;
@@ -169,7 +164,7 @@ export default Vue.extend({
     transform: rotateY(180deg);
 }
 
-.gamestate-won .guess-row.latest_reveal  {
+.gamestate-won .guess-row.latest_reveal {
     animation: shake 0.5s;
     animation-iteration-count: 2;
     animation-delay: 2s;

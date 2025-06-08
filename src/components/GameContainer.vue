@@ -41,7 +41,7 @@ export default Vue.extend({
     components: { GuessWord, Keyboard },
     computed: {
         SS: SharedState,
-        activeRowObj(): LetterColorPair[] { return this.SS.letterGrid[this.SS.cursorRow]; },
+        cursorWordArray(): LetterColorPair[] { return this.SS.letterGrid[this.SS.cursorRow]; },
     },
     mounted() {
         EventBus.On(EventNames.WORD_LOADED, this.onWordLoaded.bind(this) as EventHandler);
@@ -54,16 +54,13 @@ export default Vue.extend({
             const color = (guessLetter === this.SS.answer.charAt(cursorColumn ?? this.SS.cursorColumn)) ? MatchCodes.CORRECT : (this.SS.answer.includes(guessLetter) ? MatchCodes.ELSEWHERE : MatchCodes.MISS);
             return { color: color, letter: guessLetter } as LetterColorPair;
         },
-        setKeyColors() {
-            this.SS.letterGrid[this.SS.cursorRow].forEach((pair: LetterColorPair) => {
+        setKeyColorsFromCursorRow() {
+            this.cursorWordArray.forEach((pair: LetterColorPair) => {
                 EventBus.emit(EventNames.SET_KEY_COLOR, { key: pair.letter, color: pair.color } as SetKeyColorEvt);
             });
         },
-        resetState() {
-            resetSharedState();
-        },
         onWordLoaded(evt: WordLoadedEvt) {
-            this.resetState();
+            resetSharedState();
             EventBus.emit(EventNames.SET_KEY_COLOR, { key: '*', color: MatchCodes.DEFAULT } as SetKeyColorEvt);
             this.SS.answer = evt.word.toUpperCase();
             this.SS.gamePlayState = GamePlayStates.PLAYING;
@@ -75,8 +72,7 @@ export default Vue.extend({
             const response = await WordlessApiService.getWordAsync();
             console.log("onTriggerWordLoad: got ", response);
             if (response.success) {
-                statusMsg('Guess the 5-letter word in 6 tries. Good luck!');
-                this.SS.apiVersion = response.apiVersion ?? '';
+                this.SS.apiVersion = response.apiVersion ?? 'n/a';
                 EventBus.emit(EventNames.WORD_LOADED, { word: response.word } as WordLoadedEvt);
             }
             else {
@@ -84,34 +80,32 @@ export default Vue.extend({
             }
         },
         async keyEventHandler(eventArgs: KBRawKeyClickEvt): Promise<void> {
-            const key = eventArgs.key;
+            const letter = eventArgs.key;
 
             statusMsg('');
-            const len = this.SS.cursorColumn;
-            const row = this.SS.cursorRow;
+            const nLettersTyped = this.SS.cursorColumn;
 
             switch (true) {
-                case key === KeyCodes.ENTER && len >= 5:
+                case letter === KeyCodes.ENTER && nLettersTyped >= 5:
                     await this.validateAndAcceptWord();
                     break;
-                case key === KeyCodes.DELETE && len > 0:
-                    this.$set(this.SS.letterGrid[row], --this.SS.cursorColumn, LetterColorPair.empty());
+                case letter === KeyCodes.DELETE && nLettersTyped > 0:
+                    this.$set(this.cursorWordArray, --this.SS.cursorColumn, LetterColorPair.empty());
                     break;
-                case key.length === 1 && key >= 'A' && key <= 'Z' && len < 5:
-                    this.$set(this.SS.letterGrid[row], this.SS.cursorColumn, this.scoreGuessLetter(key));
-                    this.SS.cursorColumn++;
+                case letter.length === 1 && letter >= 'A' && letter <= 'Z' && nLettersTyped < 5:
+                    this.$set(this.cursorWordArray, this.SS.cursorColumn++, this.scoreGuessLetter(letter, this.SS.cursorColumn));
                     break;
                 default:
                     return;
             }
         },
         async validateAndAcceptWord() {
-            const completedGuessWord = this.SS.letterGrid[this.SS.cursorRow].slice(0, this.SS.cursorColumn).reduce((acc: string, item: LetterColorPair) => acc + item.letter, '');
+            const completedGuessWord = this.cursorWordArray.reduce((acc: string, lcPair: LetterColorPair) => acc + lcPair.letter, '');
             const resp = await WordlessApiService.checkWordAsync(completedGuessWord);
             switch (resp.exists) {
                 case false:
                     // word is NOT a dictionary word.  Keep editing this word.
-                    if (completedGuessWord === "xyzzy") {
+                    if (completedGuessWord === "XYZZY") {
                         statusMsg(`( ${this.SS.answer} is the answer :)`);
                     }
                     else {
@@ -119,12 +113,12 @@ export default Vue.extend({
                     }
 
                     // erase the last letter and moe cursor back onto screen to make the word editable again
-                    this.$set(this.SS.letterGrid[this.SS.cursorRow], --this.SS.cursorColumn, LetterColorPair.empty());
+                    this.$set(this.cursorWordArray, --this.SS.cursorColumn, LetterColorPair.empty());
                     break;
                 case true:
                     // Word is valid.  Process the accepted guethis.
                     this.SS.guessList.push(completedGuessWord);
-                    this.setKeyColors();
+                    this.setKeyColorsFromCursorRow();
 
                     // Move to next row (this triggers the css reveal of the row colors) and resets cursor back to start
                     this.SS.cursorColumn = 0;
@@ -150,12 +144,12 @@ export default Vue.extend({
             }
         },
         async displayMatchingWordCount(answer: string, guesses: string[]): Promise<void> {
-            const apiResp = await WordlessApiService.getMatchCountAsync(answer, guesses);
-            console.log("displayMatchingWordCount", answer, guesses, apiResp,);
-            if (!apiResp.success) {
-                statusMsg(`Failed to calc remaining: ${apiResp.message}`);
+            const resp = await WordlessApiService.getMatchCountAsync(answer, guesses);
+            console.log("displayMatchingWordCount", answer, guesses, resp,);
+            if (!resp.success) {
+                statusMsg(`Failed to calc remaining: ${resp.message}`);
             } else {
-                statusMsg(`${apiResp.count} remaining word(s) match the clues above.`);
+                statusMsg(`${resp.count} remaining word(s) match the clues above.`);
             }
         },
     },

@@ -1,6 +1,6 @@
 <template>
 
-    <div id="app" class='disable-tap-zoom' :class="{'modal-active': SS.statModalIsActive}">
+    <div id="app" class='disable-tap-zoom' :class="{ 'modal-active': SS.statModalIsActive }">
         <stats :isActive.sync='SS.statModalIsActive' />
         <div class='app-container'>
             <h3 class='title'>Bill's NYTimes <a href='https://www.nytimes.com/games/wordle/index.html'
@@ -46,11 +46,11 @@ export default Vue.extend({
     },
 
     components: {
-        GameContainer, Stats, 
+        GameContainer, Stats,
     },
 
     computed: {
-        SS:SharedState,
+        SS: SharedState,
     },
 });
 </script>
@@ -136,8 +136,6 @@ body {
 .game-container {
     position: static;
 }
-
-
 </style>
 
 <style scoped>
@@ -182,8 +180,6 @@ span.miss {
 </style>
 
 <style>
-
-
 /*
 .gg { border: 1px solid green!important;}
 .gr { border: 1px solid red!important;}

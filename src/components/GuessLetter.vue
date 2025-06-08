@@ -1,6 +1,6 @@
 <template>
 
-    <div class='guess-letter' :class="{[letterProp.color]: true}">
+    <div class='guess-letter' :class="{ [letterProp.color]: true }">
         <div class='front'>
             {{ letterProp.letter }}
         </div>
@@ -26,10 +26,6 @@ export default Vue.extend({
 
     data() {
         return {
-            colorClass: MatchCodes.DEFAULT,
-            letter: '',
-            enabled: false,
-            haveFocus: false,
         };
     },
     props: {
