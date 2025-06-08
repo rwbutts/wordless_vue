@@ -99,8 +99,7 @@ export default Vue.extend({
 </script>
 
 <style>
-button.key-button,
-.modal-active.modal-active.modal-active button.key-button {
+button.key-button, button.close-button {
     --key-width: min(7vw, 30px);
     display: inline-block;
     border: 2px solid grey;
@@ -112,7 +111,9 @@ button.key-button,
     font-size: calc(var(--key-width) * .5);
     font-weight: normal;
     color: black;
+}
 
+button.key-button, .modal-active.modal-active.modal-active button.key-button {
     opacity: .4;
     pointer-events: none;
 }
@@ -122,7 +123,6 @@ button.key-button:active {
 
 }
 
-button.key-button.enabled,
 .gamestate-playing .keyboard.enable_delete .key-delete,
 .gamestate-playing .keyboard.enable_enter .key-enter,
 .gamestate-playing .keyboard:not(.enable_enter) .alpha,

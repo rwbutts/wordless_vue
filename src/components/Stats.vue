@@ -17,7 +17,7 @@
 
         <div class='close-button'>
             <!-- <a @click="Hide();">&#x2716;</a> -->
-            <button class='key-button enabled' @click="closeDialog();" @keyup.enter="closeDialog">
+            <button class='close-button enabled' @click="closeDialog();" @keyup.enter="closeDialog">
                 Close
             </button>
         </div>
@@ -143,6 +143,11 @@ export default Vue.extend({
     border-color: #444;
 }
 
+.modal-active .close-button button{
+    pointer-events: all;
+}
+
+
 h1 {
     font-size: larger;
     margin: 10px 0;
@@ -155,8 +160,8 @@ h2 {
 </style>
 
 <style>
-div.stat-box.showdialog+div.game-container {
-    opacity: 0.2;
+.modal-active .app-container {
+    opacity: 0.4;
     transition: all .4s linear 4s;
     background-color: var(--color-modal-game-background);
 }

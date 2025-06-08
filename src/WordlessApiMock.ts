@@ -1,171 +1,209 @@
-import { assert } from './utils/Misc';
-import {GetWordAsyncResponseType, CheckWordAsyncResponseType, GetMatchCountAsyncResponseType, HealthCheckAsyncResponseType, } from '@/WordlessApi';
+import { assert } from "./utils/Misc";
+import {
+    GetWordAsyncResponseType,
+    CheckWordAsyncResponseType,
+    GetMatchCountAsyncResponseType,
+    HealthCheckAsyncResponseType,
+} from "@/WordlessApi";
 
-const enum ScoreCode { unset=0, not_present, is_elsewhere, correct }
+const enum ScoreCode {
+    unset = 0,
+    not_present,
+    is_elsewhere,
+    correct,
+}
 
-    class GuessScorer
-    {
-        _guessWord : string;
-        _scoreCodes : ScoreCode[];
+class GuessScorer {
+    _guessWord: string;
+    _scoreCodes: ScoreCode[];
 
-
-        constructor( guessWord:string, answerWord:string)
-        {
-            assert(guessWord != null, 'guessWord is empty');
-            assert(answerWord != null, 'answerWord is empty');
-            assert(guessWord.length == answerWord.length, "guessWord and answerWord strings have unequal lengths");
-            this._guessWord = guessWord.toLowerCase();
-            this._scoreCodes = GuessScorer.GetWordScoreCodes(this._guessWord, answerWord.toLowerCase());
-        }
-
-        static GetWordScoreCodes( guessWord: string, answerWord:string ) :ScoreCode[]
-        {
-            const codes: ScoreCode[] = [];
-            for( let i=0; i< guessWord.length; i++ )
-            {
-                codes.push(GuessScorer.GetLetterScoreCode(guessWord, answerWord, i));
-            }
-            return codes;
+    constructor(guessWord: string, answerWord: string) {
+        assert(guessWord != null, "guessWord is empty");
+        assert(answerWord != null, "answerWord is empty");
+        assert(
+            guessWord.length == answerWord.length,
+            "guessWord and answerWord strings have unequal lengths"
+        );
+        this._guessWord = guessWord.toLowerCase();
+        this._scoreCodes = GuessScorer.GetWordScoreCodes(
+            this._guessWord,
+            answerWord.toLowerCase()
+        );
     }
 
-        static GetLetterScoreCode( guessWord:string, answerWord:string, position: number ): ScoreCode
-        {
-            assert(position < guessWord.length, "index past end of string");
-            const guessChar = guessWord.charAt(position);
-
-            return (guessChar == answerWord.charAt(position))
-                    ? ScoreCode.correct
-                    : (answerWord.includes(guessChar) ? ScoreCode.is_elsewhere : ScoreCode.not_present);
+    static GetWordScoreCodes(
+        guessWord: string,
+        answerWord: string
+    ): ScoreCode[] {
+        const codes: ScoreCode[] = [];
+        for (let i = 0; i < guessWord.length; i++) {
+            codes.push(
+                GuessScorer.GetLetterScoreCode(guessWord, answerWord, i)
+            );
         }
-
-        GuessScoresIdenticalAgainst( alternateAnswer:string ) : boolean
-        {
-            const testScore: GuessScorer = GuessScorer.CreateGuessScorer(this._guessWord, alternateAnswer);
-            return (testScore._scoreCodes.length == this._scoreCodes.length)
-                && testScore._scoreCodes.every( (sc, ix )=> sc === this._scoreCodes[ix]);
-        }
-
-        static CreateGuessScorer( guess:string, answer:string ): GuessScorer
-        {
-            return new GuessScorer(guess,answer);
-        }
+        return codes;
     }
 
-export  class WordlessApi
-    {
-        async healthCheckAsync() : Promise<HealthCheckAsyncResponseType>
-        {
-            return { healthy: true, message: 'mock healthy', apiVersion: '0.0'};
+    static GetLetterScoreCode(
+        guessWord: string,
+        answerWord: string,
+        position: number
+    ): ScoreCode {
+        assert(position < guessWord.length, "index past end of string");
+        const guessChar = guessWord.charAt(position);
+
+        return guessChar == answerWord.charAt(position)
+            ? ScoreCode.correct
+            : answerWord.includes(guessChar)
+            ? ScoreCode.is_elsewhere
+            : ScoreCode.not_present;
+    }
+
+    GuessScoresIdenticalAgainst(alternateAnswer: string): boolean {
+        const testScore: GuessScorer = GuessScorer.CreateGuessScorer(
+            this._guessWord,
+            alternateAnswer
+        );
+        return (
+            testScore._scoreCodes.length == this._scoreCodes.length &&
+            testScore._scoreCodes.every((sc, ix) => sc === this._scoreCodes[ix])
+        );
+    }
+
+    static CreateGuessScorer(guess: string, answer: string): GuessScorer {
+        return new GuessScorer(guess, answer);
+    }
+}
+
+export class WordlessApi {
+    async healthCheckAsync(): Promise<HealthCheckAsyncResponseType> {
+        return { healthy: true, message: "mock healthy", apiVersion: "0.0" };
+    }
+
+    async checkWordAsync(word: string): Promise<CheckWordAsyncResponseType> {
+        const exists = WordList.includes(word.toLowerCase());
+        return {
+            exists: exists,
+            success: true,
+            message: exists ? "mock: found" : "mock: not found",
+            apiVersion: "0.0",
+        };
+    }
+
+    async randomWord(): Promise<GetWordAsyncResponseType> {
+        return this.getWordAsync(-1);
+    }
+
+    async getWordAsync(dayIndex = -1): Promise<GetWordAsyncResponseType> {
+        let word: string;
+
+        // for parameter >=0, return word from N days ago (0 = today)
+        if (dayIndex >= 0) {
+            // epoch of 1/1/2023
+            const epoch = new Date(2023, 0, 1, 0, 0, 0);
+
+            /**
+             * number of days since 1/1/2022 minus the DayIndex
+             * F(0) = today's word. -1 = yesterday's word, ...
+             */
+            const nowDaysEpoch = Math.floor(
+                (Date.now() - epoch.getTime()) / (1000 * 3600 * 24)
+            );
+
+            word = new RNG(nowDaysEpoch - dayIndex).choice(WordList);
+        } else {
+            word = new RNG().choice(WordList);
         }
 
-        async checkWordAsync(word: string) : Promise<CheckWordAsyncResponseType>
-        {
-            const exists = WordList.includes(word.toLowerCase());
-            return { exists: exists, success: true, message: exists? 'mock: found': 'mock: not found', apiVersion: '0.0'};
-        }
+        return {
+            word: word,
+            success: true,
+            message: "mock: OK",
+            apiVersion: "0.0",
+        };
+    }
 
-        async randomWord(): Promise<GetWordAsyncResponseType>
-        {
-            return this.getWordAsync(-1);
-        }
-
-        async getWordAsync(dayIndex = -1): Promise<GetWordAsyncResponseType>
-        {
-            let word: string;
-
-            // for parameter >=0, return word from N days ago (0 = today)    
-            if (dayIndex >= 0)
-            {
-                // epoch of 1/1/2023
-                const epoch = new Date(2023, 0, 1, 0, 0, 0);
-
-                /**
-                * number of days since 1/1/2022 minus the DayIndex
-                * F(0) = today's word. -1 = yewsterday's word, ...
-                */
-                const nowDaysEpoch = Math.floor((Date.now() - epoch.getTime()) / (1000 * 3600 * 24));
-
-                word = new RNG(nowDaysEpoch - dayIndex).choice(WordList);
-            }
-            else
-            {
-                word = new RNG().choice(WordList);
-            }
-
-            return { word: word, success: true, message:  'mock: OK', apiVersion: '0.0'};
-        }
-
-        async getMatchCountAsync(answer :string, guessArray: string[]): Promise<GetMatchCountAsyncResponseType>
-        {
-            /*
+    async getMatchCountAsync(
+        answer: string,
+        guessArray: string[]
+    ): Promise<GetMatchCountAsyncResponseType> {
+        /*
             precompute the score color codes for each letter in the guess against the
             real answer word.  These are eqivalent to the guess color clues seen by the player.
             */
-            const actualScores: GuessScorer[] = [];
-            guessArray.forEach( (g) => actualScores.push(GuessScorer.CreateGuessScorer(g, answer)));
+        const actualScores: GuessScorer[] = [];
+        guessArray.forEach((g) =>
+            actualScores.push(GuessScorer.CreateGuessScorer(g, answer))
+        );
 
-            let matchCount = 0;
-            for (const candidate of WordList )
-            {
-                // Count any word that yields the same colors the the real answer yielded
-                // for all guesses.
-                if (actualScores.every( (score) => score.GuessScoresIdenticalAgainst(candidate)))
-                {
-                    matchCount++;
-                }
+        let matchCount = 0;
+        for (const candidate of WordList) {
+            // Count any word that yields the same colors the the real answer yielded
+            // for all guesses.
+            if (
+                actualScores.every((score) =>
+                    score.GuessScoresIdenticalAgainst(candidate)
+                )
+            ) {
+                matchCount++;
             }
-
-            return { count: matchCount, success: true, message:  'mock: OK', apiVersion: '0.0'};
         }
-/*
+
+        return {
+            count: matchCount,
+            success: true,
+            message: "mock: OK",
+            apiVersion: "0.0",
+        };
+    }
+    /*
         GetAssemblyVersionString(defaultFallback?: string ): string
         {
             return "mock n/a";
         }
-*/        
-     }
+*/
+}
 export default new WordlessApi();
 
- class RNG
- {
-    m = 0x80000000; 
+class RNG {
+    m = 0x80000000;
     a = 1103515245;
     c = 12345;
     state: number;
 
- constructor(seed?: number) {
-    // LCG using GCC's constants
-  
-    this.state = seed ? seed : Math.floor(Math.random() * (this.m - 1));
-  }
+    constructor(seed?: number) {
+        // LCG using GCC's constants
 
-  seed( seed: number ) {
-    this.state = seed;
-  }
+        this.state = seed ? seed : Math.floor(Math.random() * (this.m - 1));
+    }
 
-  nextInt() {
-    this.state = (this.a * this.state + this.c) % this.m;
-    return this.state;
-  }
+    seed(seed: number) {
+        this.state = seed;
+    }
 
-  nextFloat() {
-    // returns in range [0,1]
-    return this.nextInt() / (this.m - 1);
-  }
+    nextInt() {
+        this.state = (this.a * this.state + this.c) % this.m;
+        return this.state;
+    }
 
-  nextRange(start:number, end:number):number {
-    // returns in range [start, end): including start, excluding end
-    // can't modulu nextInt because of weak randomness in lower bits
-    const rangeSize = end - start;
-    const randomUnder1 = this.nextInt() / this.m;
-    return start + Math.floor(randomUnder1 * rangeSize);
-  }
+    nextFloat() {
+        // returns in range [0,1]
+        return this.nextInt() / (this.m - 1);
+    }
 
-  choice<T>( array: T[]): T {
-    return array[this.nextRange(0, array.length)];
-  }
+    nextRange(start: number, end: number): number {
+        // returns in range [start, end): including start, excluding end
+        // can't modulu nextInt because of weak randomness in lower bits
+        const rangeSize = end - start;
+        const randomUnder1 = this.nextInt() / this.m;
+        return start + Math.floor(randomUnder1 * rangeSize);
+    }
+
+    choice<T>(array: T[]): T {
+        return array[this.nextRange(0, array.length)];
+    }
 }
- const WordList = [
+const WordList = [
     "abaci",
     "aback",
     "abaft",

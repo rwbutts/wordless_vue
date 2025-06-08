@@ -48,9 +48,6 @@ export default Vue.extend({
     },
     computed: {
         SS: SharedState,
-        // focus() {
-        //     return this.SS.cursorColumn === this.my_column_prop && this.SS.cursorRow === this.my_row_prop;
-        // },
     },
 });
 

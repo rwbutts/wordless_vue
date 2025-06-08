@@ -1,7 +1,7 @@
 "use strict";
 
 import Vue from 'vue'
-import SharedState, { resetSharedState, statusMsg,  } from '@/SharedState'
+import SharedState, { statusMsg,  } from '@/SharedState'
 
 import App from '@/App.vue'
 import EventBus, {  } from '@/EventBus';
@@ -30,7 +30,7 @@ export const app = new Vue({
 
      async mounted()
      {
-        console.log(this.SS.letterGrid);
-          setTimeout( ()=>EventBus.emitTriggerWordLoadEvent(), 2000 );
+        statusMsg('Loading ...');
+        setTimeout( ()=>EventBus.emitTriggerWordLoadEvent(), 2000 );
      }
 });

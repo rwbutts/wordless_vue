@@ -1,10 +1,11 @@
 <template>
 
-    <div id="app" class='disable-tap-zoom'>
+    <div id="app" class='disable-tap-zoom' :class="{'modal-active': SS.statModalIsActive}">
         <stats :isActive.sync='SS.statModalIsActive' />
-        <div class='game-container disable-tap-zoom' :class="{ [SS.gamePlayState]: true, 'enable-hard-mode': SS.enableHardMode }" >
-          <h3 class='title'>Bill's NYTimes <a href='https://www.nytimes.com/games/wordle/index.html' target='_blank'>Wordle</a>&trade; Clone</h3>
-          <guess-list  />
+        <div class='app-container'>
+            <h3 class='title'>Bill's NYTimes <a href='https://www.nytimes.com/games/wordle/index.html'
+                    target='_blank'>Wordle</a>&trade; Clone</h3>
+            <game-container />
             <div class='footer'>
                 <label class='hard-checkbox small-text'>
                     <input type="checkbox" v-model="SS.enableHardMode">
@@ -24,7 +25,6 @@
             </div>
         </div>
     </div>
-
 </template>
 
 <script lang='ts'>
@@ -32,7 +32,7 @@
 // @ts-check
 
 import Vue from 'vue'
-import GuessList from '@/components/GuessList.vue'
+import GameContainer from '@/components/GameContainer.vue'
 import Stats from '@/components/Stats.vue'
 import SharedState from './SharedState'
 
@@ -46,7 +46,7 @@ export default Vue.extend({
     },
 
     components: {
-        GuessList, Stats, 
+        GameContainer, Stats, 
     },
 
     computed: {
@@ -70,7 +70,7 @@ export default Vue.extend({
     --color-title: rgb(23, 170, 23);
     --color-stats-background: white;
     --color-stats-text: #444;
-    --color-modal-game-background: #white;
+    --color-modal-game-background: white;
     --color-viewport-color: #eee;
 }
 
@@ -137,9 +137,7 @@ body {
     position: static;
 }
 
-.game-container.modal-active {
-    pointer-events: none;
-}
+
 </style>
 
 <style scoped>
@@ -178,8 +176,8 @@ span.miss {
 
 .hard-checkbox input {
     margin-bottom: 0px;
-    height: 1.5vh;
-    width: 1.5vh;
+    height: 2vh;
+    width: 2vh;
 }
 </style>
 
