@@ -4,7 +4,7 @@ export type SafeIndexer<T> = { [K in keyof T]: T[K]; };
 export type PlainObject = Record<string, unknown>;
 export type EventHandler<T = unknown> = (event: T) => void;
 export const enum EventNames{ KB_RAWKEY='kb_raw_key',  
-    TRIGGER_WORD_LOAD='load_word', GUESS_ACCEPTED='guess_accepted', WORD_LOADED='word_loaded', GAME_OVER='game_over',
+    TRIGGER_WORD_LOAD='load_word', GUESS_ACCEPTED='guess_accepted', WORD_LOADED='word_loaded', GAME_OVER='game_over', SET_KEY_COLOR='set_key_color',
 }
 
 
@@ -13,7 +13,7 @@ export type EmptyObject = Record<string, never>
 export interface GameOverEvt extends BaseEvt { won: boolean, guesses: number, }  
 export interface KBRawKeyClickEvt extends BaseEvt { key: string}
 export interface WordLoadedEvt extends BaseEvt { word: string, }
-//export interface SetComponentClassEvt extends BaseEvt { targetClass: string, targetInstance?: string, classes: Record<string, boolean> }
+export interface SetKeyColorEvt extends BaseEvt { key: string, color: MatchCodes }
 export type  RequestWordLoadEvt = EmptyObject
 
 export interface KbControlKeysCss {enable_delete: boolean, enable_enter: boolean}

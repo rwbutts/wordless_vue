@@ -1,5 +1,5 @@
 <template>
-    <div class='guess-row row' :class="{ focus: haveFocus, reveal: reveal }">
+    <div class='guess-row row' :class="{ focus: haveFocus, reveal: reveal, latest_reveal: recent_reveal, }">
 
         <div v-for="col in 5" :key='col' class='letter-container'
             :class="{ focus: haveFocus && col-1 === SS.cursorColumn }">
@@ -20,7 +20,6 @@
 import Vue, { PropType } from 'vue'
 import GuessLetter from './GuessLetter.vue';
 import SharedState from '@/SharedState'
-import { LetterColorPair } from '@/types';
 
 export default Vue.extend({
     name: 'guess-word',
@@ -49,6 +48,9 @@ export default Vue.extend({
         SS:SharedState,
         reveal() {
             return this.SS.cursorRow > this.myRowProp;
+        },
+        recent_reveal() {
+            return this.SS.cursorRow === this.myRowProp+1;
         },
         haveFocus() {
             return this.SS.cursorRow === this.myRowProp;
@@ -167,7 +169,7 @@ export default Vue.extend({
     transform: rotateY(180deg);
 }
 
-.game-won .guess-row.reveal.correct {
+.gamestate-won .guess-row.latest_reveal  {
     animation: shake 0.5s;
     animation-iteration-count: 2;
     animation-delay: 2s;

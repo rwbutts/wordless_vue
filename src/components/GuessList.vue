@@ -20,14 +20,15 @@
 // @ts-check
 
 import Keyboard from '@/components/Keyboard.vue'
-import Vue, { PropType } from 'vue'
+import Vue from 'vue'
 import GuessWord from './GuessWord.vue'
 import { EventNames, EventHandler, WordLoadedEvt, GameOverEvt, 
-    GamePlayStates, KeyCodes, MatchCodes, LetterColorPair, ILetterColorPair, PlainObject, KBRawKeyClickEvt,
-    RequestWordLoadEvt, } from '@/types'
-import EventBus from '@/EventBus';
+    GamePlayStates, KeyCodes, MatchCodes, LetterColorPair, ILetterColorPair, KBRawKeyClickEvt,
+    RequestWordLoadEvt,
+    SetKeyColorEvt, } from '@/types'
+import EventBus from '@/EventBus'
 import SharedState, { resetSharedState, statusMsg,  } from '@/SharedState'
-import { wordlessApiService, CheckWordAsyncResponseType } from '@/WordlessAPI'
+import  WordlessApiService from '@/WordlessApiMock'
 
 export default Vue.extend({
     name: 'guess-list',
@@ -55,7 +56,7 @@ export default Vue.extend({
         },
         setKeyColors() {
             this.SS.letterGrid[this.SS.cursorRow].forEach( (pair:LetterColorPair) =>{
-                (this.$refs['keyboard'] as InstanceType<typeof Keyboard>)?.setKeyColor( pair.letter, pair.color );
+                EventBus.emit(EventNames.SET_KEY_COLOR, {key: pair.letter, color: pair.color} as SetKeyColorEvt);
             });
         },
         resetState() {
@@ -63,7 +64,7 @@ export default Vue.extend({
         },
         onWordLoaded(evt: WordLoadedEvt) {
             this.resetState();
-
+            EventBus.emit(EventNames.SET_KEY_COLOR, {key: '*', color: MatchCodes.DEFAULT} as SetKeyColorEvt);
             this.SS.answer = evt.word.toUpperCase();
             this.SS.gamePlayState = GamePlayStates.PLAYING;
         },
@@ -71,8 +72,8 @@ export default Vue.extend({
         async onTriggerWordLoad(_evt: RequestWordLoadEvt) 
         {
             console.log("onTriggerWordLoad");
-            //const response = await wordlessApiService.getWordAsync();
-            const response = { success: true, word:"apple", message: "OK", apiVersion: "0.0" };
+            const response = await WordlessApiService.getWordAsync();
+            console.log("onTriggerWordLoad: got ", response );
             if( response.success )
             {
                 statusMsg( 'Guess the 5-letter word in 6 tries. Good luck!' );
@@ -99,7 +100,8 @@ export default Vue.extend({
                     this.$set(this.SS.letterGrid[row], --this.SS.cursorColumn, LetterColorPair.empty());
                     break;
                 case key.length === 1 && key >= 'A' && key <= 'Z' && len < 5:
-                    this.$set(this.SS.letterGrid[row], this.SS.cursorColumn++, this.scoreGuessLetter(key));
+                    this.$set(this.SS.letterGrid[row], this.SS.cursorColumn, this.scoreGuessLetter(key));
+                    this.SS.cursorColumn++;
                     break;
                 default:
                     return;
@@ -107,8 +109,7 @@ export default Vue.extend({
         },
         async validateAndAcceptWord() {
             const completedGuessWord = this.SS.letterGrid[this.SS.cursorRow].slice(0, this.SS.cursorColumn).reduce( (acc: string, item:LetterColorPair )=> acc + item.letter, '');
-            //const resp = await this.validateExistsApiCall(completedGuessWord);
-            const resp = { success: true, exists:true, message: "", apiVersion: "0.0" };
+            const resp = await WordlessApiService.checkWordAsync(completedGuessWord);
             switch(resp.exists)
             {
                 case false:
@@ -152,17 +153,14 @@ export default Vue.extend({
             }
         },
         async displayMatchingWordCount(answer: string, guesses: string[]): Promise<void> {
-            //const apiResp = await wordlessApiService.getMatchCountAsync(answer, guesses);
-            const apiResp = { success: true, count:10, message: "OK", apiVersion: "0.0" };
+            const apiResp = await WordlessApiService.getMatchCountAsync(answer, guesses);
+            console.log("displayMatchingWordCount", answer,guesses,apiResp, );
             if (!apiResp.success) {
                 statusMsg(`Failed to calc remaining: ${apiResp.message}`);
             } else {
                 statusMsg(`${apiResp.count} remaining word(s) match the clues above.`);
             }
         },
-        async validateExistsApiCall(word: string): Promise<CheckWordAsyncResponseType> {
-            return await wordlessApiService.checkWordAsync(word);
-        }
     },
 });
 </script>

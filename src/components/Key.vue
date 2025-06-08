@@ -1,7 +1,7 @@
 <template>
 
     <BUTTON href='#' class='key-button' @click="clickHandler"
-        :class="{ [color]: true, [keyNameClass]: true, 'key-down': keyDown,  }">
+        :class="{ [color]: true, [keyNameClass]: true, [controlKey?'nonalpha':'alpha']: true, 'key-down': keyDown,  }">
         {{ label ? label : char }}
     </BUTTON>
 
@@ -12,7 +12,7 @@
 // @ts-check
 //import SharedState from '@/SharedState'
 import Vue, { PropType, } from 'vue'
-import { EventNames, KBRawKeyClickEvt, MatchCodes, WordLoadedEvt, EventHandler, } from '@/types';
+import { EventNames, KBRawKeyClickEvt, MatchCodes, WordLoadedEvt, EventHandler, SetKeyColorEvt, } from '@/types';
 import EventBus, {  } from '../EventBus';
 
 export default Vue.extend({
@@ -32,7 +32,7 @@ export default Vue.extend({
             default: "",
         },
 
-        control_key: {
+        controlKey: {
             type: Boolean as PropType<boolean>,
             default: false,
         },
@@ -61,6 +61,7 @@ export default Vue.extend({
             if ('none' !== window.getComputedStyle(this.$el).getPropertyValue('pointer-events')) {
                 this.keyDown = true;
                 EventBus.emit(EventNames.KB_RAWKEY, {key: this.char } as KBRawKeyClickEvt);
+                this.$emit('click', {key: this.char });
                 setTimeout(() => (this.keyDown = false), 100);
             }
         },
@@ -77,10 +78,20 @@ export default Vue.extend({
         onWordLoaded(_evt: WordLoadedEvt) {
             this.setKeyColor();
         },
+        onSetKeyColor(evt: SetKeyColorEvt) {
+            if( evt.key==='*' || evt.key==this.char || evt.key==='alpha' && !this.controlKey || evt.key==='nonalpha' && this.controlKey)
+            {
+                if( evt.key ==='*' || evt.color === MatchCodes.DEFAULT || this.color != MatchCodes.CORRECT )
+                {
+                    this.color = evt.color;
+                }
+            }
+        }
     },
 
     mounted() {
-        EventBus.On(EventNames.WORD_LOADED, this.onWordLoaded.bind(this) as EventHandler)
+        EventBus.On(EventNames.WORD_LOADED, this.onWordLoaded.bind(this) as EventHandler);
+        EventBus.On(EventNames.SET_KEY_COLOR, this.onSetKeyColor.bind(this) as EventHandler);
         window.addEventListener('keydown', this.handleKeyboardKey.bind(this));
     },
 
@@ -154,7 +165,7 @@ button.key-button.enabled,
      duplicate .miss to increase priority of selector 
 */
 .enable-hard-mode .key-button.miss.miss {
-    opacity: .4;
+    opacity: .6;
     pointer-events: none;
 }
 </style>
