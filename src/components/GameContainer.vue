@@ -1,13 +1,14 @@
 <template>
     <div id="app" class='disable-tap-zoom' :class="{ 'modal-active': statModalIsActive }">
-        <stats :isActive.sync='statModalIsActive' ref='stats'/>
+        <stats :isActive.sync='statModalIsActive' ref='stats' />
         <div class='app-container'>
             <h3 class='title'>Bill's NYTimes <a href='https://www.nytimes.com/games/wordle/index.html'
                     target='_blank'>Wordle</a>&trade; Clone</h3>
             <div class='game-container disable-tap-zoom'
                 :class="{ [gamePlayState]: true, 'enable-hard-mode': enableHardMode }">
                 <div class='guess-list'>
-                    <guess-word v-for="row  in 6" :key="row" :wordProp="rowWord(row)" :answerProp="answer" :myRowProp="row - 1" :activeRowProp='nGuesses'>
+                    <guess-word v-for="row in 6" :key="row" :wordProp="rowWord(row)" :answerProp="answer"
+                        :myRowProp="row - 1" :activeRowProp='nGuesses'>
                     </guess-word>
                 </div>
                 <div class='status-area'>
@@ -17,7 +18,8 @@
                     <h3 class='status status-game-won'>Congratulations, you got it! Please hire me!</h3>
                 </div>
 
-                <line-edit  :editWord.sync="editWord" @validated="onValidated" @message="statusMsg" @key="statusMsg('')" />
+                <line-edit :editWord.sync="editWord" @validated="onValidated" @message="statusMsg" @key="statusMsg('')"
+                    @reset="triggerWordLoad" />
             </div>
 
             <div class='footer'>
@@ -51,8 +53,8 @@ import GuessWord from './GuessWord.vue'
 import LineEdit from './LineEdit.vue'
 import Stats from './Stats.vue'
 import {
-    EventNames, EventHandler, GameOverEvt,
-    GamePlayStates, MatchCodes, 
+    EventNames, GameOverEvt,
+    GamePlayStates, MatchCodes,
     SetKeyColorEvt,
     WordValidatedEvt,
 } from '@/types'
@@ -61,15 +63,14 @@ import WordlessApiService from '@/WordlessApiMock'
 
 export default Vue.extend({
     name: 'game-container',
-    
     data() {
         return {
             guesses: [] as string[],
-            editWord : '',
-            gamePlayState : GamePlayStates.LOADING_WORD,
+            editWord: '',
+            gamePlayState: GamePlayStates.LOADING_WORD,
             answer: '',
             statModalIsActive: false,
-            appVersion: '',
+            appVersion: process.env.VUE_APP_VERSION,
             apiVersion: '',
             statusMessage: 'Loading ...',
             enableHardMode: false,
@@ -83,19 +84,17 @@ export default Vue.extend({
         },
     },
     mounted() {
-        EventBus.On(EventNames.TRIGGER_WORD_LOAD, this.onTriggerWordLoad.bind(this) as EventHandler);
+        setTimeout(() => this.triggerWordLoad(), 2000);
     },
-
     methods: {
-        statusMsg( msg: string) {
+        statusMsg(msg: string) {
             this.statusMessage = msg;
-            console.log('satus', msg);
         },
-        rowWord( row: number ): string {
-            if( row -1 === this.nGuesses) {
+        rowWord(row: number): string {
+            if (row - 1 === this.nGuesses) {
                 return this.editWord;
-            } else if( row-1 < this.nGuesses ) {
-                return this.guesses[row-1];
+            } else if (row - 1 < this.nGuesses) {
+                return this.guesses[row - 1];
             } else {
                 return '';
             }
@@ -103,39 +102,38 @@ export default Vue.extend({
         async onValidated(e: WordValidatedEvt) {
             this.guesses.push(e.word);
             this.setKeyColorsFromGuess(e.word);
-            switch(true)
-            {
+            switch (true) {
                 case e.word === this.answer:
                     this.gamePlayState = GamePlayStates.WON;
-                    this.onGameOver({ won: true, guesses: this.nGuesses} as GameOverEvt);
+                    this.onGameOver({ won: true, guesses: this.nGuesses } as GameOverEvt);
                     this
                     break;
                 case this.guesses.length >= 6:
                     this.gamePlayState = GamePlayStates.LOST;
-                    this.onGameOver({ won: false, guesses: this.nGuesses} as GameOverEvt);
+                    this.onGameOver({ won: false, guesses: this.nGuesses } as GameOverEvt);
                     break;
                 default:
                     await this.displayMatchingWordCount(this.answer, this.guesses);
             }
         },
-        setKeyColorsFromGuess( guess: string) {
-            for(let i=0; i<guess.length; i++ ) {
+        setKeyColorsFromGuess(guess: string) {
+            for (let i = 0; i < guess.length; i++) {
                 const gc = guess.charAt(i);
                 const color = (gc === this.answer.charAt(i)) ? MatchCodes.CORRECT : (this.answer.includes(gc) ? MatchCodes.ELSEWHERE : MatchCodes.MISS);
                 EventBus.emit(EventNames.SET_KEY_COLOR, { key: gc, color: color } as SetKeyColorEvt);
             }
         },
         resetState() {
-                this.guesses = [];
-                EventBus.emit(EventNames.SET_KEY_COLOR, { key: '*', color: MatchCodes.DEFAULT } as SetKeyColorEvt);
-                this.gamePlayState = GamePlayStates.PLAYING;
+            this.guesses = [];
+            EventBus.emit(EventNames.SET_KEY_COLOR, { key: '*', color: MatchCodes.DEFAULT } as SetKeyColorEvt);
+            this.gamePlayState = GamePlayStates.PLAYING;
         },
         // @typescript-eslint-disable-next-line no-unused-vars
-        async onTriggerWordLoad() {
+        async triggerWordLoad() {
             this.statusMsg("Loading ...");
             const response = await WordlessApiService.getWordAsync();
             console.log("onTriggerWordLoad: got ", response);
-            if ( response.success) {
+            if (response.success) {
                 this.answer = response.word?.toUpperCase() as string;
                 this.resetState();
                 this.apiVersion = response.apiVersion ?? 'n/a';
@@ -188,8 +186,11 @@ export default Vue.extend({
 }
 
 @media (min-width: 768px) {}
+
 @media (min-width: 992px) {}
+
 @media (min-width: 1200px) {}
+
 @media (min-width: 1400px) {}
 
 html {
@@ -279,15 +280,6 @@ span.miss {
     width: 2vh;
 }
 
-.game-in-progress .guess-row.current>.letter-container {
-    border: 3px solid #888;
-
-}
-
-.game-in-progress .guess-row.current>.letter-container.current {
-    border: 3px solid #888;
-    background-color: #fee;
-}
 
 
 .status-area {

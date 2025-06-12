@@ -33,8 +33,7 @@ import Vue, { PropType } from 'vue'
 import StatBar from './StatBar.vue'
 import CumulativeStats from '@/CumulativeStats'
 import { assert } from '@/utils/Misc';
-import { EventNames, GameOverEvt, EventHandler } from '@/types'
-import EventBus from '@/EventBus';
+import { GameOverEvt, } from '@/types'
 
 export default Vue.extend({
     name: 'statbox',
@@ -56,10 +55,6 @@ export default Vue.extend({
             required: true,
         }
     },
-
-    watch: {
-    },
-
     methods: {
         histogramPct(NTries: number): number {
             return Math.floor((this.cumStats.histogramBins[NTries - 1] / this.cumStats.gamesWon) * 100 + 0.5);
@@ -103,12 +98,10 @@ export default Vue.extend({
     mounted() {
         this.handleKey = this.handleKey.bind(this);
         window.addEventListener('keydown', this.handleKey);
-        EventBus.On( EventNames.GAME_OVER,this.onGameOver as EventHandler);
     },
 });
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .stat-box.showdialog {
     display: block;
