@@ -1,32 +1,58 @@
 <template>
-    <div class='game-container disable-tap-zoom'
-        :class="{ [gamePlayState]: true, 'enable-hard-mode': enableHardMode }">
-        <div class='guess-list'>
-            <guess-word v-for="row  in 6" :key="row" :wordProp="rowWord(row)" :answerProp="answer" :myRowProp="row - 1" :activeRowProp='nGuesses'>
-            </guess-word>
-        </div>
-        <div class='status-area'>
-            <h3 class='status status-game-loading'> Loading ...</h3>
-            <h3 class='status status-game-in-progress'> {{ statusMessage }}</h3>
-            <h3 class='status status-game-lost'>Sorry, the answer is {{ answer }}</h3>
-            <h3 class='status status-game-won'>Congratulations, you got it! Please hire me!</h3>
-        </div>
+    <div id="app" class='disable-tap-zoom' :class="{ 'modal-active': statModalIsActive }">
+        <stats :isActive.sync='statModalIsActive' ref='stats'/>
+        <div class='app-container'>
+            <h3 class='title'>Bill's NYTimes <a href='https://www.nytimes.com/games/wordle/index.html'
+                    target='_blank'>Wordle</a>&trade; Clone</h3>
+            <div class='game-container disable-tap-zoom'
+                :class="{ [gamePlayState]: true, 'enable-hard-mode': enableHardMode }">
+                <div class='guess-list'>
+                    <guess-word v-for="row  in 6" :key="row" :wordProp="rowWord(row)" :answerProp="answer" :myRowProp="row - 1" :activeRowProp='nGuesses'>
+                    </guess-word>
+                </div>
+                <div class='status-area'>
+                    <h3 class='status status-game-loading'> Loading ...</h3>
+                    <h3 class='status status-game-in-progress'> {{ statusMessage }}</h3>
+                    <h3 class='status status-game-lost'>Sorry, the answer is {{ answer }}</h3>
+                    <h3 class='status status-game-won'>Congratulations, you got it! Please hire me!</h3>
+                </div>
 
-        <line-edit  :editWord.sync="editWord" @validated="onValidated" @message="statusMsg" @key="statusMsg('')"/>
+                <line-edit  :editWord.sync="editWord" @validated="onValidated" @message="statusMsg" @key="statusMsg('')" />
+            </div>
+
+            <div class='footer'>
+                <label class='hard-checkbox small-text'>
+                    <input type="checkbox" v-model="enableHardMode">
+                    <b>Hard Mode:</b> when checked, grey letters cannot be reused
+                </label>
+                <br>
+                <br>
+                <span class='correct'>Green</span>: correct;
+                <span class='elsewhere'>Yellow</span>: wrong position;
+                <span class='miss'>Grey</span>: not in word
+                <br>
+                <!-- <span class='small-text'>The unknown word may be plural</span> -->
+                <span class='small-text version-info'>
+                    app_ver: {{ appVersion }}
+                    <span v-if="apiVersion !== ''">, api_ver: {{ apiVersion }} </span>
+                </span>
+            </div>
+        </div>
     </div>
+
 </template>
 
 <script lang='ts'>
+/* eslint-disable no-unused-vars */
 "use strict";
-// @ts-check
 
 import Vue from 'vue'
 import GuessWord from './GuessWord.vue'
 import LineEdit from './LineEdit.vue'
+import Stats from './Stats.vue'
 import {
     EventNames, EventHandler, GameOverEvt,
     GamePlayStates, MatchCodes, 
-    RequestWordLoadEvt,
     SetKeyColorEvt,
     WordValidatedEvt,
 } from '@/types'
@@ -35,23 +61,22 @@ import WordlessApiService from '@/WordlessApiMock'
 
 export default Vue.extend({
     name: 'game-container',
-    props: {
-        'enableHardMode': {
-            type: Boolean,
-            required: true,
-        },
-    },
-
+    
     data() {
         return {
             guesses: [] as string[],
             editWord : '',
             gamePlayState : GamePlayStates.LOADING_WORD,
             answer: '',
+            statModalIsActive: false,
+            appVersion: '',
+            apiVersion: '',
             statusMessage: 'Loading ...',
+            enableHardMode: false,
+
         };
     },
-    components: { GuessWord, LineEdit, },
+    components: { GuessWord, LineEdit, Stats, },
     computed: {
         nGuesses(): number {
             return this.guesses.length;
@@ -77,14 +102,19 @@ export default Vue.extend({
         async onValidated(e: WordValidatedEvt) {
             this.guesses.push(e.word);
             this.setKeyColorsFromGuess(e.word);
-            if( e.word === this.answer ) {
-                this.gamePlayState = GamePlayStates.WON;
-                this.$emit('gameover', { won: true, guesses: this.nGuesses} as GameOverEvt);
-            } else if( this.guesses.length >=6 ) {
-                this.gamePlayState = GamePlayStates.LOST;
-                this.$emit('gameover', { won: false, guesses: this.nGuesses} as GameOverEvt);
-            } else {
-                await this.displayMatchingWordCount(this.answer, this.guesses);
+            switch(true)
+            {
+                case e.word === this.answer:
+                    this.gamePlayState = GamePlayStates.WON;
+                    this.onGameOver({ won: true, guesses: this.nGuesses} as GameOverEvt);
+                    this
+                    break;
+                case this.guesses.length >= 6:
+                    this.gamePlayState = GamePlayStates.LOST;
+                    this.onGameOver({ won: false, guesses: this.nGuesses} as GameOverEvt);
+                    break;
+                default:
+                    await this.displayMatchingWordCount(this.answer, this.guesses);
             }
         },
         setKeyColorsFromGuess( guess: string) {
@@ -100,7 +130,7 @@ export default Vue.extend({
                 this.gamePlayState = GamePlayStates.PLAYING;
         },
         // @typescript-eslint-disable-next-line no-unused-vars
-        async onTriggerWordLoad(_evt: RequestWordLoadEvt) {
+        async onTriggerWordLoad() {
             this.statusMsg("Loading ...");
             const response = await WordlessApiService.getWordAsync();
             console.log("onTriggerWordLoad: got ", response);
@@ -122,40 +152,129 @@ export default Vue.extend({
                 this.statusMsg(`${resp.count} remaining word(s) match the clues above.`);
             }
         },
+        onGameOver(e: GameOverEvt) {
+            (this.$refs['stats'] as InstanceType<typeof Stats>).onGameOver(e);
+        },
+
     },
 });
 </script>
 
 <style>
-.guess-letter {
-    position: absolute;
-    left: 0;
-    top: 0;
-    display: inline-block;
-    width: 100%;
-    height: 100%;
-    font-size: min(7vw, 35px);
-    font-weight: normal;
-    font-family: Arial, sans-serif;
-    transition: transform .75s;
-    transform-style: preserve-3D;
+:root {
+    --status-font-size: 12px;
+    --title-font-size: min(4vw, 25px);
+    --footer-font-size: min(3vw, 15px);
+    --color-correct: rgb(137, 233, 137);
+    --color-elsewhere: rgb(238, 222, 152);
+    --color-miss: #AAA;
+    --color-default: #FFF;
+    --color-status-err: #822;
+    --color-status: #000;
+    --color-game-background: white;
+    --color-title: rgb(23, 170, 23);
+    --color-stats-background: white;
+    --color-stats-text: #444;
+    --color-modal-game-background: white;
+    --color-viewport-color: #eee;
 }
-</style>
 
-<style scoped>
-.guess-row {
+@media (min-width: 576px) {
+    :root {
+        --status-font-size: 14px;
+    }
+}
+
+@media (min-width: 768px) {}
+@media (min-width: 992px) {}
+@media (min-width: 1200px) {}
+@media (min-width: 1400px) {}
+
+html {
+    height: 100%;
     display: flex;
     justify-content: center;
+    align-items: flex-start;
+    background-color: var(--color-viewport-color);
 }
 
-.letter-container {
+div {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    height: auto;
+    width: auto;
+}
+
+#app {
+    font-family: Arial, sans-serif;
+    color: #2c3e50;
+    background-color: var(--color-game-background);
+    border: 1px solid #aaa;
+    box-shadow: 7px 7px #ddd;
+    padding: 5px 10px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    touch-action: 'manipulation';
+    /* disable iphone default tap zoom action */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
     position: relative;
-    height: min(8vw, 40px);
-    width: min(8vw, 40px);
-    margin: min(.5vw, 5px);
-    perspective: 500px;
-    box-sizing: content-box;
-    border: 3px solid #EEE;
+    width: auto;
+    height: auto;
+    margin: 5px 0;
+}
+
+.disable-tap-zoom {
+    touch-action: none;
+    /* disable iphone default tap zoom action */
+}
+
+.game-container {
+    position: static;
+}
+
+.title {
+    font-weight: bold;
+    font-size: var(--title-font-size);
+    color: var(--color-title);
+}
+
+span.correct {
+    background-color: var(--color-correct);
+}
+
+span.elsewhere {
+    background-color: var(--color-elsewhere);
+}
+
+span.miss {
+    background-color: var(--color-miss);
+}
+
+.footer {
+    font-size: var(--footer-font-size);
+    font-weight: bold;
+    margin: auto;
+}
+
+.small-text {
+    font-weight: normal;
+    font-size: smaller;
+}
+
+.version-info {
+    color: #bbb;
+}
+
+.hard-checkbox input {
+    margin-bottom: 0px;
+    height: 2vh;
+    width: 2vh;
 }
 
 .game-in-progress .guess-row.current>.letter-container {
@@ -168,49 +287,6 @@ export default Vue.extend({
     background-color: #fee;
 }
 
-.guess-row.previous .letter-container {
-    border: 3px solid #888;
-}
-
-/* reveal color as default grey, conditionally yellow or green */
-.reveal .back {
-    background-color: var(--color-miss);
-}
-
-.reveal .back.present {
-    background-color: var(--color-elsewhere);
-}
-
-.reveal .back.correct {
-    background-color: var(--color-correct);
-}
-
-/* when reveal class added, flip the wrapper div ocer to expose colored div */
-.reveal .guess-letter {
-    transform: rotateY(180deg);
-}
-
-
-/* flip the columns .5s apart */
-.reveal .letter-container:nth-child(2) .guess-letter {
-    transition-delay: .5s;
-}
-
-.reveal .letter-container:nth-child(3) .guess-letter {
-    transition-delay: 1s;
-}
-
-.reveal .letter-container:nth-child(4) .guess-letter {
-    transition-delay: 1.5s;
-}
-
-.reveal .letter-container:nth-child(5) .guess-letter {
-    transition-delay: 2s;
-}
-
-.reveal .letter-container:nth-child(6) .guess-letter {
-    transition-delay: 2.5s;
-}
 
 .status-area {
     min-height: 20px;
