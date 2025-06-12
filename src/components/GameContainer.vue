@@ -89,6 +89,7 @@ export default Vue.extend({
     methods: {
         statusMsg( msg: string) {
             this.statusMessage = msg;
+            console.log('satus', msg);
         },
         rowWord( row: number ): string {
             if( row -1 === this.nGuesses) {
@@ -137,6 +138,7 @@ export default Vue.extend({
             if ( response.success) {
                 this.answer = response.word?.toUpperCase() as string;
                 this.resetState();
+                this.apiVersion = response.apiVersion ?? 'n/a';
                 this.statusMsg('Guess the 5-letter word in 6 tries. Good luck!');
             }
             else {

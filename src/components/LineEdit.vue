@@ -31,6 +31,7 @@ export default Vue.extend({
     {
         async onKey(e: KBRawKeyClickEvt): Promise<void> {
             const key = e.key;
+            this.$emit('key', e);
 
             const L = this.editWord.length;
             let newEditWord = this.editWord;
@@ -68,7 +69,6 @@ export default Vue.extend({
                 this.$emit('update:editWord', newEditWord);
             }
 
-            this.$emit('key', e);
         },
         statusMsg( msg: string ) {
             this.$emit('message', msg );
