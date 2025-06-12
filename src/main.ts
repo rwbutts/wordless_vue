@@ -1,8 +1,6 @@
 "use strict";
 
 import Vue from "vue";
-import SharedState, { statusMsg } from "@/SharedState";
-
 import App from "@/App.vue";
 import EventBus from "@/EventBus";
 import VueCompositionAPI from "@vue/composition-api";
@@ -17,14 +15,7 @@ export const app = new Vue({
 
     data: {},
 
-    computed: {
-        SS: SharedState,
-    },
-
-    methods: {},
-
     async mounted() {
-        statusMsg("Loading ...");
         setTimeout(() => EventBus.emitTriggerWordLoadEvent(), 2000);
     },
 });

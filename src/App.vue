@@ -1,14 +1,14 @@
 <template>
 
-    <div id="app" class='disable-tap-zoom' :class="{ 'modal-active': SS.statModalIsActive }">
-        <stats :isActive.sync='SS.statModalIsActive' />
+    <div id="app" class='disable-tap-zoom' :class="{ 'modal-active': statModalIsActive }">
+        <stats :isActive.sync='statModalIsActive' ref='stats'/>
         <div class='app-container'>
             <h3 class='title'>Bill's NYTimes <a href='https://www.nytimes.com/games/wordle/index.html'
                     target='_blank'>Wordle</a>&trade; Clone</h3>
-            <game-container />
+            <game-container :enableHardMode="enableHardMode" @gameover="onGameOver"/>
             <div class='footer'>
                 <label class='hard-checkbox small-text'>
-                    <input type="checkbox" v-model="SS.enableHardMode">
+                    <input type="checkbox" v-model="enableHardMode">
                     <b>Hard Mode:</b> when checked, grey letters cannot be reused
                 </label>
                 <br>
@@ -19,8 +19,8 @@
                 <br>
                 <!-- <span class='small-text'>The unknown word may be plural</span> -->
                 <span class='small-text version-info'>
-                    app_ver: {{ SS.appVersion }}
-                    <span v-if="SS.apiVersion !== ''">, api_ver: {{ SS.apiVersion }} </span>
+                    app_ver: {{ appVersion }}
+                    <span v-if="apiVersion !== ''">, api_ver: {{ apiVersion }} </span>
                 </span>
             </div>
         </div>
@@ -34,7 +34,7 @@
 import Vue from 'vue'
 import GameContainer from '@/components/GameContainer.vue'
 import Stats from '@/components/Stats.vue'
-import SharedState from './SharedState'
+import { GameOverEvt } from './types';
 
 
 export default Vue.extend({
@@ -42,16 +42,23 @@ export default Vue.extend({
 
     data() {
         return {
+            statModalIsActive: false,
+            appVersion: process.env.VUE_APP_VERSION,
+            apiVersion: 'n/a',
+            enableHardMode: false,
         };
     },
 
     components: {
         GameContainer, Stats,
     },
-
-    computed: {
-        SS: SharedState,
+    methods: {
+        onGameOver(e: GameOverEvt) {
+            (this.$refs['stats'] as InstanceType<typeof Stats>).onGameOver(e);
+        },
     },
+    // computed: {
+    // },
 });
 </script>
 

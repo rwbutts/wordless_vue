@@ -1,11 +1,11 @@
 <template>
 
-    <div class='guess-letter' :class="{ [letterProp.color]: true }">
+    <div class='guess-letter' :class="{ [letterColor]: true }">
         <div class='front'>
-            {{ letterProp.letter }}
+            {{ letterProp }}
         </div>
         <div class='back '>
-            {{ letterProp.letter }}
+            {{ letterProp }}
         </div>
     </div>
 
@@ -14,10 +14,7 @@
 <script lang='ts'>
 "use strict";
 // @ts-check
-import { MatchCodes, LetterColorPair } from '../types';
-import SharedState, { } from '../SharedState'
-
-// @ts-check
+import { MatchCodes,  } from '../types';
 
 import Vue, { } from 'vue'
 
@@ -30,20 +27,25 @@ export default Vue.extend({
     },
     props: {
         'letterProp': {
-            type: LetterColorPair,
+            type: String,
             required: true,
         },
-        'myColumnProp': {
+        'answerProp': {
+            type: String,
+            required: true,
+        },
+        'columnProp': {
             type: Number,
             required: true,
         },
-        'myRowProp': {
-            type: Number,
-            required: true,
-        },
+        
     },
     computed: {
-        SS: SharedState,
+        letterColor(): MatchCodes {
+            return (this.letterProp === this.answerProp.charAt(this.columnProp )) 
+            ? MatchCodes.CORRECT 
+            : (this.answerProp.includes(this.letterProp) ? MatchCodes.ELSEWHERE : MatchCodes.MISS);
+        }
     },
 });
 

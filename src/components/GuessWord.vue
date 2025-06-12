@@ -1,14 +1,10 @@
 <template>
-    <div class='guess-row row' :class="{ focus: haveFocus, reveal: reveal, latest_reveal: recent_reveal, }">
+    <div class='guess-row row' :class="{ focus: haveFocus, reveal: reveal, latest_reveal: recentReveal, }">
 
         <div v-for="col in 5" :key='col' class='letter-container'
-            :class="{ focus: haveFocus && col - 1 === SS.cursorColumn }">
-            <guess-letter :letterProp="letterRowArrayProp[col - 1]" :myColumnProp="col - 1" :myRowProp="myRowProp" />
+            :class="{ focus: haveFocus && col - 1 === wordProp.length }">
+            <guess-letter :letterProp="wordProp.charAt(col - 1)" :columnProp="col - 1" :answerProp="answerProp" />
         </div>
-
-        <!--
-    <pre>|{{ JSON.stringify(letterRowArrayProp) }}|</pre>
--->
     </div>
 </template>
 
@@ -16,9 +12,8 @@
 "use strict";
 // @ts-check
 
-import Vue, { PropType } from 'vue'
+import Vue, { } from 'vue'
 import GuessLetter from './GuessLetter.vue';
-import SharedState from '@/SharedState'
 
 export default Vue.extend({
     name: 'guess-word',
@@ -33,23 +28,33 @@ export default Vue.extend({
     props:
     {
         myRowProp: {
-            type: Number as PropType<number>,
+            type: Number,
             required: true,
         },
-        letterRowArrayProp: Array,
+        answerProp: {
+            type: String,
+            required: true,
+        },
+        wordProp: {
+            type: String,
+            required: true,
+        },
+        activeRowProp: {
+            type: Number,
+            required: true,
+        },
     },
 
     computed: {
-        SS: SharedState,
-        reveal() {
-            return this.SS.cursorRow > this.myRowProp;
+        reveal(): boolean {
+            return this.activeRowProp > this.myRowProp;
         },
-        recent_reveal() {
-            return this.SS.cursorRow === this.myRowProp + 1;
+        recentReveal(): boolean {
+            return this.activeRowProp === this.myRowProp + 1;
         },
-        haveFocus() {
-            return this.SS.cursorRow === this.myRowProp;
-        }
+        haveFocus(): boolean {
+            return this.activeRowProp === this.myRowProp;
+        },
     },
 });
 </script>

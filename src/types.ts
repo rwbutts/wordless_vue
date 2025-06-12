@@ -24,6 +24,9 @@ export interface KBRawKeyClickEvt extends BaseEvt {
 export interface WordLoadedEvt extends BaseEvt {
     word: string;
 }
+export interface WordValidatedEvt extends BaseEvt {
+    word: string;
+}
 export interface SetKeyColorEvt extends BaseEvt {
     key: string;
     color: MatchCodes;

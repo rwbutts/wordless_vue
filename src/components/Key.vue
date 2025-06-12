@@ -12,7 +12,7 @@
 // @ts-check
 //import SharedState from '@/SharedState'
 import Vue, { PropType, } from 'vue'
-import { EventNames, KBRawKeyClickEvt, MatchCodes, WordLoadedEvt, EventHandler, SetKeyColorEvt, } from '@/types';
+import { EventNames, MatchCodes, EventHandler, SetKeyColorEvt, } from '@/types';
 import EventBus, {  } from '../EventBus';
 
 export default Vue.extend({
@@ -55,13 +55,12 @@ export default Vue.extend({
         clickHandler(): void {
             /**                
              * check if disabled in css so keypress-
-             * calls are ignored (native click will be 
-             * disabled by css setting natively.)
+             * calls are ignored (native click will be disabled by css setting .)
              **/
             if ('none' !== window.getComputedStyle(this.$el).getPropertyValue('pointer-events')) {
                 this.keyDown = true;
-                EventBus.emit(EventNames.KB_RAWKEY, {key: this.char } as KBRawKeyClickEvt);
-                this.$emit('click', {key: this.char });
+                //EventBus.emit(EventNames.KB_RAWKEY, {key: this.char } as KBRawKeyClickEvt);
+                this.$emit('key', {key: this.char });
                 setTimeout(() => (this.keyDown = false), 100);
             }
         },
