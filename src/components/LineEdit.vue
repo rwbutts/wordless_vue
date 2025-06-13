@@ -62,6 +62,9 @@ export default Vue.extend({
                 case key.length === 1 && key >= 'A' && key <= 'Z' && L < 5:
                     newEditWord += key;
                     break;
+                case key === 'RESET':
+                    this.$emit('reset');
+                    break;
             }
 
             if(newEditWord !== this.editWord)

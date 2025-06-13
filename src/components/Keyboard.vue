@@ -36,7 +36,7 @@
             <key char='ENTER' :controlKey="true" label='ENTER' @key="onKey" />
         </div>
         <div class='kb-row'>
-            <key char='RESET' :controlKey="true" label='PLAY AGAIN' @key="broadcastReload();" />
+            <key char='RESET' :controlKey="true" label='PLAY AGAIN' @key="onKey"  />
         </div>
     </div>
 
@@ -47,7 +47,6 @@
 
 import Vue from 'vue'
 import Key from './Key.vue'
-import EventBus from '../EventBus'
 import { KBRawKeyClickEvt } from '@/types';
 
 export default Vue.extend({
@@ -61,9 +60,6 @@ export default Vue.extend({
         Key
     },
     methods: {
-        broadcastReload() {
-            EventBus.emitTriggerWordLoadEvent();
-        },
         onKey(e: KBRawKeyClickEvt) {
             this.$emit('key', e );
         },
