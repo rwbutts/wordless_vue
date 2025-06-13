@@ -59,9 +59,7 @@ export default Vue.extend({
     width: 100%;
 
 }
-</style>
 
-<style scoped>
 /* opposing sides of the wrapper content */
 .back,
 .front {
@@ -74,9 +72,12 @@ export default Vue.extend({
 .back {
     transform: rotateY(180deg);
 }
-</style>
 
-<style>
+/* when reveal class added, flip the wrapper div ocer to expose colored div */
+.reveal .guess-letter {
+    transform: rotateY(180deg);
+}
+
 .guess-letter.miss .back {
     background-color: var(--color-miss);
 }
@@ -88,4 +89,5 @@ export default Vue.extend({
 .guess-letter.elsewhere .back {
     background-color: var(--color-elsewhere);
 }
+
 </style>

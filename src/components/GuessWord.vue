@@ -1,5 +1,5 @@
 <template>
-    <div class='guess-row row' :class="{ focus: haveFocus, reveal: reveal, latest_reveal: recentReveal, }">
+    <div class='guess-row row' :class="{ focus: haveFocus, reveal: reveal, 'latest-reveal': recentReveal, }">
 
         <div v-for="col in 5" :key='col' class='letter-container'
             :class="{ focus: haveFocus && col - 1 === wordProp.length }">
@@ -151,25 +151,8 @@ export default Vue.extend({
     }
 }
 
-/* reveal color as default grey, conditionally yellow or green */
-.reveal .back {
-    background-color: var(--color-miss);
-}
 
-.reveal .back.present {
-    background-color: var(--color-elsewhere);
-}
-
-.reveal .back.correct {
-    background-color: var(--color-correct);
-}
-
-/* when reveal class added, flip the wrapper div ocer to expose colored div */
-.reveal .guess-letter {
-    transform: rotateY(180deg);
-}
-
-.gamestate-won .guess-row.latest_reveal {
+.gamestate-won .guess-row.latest-reveal {
     animation: shake 0.5s;
     animation-iteration-count: 2;
     animation-delay: 2s;
