@@ -11,15 +11,15 @@ const GETMATCHCOUNT_URI = process.env.VUE_APP_API_URI_GETMATCHCOUNT;
 const HTTP_VER_HEADER = "X-wordless-api-version";
 
 export type CheckWordAsyncResponseType =
-{ success: boolean, exists:boolean|undefined, message: string, apiVersion?: string }
+{ success: boolean, exists:boolean|undefined, message: string, api_version: string }
 
 export type GetWordAsyncResponseType =
-{ success: boolean, word:string|undefined, message: string, apiVersion?: string }
+{ success: boolean, word:string|undefined, message: string, api_version: string }
 
 export type GetMatchCountAsyncResponseType=
-{ success: boolean, count:number|undefined, message: string, apiVersion?: string }
+{ success: boolean, count:number|undefined, message: string, api_version: string }
 
-export type HealthCheckAsyncResponseType = { healthy: boolean, message: string, apiVersion?:  string }
+export type HealthCheckAsyncResponseType = { healthy: boolean, message: string, api_version:  string }
 
 export class WordlessAPI
 {
@@ -49,11 +49,11 @@ async function healthCheckAsync( ) :  Promise<HealthCheckAsyncResponseType>
      try
      {
           const json = await _fetchAndGetJson( `${API_SITE}${HEALTHCHECK_URI}` );
-          return  { healthy : true, message:'',  apiVersion: json.apiVersion  as string };  
+          return  { healthy : true, message:'',  api_version: json.api_version  as string };  
      }
      catch(err : unknown)
      {
-          return  { healthy: false, message: (err as Error).message, };  
+          return  { healthy: false, message: (err as Error).message, api_version: 'n/a' };  
      }  
 }
 
@@ -62,11 +62,11 @@ async function getWordAsync( daysAgo = -1) :  Promise<GetWordAsyncResponseType>
      try
      {
           const json = await _fetchAndGetJson( `${API_SITE}${GETWORD_URI}/${daysAgo}` );
-          return  { word: (json.word as string).toUpperCase(), success : true, message:'',  apiVersion: json.apiVersion  as string };  
+          return  { word: (json.word as string).toUpperCase(), success : true, message:'',  api_version: json.api_version  as string };  
      }
      catch(err : unknown)
      {
-          return  { word: undefined, success : false, message: (err as Error).message };  
+          return  { word: undefined, success : false, message: (err as Error).message, api_version: 'n/a' };  
      }  
 }
 
@@ -76,11 +76,11 @@ export async function checkWordAsync( Word :string) : Promise<CheckWordAsyncResp
      try
      {
           const json = await _fetchAndGetJson( `${API_SITE}${CHECKWORD_URI}/${WordLC}` );
-          return { exists: json.exists as boolean, success: true, message: '',  apiVersion: json.apiVersion as string };
+          return { exists: json.exists as boolean, success: true, message: '',  api_version: json.api_version as string };
      }
      catch( err : unknown )
      {
-          return { exists: undefined, success: false, message: (err as Error).message,  };
+          return { exists: undefined, success: false, message: (err as Error).message, api_version: 'n/a' };
      }
 }
 
@@ -95,11 +95,11 @@ export async function getMatchCountAsync( answer :string, guessArray: string[]  
      try
      {
           const json = await _fetchAndGetJson( `${API_SITE}${GETMATCHCOUNT_URI}`, postData );
-          return { count: json.count as number, success: true, message: '', apiVersion: json.apiVersion as string };
+          return { count: json.count as number, success: true, message: '', api_version: json.api_version as string };
      }
      catch( err : unknown )
      {
-          return { count: undefined, success: false, message: (err as Error).message,};
+          return { count: undefined, success: false, message: (err as Error).message, api_version: 'n/a'};
      }
 }
 
@@ -137,7 +137,7 @@ async function _fetchAndGetJson( Url: string, PostData: Record<string,unknown>|n
      }
      
      const json = await response.json();
-     json['apiVersion']  = response.headers.get(HTTP_VER_HEADER) ?? 'n/a';
+     json['api_version']  = response.headers.get(HTTP_VER_HEADER) ?? 'n/a';
      return Promise.resolve(json);
 }
 

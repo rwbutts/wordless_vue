@@ -136,7 +136,7 @@ export default Vue.extend({
             if (response.success) {
                 this.answer = response.word?.toUpperCase() as string;
                 this.resetState();
-                this.apiVersion = response.apiVersion ?? 'n/a';
+                this.apiVersion = response.api_version ?? 'n/a';
                 this.statusMsg('Guess the 5-letter word in 6 tries. Good luck!');
             }
             else {

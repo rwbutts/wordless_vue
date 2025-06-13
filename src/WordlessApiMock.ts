@@ -77,7 +77,7 @@ class GuessScorer {
 
 export class WordlessApi {
     async healthCheckAsync(): Promise<HealthCheckAsyncResponseType> {
-        return { healthy: true, message: "mock healthy", apiVersion: "mock" };
+        return { healthy: true, message: "mock healthy", api_version: "0.0m" };
     }
 
     async checkWordAsync(word: string): Promise<CheckWordAsyncResponseType> {
@@ -86,7 +86,7 @@ export class WordlessApi {
             exists: exists,
             success: true,
             message: exists ? "mock: found" : "mock: not found",
-            apiVersion: "mock",
+            api_version: "0.0m",
         };
     }
 
@@ -119,7 +119,7 @@ export class WordlessApi {
             word: word,
             success: true,
             message: "mock: OK",
-            apiVersion: "mock",
+            api_version: "0.0m",
         };
     }
 
@@ -153,7 +153,7 @@ export class WordlessApi {
             count: matchCount,
             success: true,
             message: "mock: OK",
-            apiVersion: "mock",
+            api_version: "0.0m",
         };
     }
     /*
