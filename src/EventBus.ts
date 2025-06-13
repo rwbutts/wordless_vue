@@ -4,16 +4,12 @@
 import mitt, { Emitter } from "mitt";
 
 import {
-    EventNames,
     EventHandler,
-    RequestWordLoadEvt,
     PlainObject,
     BaseEvt,
 } from "@/types";
 
 export class EventBus {
-    static readonly DEFAULT_EVENT_NAME = "DEFAULT";
-
     _emitter: Emitter<BaseEvt> = mitt<BaseEvt>();
 
     emit(
@@ -47,9 +43,6 @@ export class EventBus {
         this._emitter.off(event, handler);
     }
 
-    emitTriggerWordLoadEvent(): void {
-        this.emit(EventNames.TRIGGER_WORD_LOAD, {} as RequestWordLoadEvt);
-    }
 }
 
 const defaultEventBus = new EventBus();
