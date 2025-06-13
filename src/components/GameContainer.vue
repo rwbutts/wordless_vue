@@ -51,14 +51,13 @@
 import Vue from 'vue'
 import GuessWord from './GuessWord.vue'
 import LineEdit from './LineEdit.vue'
+import {keyRefMap} from './Key.vue'
 import Stats from './Stats.vue'
 import {
-    EventNames, GameOverEvt,
+    GameOverEvt,
     GamePlayStates, MatchCodes,
-    SetKeyColorEvt,
     WordValidatedEvt,
 } from '@/types'
-import EventBus from '@/EventBus'
 import WordlessApiService from '@/WordlessApiMock'
 
 export default Vue.extend({
@@ -120,12 +119,19 @@ export default Vue.extend({
             for (let i = 0; i < guess.length; i++) {
                 const gc = guess.charAt(i);
                 const color = (gc === this.answer.charAt(i)) ? MatchCodes.CORRECT : (this.answer.includes(gc) ? MatchCodes.ELSEWHERE : MatchCodes.MISS);
-                EventBus.emit(EventNames.SET_KEY_COLOR, { key: gc, color: color } as SetKeyColorEvt);
+                this.setKeyColor(gc, color);
+            }
+        },
+        setKeyColor(key:string, color: MatchCodes) {
+            if(key === '*') {
+                Object.keys(keyRefMap).forEach( k => keyRefMap[k].setKeyColor(color));
+            } else{
+                keyRefMap[key].setKeyColor( color );
             }
         },
         resetState() {
             this.guesses = [];
-            EventBus.emit(EventNames.SET_KEY_COLOR, { key: '*', color: MatchCodes.DEFAULT } as SetKeyColorEvt);
+            this.setKeyColor('*', MatchCodes.DEFAULT);
             this.gamePlayState = GamePlayStates.PLAYING;
         },
         // @typescript-eslint-disable-next-line no-unused-vars

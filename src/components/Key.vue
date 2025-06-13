@@ -12,10 +12,9 @@
 // @ts-check
 //import SharedState from '@/SharedState'
 import Vue, { PropType, } from 'vue'
-import { EventNames, MatchCodes, EventHandler, SetKeyColorEvt, } from '@/types';
-import EventBus, {  } from '../EventBus';
+import { MatchCodes, } from '@/types';
 
-export default Vue.extend({
+const keyComponent = Vue.extend({
     name: 'key',
 
     data() {
@@ -59,7 +58,6 @@ export default Vue.extend({
              **/
             if ('none' !== window.getComputedStyle(this.$el).getPropertyValue('pointer-events')) {
                 this.keyDown = true;
-                //EventBus.emit(EventNames.KB_RAWKEY, {key: this.char } as KBRawKeyClickEvt);
                 this.$emit('key', {key: this.char });
                 setTimeout(() => (this.keyDown = false), 100);
             }
@@ -71,23 +69,21 @@ export default Vue.extend({
             }
         },
         
-        onSetKeyColor(evt: SetKeyColorEvt) {
-            if( evt.key==='*' || evt.key==this.char || evt.key==='alpha' && !this.controlKey || evt.key==='nonalpha' && this.controlKey)
-            {
-                if( evt.key ==='*' || evt.color === MatchCodes.DEFAULT || this.color != MatchCodes.CORRECT )
-                {
-                    this.color = evt.color;
-                }
-            }
+        setKeyColor( color: MatchCodes) {
+            this.color = color;
         }
     },
 
     mounted() {
-        EventBus.On(EventNames.SET_KEY_COLOR, this.onSetKeyColor.bind(this) as EventHandler);
+        keyRefMap[this.char] = this;
         window.addEventListener('keydown', this.handleKeyboardKey.bind(this));
     },
 
 });
+
+export default keyComponent;
+export const keyRefMap = {} as Record<string,InstanceType<typeof keyComponent>>;
+
 </script>
 
 <style>
